@@ -1,0 +1,31 @@
+# Python bytecode cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments (Do NOT push local libraries to GitHub)
+venv/
+.venv/
+env/
+ENV/
+
+# Local database (SQLite will auto-generate on first run)
+*.db
+*.sqlite3
+data/
+
+# Local editor & IDE settings
+.vscode/
+.idea/
+
+# Environment variables & secrets
+.env
+
+# Keep uploads folder structure on GitHub, but don't commit uploaded files
+uploads/*
+!uploads/.gitkeep
+
+# Operating system files
+Thumbs.db
+.DS_Store
+

@@ -1,0 +1,430 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard | CareerX – Placement Assistant{% endblock %}
+{% block page_title %}Student Placement Overview{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="card dashboard-banner">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                <span class="badge badge-primary"><i class="fa-solid fa-crosshairs"></i> Target: {{ current_user.target_role or 'Software Engineer' }}</span>
+                <span class="badge badge-success"><i class="fa-solid fa-building-columns"></i> {{ current_user.college or 'College Campus' }}</span>
+            </div>
+            <h1 style="font-size: 1.85rem; margin-bottom: 0.35rem;">
+                Welcome back, <span style="color: var(--accent);">{{ current_user.full_name or current_user.username }}</span>! 👋
+            </h1>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">
+                Here is your real-time placement readiness score and progress analytics across all preparation modules.
+            </p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+            <a href="{{ url_for('resume_builder') }}" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-file-pen"></i> Create Resume
+            </a>
+            <a href="{{ url_for('interview_prep') }}" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-code"></i> Tech Interview Prep
+            </a>
+            <a href="{{ url_for('aptitude_view') }}" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-bolt"></i> Practice Aptitude
+            </a>
+            <a href="{{ url_for('ats_checker') }}" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-file-shield"></i> ATS Scan
+            </a>
+            <button type="button" onclick="window.print()" class="btn btn-outline btn-sm" title="Print/Save Placement Preparation Summary Report">
+                <i class="fa-solid fa-print"></i> Export Report
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Placement Cell Broadcast Notices -->
+{% if notices %}
+<div class="notices-banner-container">
+    {% for n in notices[:2] %}
+    <div class="notice-alert-item {% if n.priority == 'Urgent' %}priority-urgent{% elif n.priority == 'High' %}priority-high{% endif %}">
+        <div class="notice-alert-content">
+            <span class="badge {% if n.priority == 'Urgent' %}badge-danger{% elif n.priority == 'High' %}badge-warning{% else %}badge-primary{% endif %}">
+                <i class="fa-solid fa-bullhorn"></i> {{ n.priority }}
+            </span>
+            <strong style="color: var(--text-primary); font-size: 0.92rem;">{{ n.title }}:</strong>
+            <span style="color: var(--text-secondary); font-size: 0.88rem;">{{ n.content }}</span>
+        </div>
+        <div style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap;">
+            <i class="fa-solid fa-user-tie"></i> {{ n.posted_by }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- KPI Stats Grid -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon indigo">
+            <i class="fa-solid fa-file-shield"></i>
+        </div>
+        <div class="stat-info">
+            <div class="label">ATS Resume Score</div>
+            <div class="value">{{ ats_score }}%</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon emerald">
+            <i class="fa-solid fa-bolt"></i>
+        </div>
+        <div class="stat-info">
+            <div class="label">Aptitude Accuracy</div>
+            <div class="value">{{ avg_accuracy }}%</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon cyan">
+            <i class="fa-solid fa-clipboard-check"></i>
+        </div>
+        <div class="stat-info">
+            <div class="label">Assessment Rating</div>
+            <div class="value">{{ avg_interview_score }}<span style="font-size: 1rem; color: var(--text-muted);">/10</span></div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon amber">
+            <i class="fa-solid fa-code"></i>
+        </div>
+        <div class="stat-info">
+            <div class="label">Skills Logged</div>
+            <div class="value">{{ skills_count }}</div>
+        </div>
+    </div>
+
+    <div class="stat-card">
+        <div class="stat-icon rose">
+            <i class="fa-solid fa-briefcase"></i>
+        </div>
+        <div class="stat-info">
+            <div class="label">Job Applications</div>
+            <div class="value">{{ apps_count }}</div>
+        </div>
+    </div>
+</div>
+
+<!-- Placement Readiness Diagnostic & Simulation Engine -->
+<div class="card readiness-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <span class="badge badge-primary"><i class="fa-solid fa-microchip"></i> Real-time AI Evaluation</span>
+                <span class="badge badge-success" id="readinessTierBadge">Tier 1 — Day-1 Ready</span>
+            </div>
+            <h3 style="font-size: 1.35rem; margin: 0;">
+                <i class="fa-solid fa-gauge-high" style="color: var(--accent); margin-right: 0.4rem;"></i> Placement Readiness Diagnostic
+            </h3>
+        </div>
+        <button type="button" class="btn btn-outline btn-sm" id="toggleSimulatorBtn" onclick="toggleReadinessSimulator()">
+            <i class="fa-solid fa-sliders"></i> <span id="simBtnText">Open Readiness Simulator</span>
+        </button>
+    </div>
+
+    <div style="display: grid; grid-template-columns: auto 1fr; gap: 1.75rem; align-items: center;" class="readiness-flex-grid">
+        <div class="readiness-score-dial" id="readinessScoreDial" style="--score-pct: 86;">
+            <div class="readiness-score-inner">
+                <span id="readinessScoreVal" style="font-size: 1.5rem; font-weight: 800; font-family: var(--font); color: var(--accent);">86%</span>
+                <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Index</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                    <span><i class="fa-solid fa-bolt" style="color: var(--accent-emerald);"></i> Aptitude Proficiency</span>
+                    <strong id="diagAptVal">{{ avg_accuracy }}%</strong>
+                </div>
+                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                    <div id="diagAptBar" data-progress="{{ avg_accuracy }}" style="height: 100%; width: 0%; background: var(--accent-emerald); border-radius: 99px; transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                    <span><i class="fa-solid fa-file-shield" style="color: var(--accent);"></i> ATS Resume Alignment</span>
+                    <strong id="diagAtsVal">{{ ats_score }}%</strong>
+                </div>
+                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                    <div id="diagAtsBar" data-progress="{{ ats_score }}" style="height: 100%; width: 0%; background: var(--accent); border-radius: 99px; transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                    <span><i class="fa-solid fa-clipboard-check" style="color: var(--accent-cyan);"></i> Technical Assessment</span>
+                    <strong id="diagMockVal">{{ ((avg_interview_score or 0) * 10)|round|int }}%</strong>
+                </div>
+                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                    <div id="diagMockBar" data-progress="{{ ((avg_interview_score or 0) * 10)|round|int }}" style="height: 100%; width: 0%; background: var(--accent-cyan); border-radius: 99px; transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                    <span><i class="fa-solid fa-graduation-cap" style="color: var(--accent-amber);"></i> Academic CGPA Benchmark</span>
+                    <strong id="diagCgpaVal">85%</strong>
+                </div>
+                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                    <div id="diagCgpaBar" data-progress="85" style="height: 100%; width: 85%; background: var(--accent-amber); border-radius: 99px; transition: width 0.6s ease;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expandable Interactive Simulator -->
+    <div class="simulator-box" id="simulatorBox">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <strong style="color: var(--text-primary); font-size: 0.95rem;">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> Simulate Your Target Readiness
+            </strong>
+            <span style="font-size: 0.78rem; color: var(--text-muted);">Adjust parameters to see score sensitivity</span>
+        </div>
+        <div class="slider-group">
+            <div class="slider-item">
+                <label><span>College CGPA</span> <span id="simCgpaDisplay" style="color: var(--accent);">8.5</span></label>
+                <input type="range" id="simCgpa" min="5.0" max="10.0" step="0.1" value="8.5" oninput="updateSimulation()">
+            </div>
+            <div class="slider-item">
+                <label><span>Aptitude Accuracy</span> <span id="simAptDisplay" style="color: var(--accent);">{{ avg_accuracy or 80 }}%</span></label>
+                <input type="range" id="simApt" min="40" max="100" step="1" value="{{ avg_accuracy or 80 }}" oninput="updateSimulation()">
+            </div>
+            <div class="slider-item">
+                <label><span>ATS Resume Score</span> <span id="simAtsDisplay" style="color: var(--accent);">{{ ats_score or 82 }}%</span></label>
+                <input type="range" id="simAts" min="40" max="100" step="1" value="{{ ats_score or 82 }}" oninput="updateSimulation()">
+            </div>
+            <div class="slider-item">
+                <label><span>Assessment Rating</span> <span id="simMockDisplay" style="color: var(--accent);">{{ avg_interview_score or 7.8 }}/10</span></label>
+                <input type="range" id="simMock" min="4.0" max="10.0" step="0.2" value="{{ avg_interview_score or 7.8 }}" oninput="updateSimulation()">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Interactive Roadmap Banner -->
+{% if roadmap %}
+<div class="card" style="margin-bottom: var(--spacing-standard);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+        <div>
+            <span style="font-family: var(--font); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 600;">Career Milestone</span>
+            <h3 style="font-size: 1.15rem; margin-top: 2px;">{{ roadmap.career_role }} &mdash; <span style="color: var(--accent);">{{ roadmap.current_milestone }}</span></h3>
+        </div>
+        <div style="text-align: right;">
+            <span style="font-size: 1.35rem; font-weight: 700; font-family: var(--font); color: var(--accent);">{{ roadmap.progress_pct }}%</span>
+            <div style="font-size: 0.75rem; color: var(--text-muted);">Completed</div>
+        </div>
+    </div>
+    <!-- Progress Bar -->
+    <div style="height: 8px; width: 100%; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+        <div id="dashRoadmapBar" data-progress="{{ roadmap.progress_pct }}" style="height: 100%; width: 0%; background: var(--accent); border-radius: 99px; transition: width 0.6s ease;"></div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Active Campus Placement Drives Board -->
+<div class="card" style="margin-bottom: var(--spacing-standard);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Verified TPO Drives</span>
+                <span class="badge badge-primary">{{ drives|length }} Open Positions</span>
+            </div>
+            <h3 style="font-size: 1.35rem; margin: 0;">
+                <i class="fa-solid fa-building-columns" style="color: var(--accent); margin-right: 0.4rem;"></i> Active Campus Placement Drives
+            </h3>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);">
+            <i class="fa-solid fa-bolt" style="color: var(--accent-amber);"></i> 1-Click apply adds directly to your tracker
+        </div>
+    </div>
+
+    <!-- Live Search & CTC Filter Row -->
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem; background: var(--bg); padding: 0.75rem 1rem; border-radius: var(--radius-btn); border: 1px solid var(--border-color);">
+        <div class="form-icon-wrap" style="flex: 1; min-width: 240px; max-width: 380px;">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="driveSearchInput" class="form-control form-control-sm" placeholder="Filter company, role, or location..." oninput="filterCampusDrives()">
+        </div>
+        <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+            <button type="button" class="btn btn-outline btn-sm drive-filter-btn active" data-filter="all" onclick="setDriveFilter('all', this)">All ({{ drives|length }})</button>
+            <button type="button" class="btn btn-outline btn-sm drive-filter-btn" data-filter="10" onclick="setDriveFilter('10', this)">10+ LPA</button>
+            <button type="button" class="btn btn-outline btn-sm drive-filter-btn" data-filter="20" onclick="setDriveFilter('20', this)">20+ LPA</button>
+        </div>
+    </div>
+
+    <div class="drives-grid" id="campusDrivesGrid">
+        {% for d in drives %}
+        <div class="drive-card" data-company="{{ d.company|lower }}" data-role="{{ d.role|lower }}" data-location="{{ d.location|lower }}" data-package="{{ d.package_lpa }}">
+            <div>
+                <div class="drive-card-header">
+                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                        <div class="drive-company-badge">
+                            {{ d.company[:1] }}
+                        </div>
+                        <div>
+                            <strong style="font-size: 1.05rem; color: var(--text-primary); display: block;">{{ d.company }}</strong>
+                            <div style="font-size: 0.82rem; color: var(--text-secondary);"><i class="fa-solid fa-location-dot" style="font-size: 0.75rem;"></i> {{ d.location }}</div>
+                        </div>
+                    </div>
+                    <div class="drive-package-tag">
+                        ₹{{ d.package_lpa }} <span style="font-size: 0.75rem; font-weight: 500; color: var(--text-secondary);">LPA</span>
+                    </div>
+                </div>
+
+                <h4 style="font-size: 0.95rem; margin: 0.5rem 0 0.35rem; color: var(--accent);">{{ d.role }}</h4>
+                <p style="font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4; margin-bottom: 0.75rem;">
+                    {{ d.description or 'Official campus recruitment drive for final year and pre-final year students.' }}
+                </p>
+
+                <div class="drive-meta-row">
+                    <span class="drive-meta-pill">
+                        <i class="fa-solid fa-graduation-cap"></i> Min CGPA: <strong>{{ d.min_cgpa }}</strong>
+                    </span>
+                    <span class="drive-meta-pill">
+                        <i class="fa-regular fa-calendar"></i> Drive: {{ d.drive_date }}
+                    </span>
+                    <span class="drive-meta-pill" style="color: var(--accent-rose);">
+                        <i class="fa-regular fa-clock"></i> Deadline: {{ d.deadline }}
+                    </span>
+                </div>
+            </div>
+
+            <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                <span class="badge badge-success"><i class="fa-solid fa-circle" style="font-size: 0.5rem;"></i> {{ d.status }}</span>
+                <button type="button" 
+                        class="btn btn-primary btn-sm apply-drive-btn" 
+                        data-drive-id="{{ d.id }}" 
+                        data-company="{{ d.company }}" 
+                        data-role="{{ d.role }}"
+                        onclick="handleDriveApply(this, '{{ d.id }}', '{{ d.company }}', '{{ d.role }}')">
+                    <i class="fa-solid fa-paper-plane"></i> 1-Click Apply
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 2rem;">
+            <p>No active campus drives posted right now. Check back soon!</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Analytics Charts Grid -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-standard); margin-bottom: var(--spacing-standard);">
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3><i class="fa-solid fa-chart-simple" style="color: var(--accent); margin-right: 0.5rem;"></i> Aptitude Performance by Category</h3>
+            <span class="badge badge-primary">{{ total_tests }} Tests Taken</span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="aptitudeChart"></canvas>
+        </div>
+    </div>
+
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3><i class="fa-solid fa-chart-pie" style="color: var(--accent); margin-right: 0.5rem;"></i> Job Applications Pipeline</h3>
+            <span class="badge badge-primary">{{ apps_count }} Total Tracked</span>
+        </div>
+        <div class="chart-wrapper">
+            <canvas id="applicationsChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Section: Recent Applications & Badges -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+    <!-- Recent Applications -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3><i class="fa-solid fa-briefcase" style="color: var(--accent-amber); margin-right: 0.5rem;"></i> Recent Applications</h3>
+            <a href="{{ url_for('applications_view') }}" class="btn btn-outline btn-sm">View Pipeline</a>
+        </div>
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Company</th>
+                        <th>Role</th>
+                        <th>Package</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for app in recent_apps %}
+                    <tr>
+                        <td><strong>{{ app.company }}</strong></td>
+                        <td>{{ app.role }}</td>
+                        <td>{{ app.salary_lpa }} LPA</td>
+                        <td>
+                            {% if app.status == 'Offer' %}
+                                <span class="badge badge-success">{{ app.status }}</span>
+                            {% elif app.status == 'Interview' %}
+                                <span class="badge badge-primary">{{ app.status }}</span>
+                            {% elif app.status == 'Screening' %}
+                                <span class="badge badge-warning">{{ app.status }}</span>
+                            {% elif app.status == 'Rejected' %}
+                                <span class="badge badge-danger">{{ app.status }}</span>
+                            {% else %}
+                                <span class="badge badge-primary">{{ app.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            No applications tracked yet. Start by logging an application in the Job Tracker!
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Earned Badges -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <h3><i class="fa-solid fa-trophy" style="color: var(--gold-rank); margin-right: 0.5rem;"></i> Achievements</h3>
+            <span class="badge badge-gold">{{ badges|length }} Earned</span>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+            {% for b in badges %}
+            <div style="display: flex; align-items: center; gap: 0.85rem; padding: 0.85rem; border-radius: var(--radius-btn); background: var(--bg-card); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm);">
+                <div style="width: 40px; height: 40px; border-radius: 50%; background: rgba(245, 185, 66, 0.12); border: 1px solid rgba(245, 185, 66, 0.35); color: var(--gold-rank); display: flex; align-items: center; justify-content: center; font-size: 1.15rem; flex-shrink: 0;">
+                    <i class="fa-solid {{ b.badge_icon }}"></i>
+                </div>
+                <div>
+                    <div style="font-family: var(--font); font-size: 0.88rem; font-weight: 600; color: var(--text-primary);">{{ b.badge_name }}</div>
+                    <div style="font-size: 0.74rem; color: var(--text-secondary);">{{ b.badge_desc }}</div>
+                </div>
+            </div>
+            {% else %}
+            <div style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                <i class="fa-solid fa-award" style="font-size: 2rem; margin-bottom: 0.5rem; color: var(--accent); opacity: 0.5;"></i>
+                <p style="font-size: 0.85rem;">Complete aptitude tests and technical assessments to unlock badges!</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Clean Data Blocks (Pure HTML) -->
+<script type="application/json" id="catMapData">{{ cat_map|tojson }}</script>
+<script type="application/json" id="statusMapData">{{ status_map|tojson }}</script>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}

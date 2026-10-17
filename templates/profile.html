@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Profile Settings | CareerX{% endblock %}
+{% block page_title %}Student Placement Profile{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; align-items: start;">
+    <!-- Profile Card Summary -->
+    <div class="card" style="text-align: center; padding: 2.5rem 1.5rem;">
+        <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #06B6D4, #6366F1); color: #FFF; font-size: 2.2rem; font-weight: 800; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; box-shadow: var(--glow-primary);">
+            {{ user.full_name[:1] if user.full_name else user.username[:1] }}
+        </div>
+        <h3 style="font-size: 1.35rem; margin-bottom: 0.25rem;">{{ user.full_name or user.username }}</h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; margin-bottom: 0.5rem;">@{{ user.username }} &bull; {{ user.role.title() }}</p>
+        <span class="badge badge-primary">{{ user.target_role or 'Software Engineer' }}</span>
+
+        <div style="border-top: 1px solid var(--border-color); margin-top: 1.5rem; padding-top: 1.25rem; text-align: left; font-size: 0.86rem; color: var(--text-secondary); line-height: 1.8;">
+            <div><i class="fa-solid fa-building-columns" style="color: var(--primary); width: 20px;"></i> {{ user.college or 'Campus Not Specified' }}</div>
+            <div><i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan); width: 20px;"></i> {{ user.branch or 'Engineering' }} ({{ user.grad_year or '2025' }})</div>
+            <div><i class="fa-solid fa-envelope" style="color: var(--accent-amber); width: 20px;"></i> {{ user.email }}</div>
+        </div>
+    </div>
+
+    <!-- Edit Profile Form -->
+    <div class="card">
+        <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;">Edit Personal & Placement Details</h3>
+        <form method="POST" action="{{ url_for('profile') }}">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" name="full_name" class="form-control" value="{{ user.full_name or '' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Placement Role</label>
+                    <select name="target_role" class="form-control">
+                        <option value="Software Engineer" {% if user.target_role == 'Software Engineer' %}selected{% endif %}>Software Engineer</option>
+                        <option value="AI/ML Engineer" {% if user.target_role == 'AI/ML Engineer' %}selected{% endif %}>AI/ML Engineer</option>
+                        <option value="Full Stack Developer" {% if user.target_role == 'Full Stack Developer' %}selected{% endif %}>Full Stack Developer</option>
+                        <option value="Data Analyst" {% if user.target_role == 'Data Analyst' %}selected{% endif %}>Data Analyst</option>
+                        <option value="Cloud / DevOps Engineer" {% if user.target_role == 'Cloud / DevOps Engineer' %}selected{% endif %}>Cloud / DevOps Engineer</option>
+                        <option value="Cybersecurity Analyst" {% if user.target_role == 'Cybersecurity Analyst' %}selected{% endif %}>Cybersecurity Analyst</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">College / Institute</label>
+                    <input type="text" name="college" class="form-control" value="{{ user.college or '' }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Graduation Year</label>
+                    <input type="number" name="grad_year" class="form-control" value="{{ user.grad_year or 2025 }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Department / Branch</label>
+                <input type="text" name="branch" class="form-control" value="{{ user.branch or '' }}">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Bio & Career Objective</label>
+                <textarea name="bio" class="form-control" rows="3">{{ user.bio or '' }}</textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; margin-top: 1rem;">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Profile Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

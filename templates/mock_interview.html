@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Technical Assessment | CareerX{% endblock %}
+{% block page_title %}Technical Assessment{% endblock %}
+
+{% block extra_css %}
+<style>
+/* Assessment styling */
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <h2 style="font-size: 1.45rem; margin-bottom: 0.25rem;">Technical Assessment</h2>
+    <p style="color: var(--text-secondary); font-size: 0.92rem;">
+        Face realistic engineering challenges and domain questions. Submit your technical solutions and evaluate them for engineering precision, concept coverage, and best practices.
+    </p>
+</div>
+
+<!-- Mock Setup & Arena -->
+<div class="card" id="mockArenaCard">
+    <!-- Setup Screen -->
+    <div id="mockSetupScreen" style="text-align: center; padding: 2.5rem 1rem;">
+        <div style="width: 70px; height: 70px; border-radius: 20px; background: var(--primary-gradient); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 1.5rem; box-shadow: var(--glow-primary);">
+            <i class="fa-solid fa-clipboard-check"></i>
+        </div>
+        <h3 style="font-size: 1.6rem; margin-bottom: 0.5rem;">Configure Your Assessment Session</h3>
+        <p style="color: var(--text-secondary); max-width: 500px; margin: 0 auto 2rem; font-size: 0.95rem;">
+            Choose your technical track. Practice answering core domain questions and critique your answers on engineering precision.
+        </p>
+
+        <div style="display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 2rem; flex-wrap: wrap;">
+            <div style="text-align: left;">
+                <label class="form-label">Domain Track</label>
+                <select id="mockCategorySelect" class="form-control" style="min-width: 200px;">
+                    {% for cat in categories %}
+                    <option value="{{ cat }}">{{ cat }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div style="text-align: left;">
+                <label class="form-label">Question Count</label>
+                <select id="mockCountSelect" class="form-control" style="min-width: 140px;">
+                    <option value="2">2 Questions (Fast)</option>
+                    <option value="3" selected>3 Questions</option>
+                    <option value="5">5 Questions (Deep)</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="startMockBtn" class="btn btn-primary" style="padding: 0.85rem 2rem; font-size: 1rem;">
+            <i class="fa-solid fa-play"></i> Start Assessment
+        </button>
+    </div>
+
+    <!-- Active Assessment Room (Hidden initially) -->
+    <div id="mockRoomScreen" style="display: none;">
+        <!-- Top Bar -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem;">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <span class="badge badge-primary" id="mockDomainBadge">Python</span>
+                <span style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);" id="mockQuestionCounter">Question 1 of 3</span>
+            </div>
+            <span class="badge badge-warning" id="mockDifficultyBadge">Medium</span>
+        </div>
+
+        <!-- Technical Evaluator Dialogue -->
+        <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <div style="width: 44px; height: 44px; border-radius: 12px; background: var(--primary-gradient); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+                <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <div style="background: rgba(99, 102, 241, 0.08); border: 1px solid rgba(99, 102, 241, 0.25); border-radius: var(--radius-md); padding: 1.25rem 1.5rem; flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--accent-gold); font-weight: 700;">Technical Evaluator</div>
+                    <button type="button" id="mockReadQuestionBtn" class="btn btn-outline btn-sm" style="font-size: 0.76rem; padding: 0.25rem 0.7rem; border-radius: 999px; display: inline-flex; align-items: center; gap: 0.35rem;" title="Listen to question spoken out loud">
+                        <i class="fa-solid fa-volume-high" id="mockSpeakerIcon"></i>
+                        <span id="mockSpeakerText">Listen</span>
+                    </button>
+                </div>
+                <h4 id="mockQuestionText" style="font-size: 1.15rem; color: var(--text-primary); line-height: 1.5;">
+                    Question text loading...
+                </h4>
+            </div>
+        </div>
+
+        <!-- Student Answer Field -->
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.5rem;">
+                <label class="form-label" style="margin-bottom: 0; display: flex; align-items: center; gap: 0.5rem;">
+                    <span>Your Answer</span>
+                    <span style="color: var(--text-muted); font-size: 0.8rem; font-weight: normal;">(Type your response below)</span>
+                </label>
+                <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                    <button type="button" id="mockClearAnswerBtn" class="btn btn-outline btn-sm" style="border-radius: 999px; padding: 0.3rem 0.75rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem;" title="Clear answer text">
+                        <i class="fa-solid fa-eraser"></i> Clear
+                    </button>
+                    <button type="button" id="mockSmartDictateBtn" class="btn btn-outline btn-sm" style="border-radius: 999px; padding: 0.3rem 0.8rem; font-size: 0.8rem; display: inline-flex; align-items: center; gap: 0.35rem; border-color: var(--accent-gold); color: var(--accent-gold);" title="Articulate candidate sample response for this question">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        <span>Sample Answer</span>
+                    </button>
+                </div>
+            </div>
+
+            <textarea id="mockAnswerInput" class="form-control" rows="5" placeholder="Type your technical response, explanation, or code approach here..."></textarea>
+        </div>
+
+        <!-- Submit Answer Button -->
+        <div style="display: flex; justify-content: flex-end;">
+            <button id="submitMockAnswerBtn" class="btn btn-primary">
+                <span>Evaluate Answer</span>
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            </button>
+        </div>
+
+        <!-- Immediate AI Feedback Box (Shown after evaluation) -->
+        <div id="mockAnswerFeedbackBox" style="display: none; margin-top: 1.5rem; padding: 1.5rem; border-radius: var(--radius-md); background: var(--bg-secondary); border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                    <span class="badge badge-success" id="fbRatingBadge">Outstanding</span>
+                    <h4 style="font-size: 1.15rem; margin-top: 0.25rem;">Evaluation & Score: <span id="fbScore" style="color: var(--accent-emerald);">8.5/10</span></h4>
+                </div>
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <button type="button" id="mockReadFeedbackBtn" class="btn btn-outline btn-sm" style="font-size: 0.78rem; padding: 0.28rem 0.75rem; border-radius: 999px; display: inline-flex; align-items: center; gap: 0.4rem;" title="Listen to evaluator feedback spoken fluently">
+                        <i class="fa-solid fa-volume-high" id="mockFeedbackSpeakerIcon"></i>
+                        <span id="mockFeedbackSpeakerText">Listen Feedback</span>
+                    </button>
+                    <button id="nextMockQBtn" class="btn btn-primary btn-sm">
+                        Next Question <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 0.85rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #34D399; margin-bottom: 0.35rem;"><i class="fa-solid fa-circle-check"></i> Strengths:</div>
+                <ul id="fbStrengthsList" style="padding-left: 1.25rem; font-size: 0.86rem; color: var(--text-secondary);"></ul>
+            </div>
+
+            <div style="margin-bottom: 0.85rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #FB7185; margin-bottom: 0.35rem;"><i class="fa-solid fa-triangle-exclamation"></i> Gaps & Suggestions:</div>
+                <ul id="fbImprovementsList" style="padding-left: 1.25rem; font-size: 0.86rem; color: var(--text-secondary);"></ul>
+            </div>
+
+            <div style="background: var(--gold-soft); padding: 0.85rem; border-radius: var(--radius-sm); font-size: 0.84rem; border-left: 3px solid var(--accent-gold);">
+                <strong style="color: var(--accent-gold);">Model Benchmark:</strong>
+                <span id="fbModelAns" style="color: var(--text-secondary);"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Final Summary Screen -->
+    <div id="mockFinalSummaryScreen" style="display: none; text-align: center; padding: 2.5rem 1rem;">
+        <div style="font-size: 3rem; font-weight: 800; font-family: 'Outfit'; color: var(--accent-emerald);" id="finalOverallScore">
+            8.5 / 10
+        </div>
+        <h3 style="font-size: 1.4rem; margin-top: 0.35rem;">Assessment Completed! 🎓</h3>
+        <p style="color: var(--text-secondary); max-width: 500px; margin: 0.5rem auto 1.5rem; font-size: 0.92rem;" id="finalSummaryText">
+            Your results have been recorded in your placement analytics dashboard.
+        </p>
+        <button onclick="resetMockArena()" class="btn btn-primary">
+            <i class="fa-solid fa-rotate-right"></i> Take Another Assessment
+        </button>
+    </div>
+</div>
+
+<!-- Past Assessment Scores -->
+{% if past_interviews %}
+<div class="card" style="margin-top: 2rem;">
+    <h3 style="margin-bottom: 1rem; font-size: 1.15rem;">Recent Assessment Performance</h3>
+    <div class="table-responsive">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Domain</th>
+                    <th>Questions</th>
+                    <th>Overall Rating</th>
+                    <th>Feedback</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in past_interviews %}
+                <tr>
+                    <td><strong>{{ test.role_tested }}</strong></td>
+                    <td>{{ test.question_count }} Questions</td>
+                    <td>
+                        <span class="badge {% if test.overall_score >= 8 %}badge-success{% elif test.overall_score >= 6 %}badge-warning{% else %}badge-danger{% endif %}">
+                            {{ test.overall_score }} / 10
+                        </span>
+                    </td>
+                    <td style="font-size: 0.85rem;">{{ test.feedback }}</td>
+                    <td>{{ test.taken_at[:16] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/mock_interview.js') }}"></script>
+{% endblock %}

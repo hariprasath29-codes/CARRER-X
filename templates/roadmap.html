@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block title %}Career Roadmaps | CareerX{% endblock %}
+{% block page_title %}Career Roadmap & Milestones{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 1.5rem; margin-bottom: 0.25rem;">Interactive Placement Roadmaps</h2>
+            <p style="color: var(--text-secondary); font-size: 0.92rem;">
+                Step-by-step verified curriculum tailored for campus hiring and technical off-campus drives.
+            </p>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <label class="form-label" style="margin: 0; font-weight: 700;">Select Track:</label>
+            <select id="roleSelector" class="form-control" style="width: auto; min-width: 220px;">
+                {% for r in all_roles %}
+                <option value="{{ r }}" {% if r == current_role %}selected{% endif %}>{{ r }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+</div>
+
+<!-- Roadmap Progress Overview -->
+<div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.05)), var(--bg-card);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+            <span class="badge badge-primary" id="trackBadge">{{ current_role }} Track</span>
+            <h3 style="font-size: 1.3rem; margin-top: 0.5rem;" id="progressHeadline">
+                Milestone Progress: <span id="progressPctText">0%</span>
+            </h3>
+        </div>
+        <button id="saveRoadmapBtn" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span>Save Milestone Progress</span>
+        </button>
+    </div>
+
+    <div style="height: 10px; width: 100%; background: rgba(255, 255, 255, 0.08); border-radius: 99px; overflow: hidden;">
+        <div id="roadmapProgressBar" style="height: 100%; width: 0%; background: var(--primary-gradient); border-radius: 99px; transition: width 0.4s ease;"></div>
+    </div>
+</div>
+
+<!-- Step Milestones Checklist -->
+<div class="card">
+    <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem;">
+        <i class="fa-solid fa-list-check" style="color: var(--primary); margin-right: 0.5rem;"></i>
+        Curriculum Checklist & Tasks
+    </h3>
+    <div id="milestonesList" style="display: flex; flex-direction: column; gap: 1rem;">
+        <!-- Dynamic steps injected by roadmap.js -->
+    </div>
+</div>
+
+<!-- Clean Data Script Blocks -->
+<script type="application/json" id="roadmapData">{{ (templates_json or {})|tojson }}</script>
+<script type="application/json" id="completedStepsData">{{ (completed_steps or [])|tojson }}</script>
+<div id="initialRoleData" style="display: none;">{{ current_role or 'Full Stack Developer' }}</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/roadmap.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,560 @@
+{% extends "base.html" %}
+
+{% block title %}Executive ATS Resume Studio | CareerX{% endblock %}
+{% block page_title %}Executive ATS Resume Studio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/resume.css') }}">
+{% endblock %}
+
+{% block content %}
+<!-- Top Header & Action Card -->
+<div class="resume-toolbar-card">
+    <div class="resume-toolbar-row">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.65rem; margin-bottom: 0.25rem;">
+                <h2 style="font-size: 1.35rem; font-weight: 800; margin: 0; color: var(--text);">
+                    ATS-Engineered Placement Resume
+                </h2>
+                <span class="badge badge-primary" style="font-size: 0.72rem; padding: 3px 8px; font-weight: 700;">
+                    FAANG & RECRUITER VERIFIED
+                </span>
+            </div>
+            <p style="color: var(--text-muted); font-size: 0.88rem; margin: 0;">
+                Live dual-pane studio. Automatically formats Google X-Y-Z achievements, calculates real-time ATS strength, and exports single-page A4 PDFs.
+            </p>
+        </div>
+        <div class="resume-toolbar-actions">
+            <button type="button" id="loadPresetBtn" class="btn btn-outline btn-sm" onclick="loadHighImpactPreset()" title="Populate with award-winning FAANG student profile">
+                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> Load FAANG Preset
+            </button>
+            <button type="button" id="saveResumeBtn" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-floppy-disk"></i> Save Resume
+            </button>
+            <button type="button" id="downloadResumeBtn" onclick="openDownloadModal()" class="btn btn-sm" style="background: #059669; border-color: #059669; color: #FFF; font-weight: 700;">
+                <i class="fa-solid fa-download"></i> Download Resume
+            </button>
+            <button type="button" onclick="downloadResumePDF()" class="btn btn-outline btn-sm" style="font-weight: 700;">
+                <i class="fa-solid fa-print"></i> Print / PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Customizer Bar: Template, Font, Palette & Live ATS Meter -->
+<div class="resume-customizer-bar">
+    <div class="customizer-group">
+        <label for="templateSelect"><i class="fa-solid fa-layer-group" style="color: var(--accent);"></i> Layout:</label>
+        <select id="templateSelect" class="customizer-select" onchange="changeResumeTemplate(this.value)">
+            <option value="template-ivy">Ivy League ATS (Classic Centered)</option>
+            <option value="template-modern">Silicon Modern (Tech Accent)</option>
+            <option value="template-minimal">Executive Minimal (High Density)</option>
+        </select>
+    </div>
+
+    <div class="customizer-group">
+        <label for="fontSelect"><i class="fa-solid fa-font" style="color: var(--accent);"></i> Typography:</label>
+        <select id="fontSelect" class="customizer-select" onchange="changeResumeFont(this.value)">
+            <option value="font-inter">Inter (Modern Sans)</option>
+            <option value="font-merriweather">Merriweather (Executive Serif)</option>
+            <option value="font-jakarta">Plus Jakarta (Corporate Clean)</option>
+        </select>
+    </div>
+
+    <div class="customizer-group">
+        <span class="badge" style="background: #000000; color: #FFFFFF; font-size: 0.8rem; padding: 5px 12px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; letter-spacing: 0.02em;">
+            <i class="fa-solid fa-circle" style="color: #FFFFFF; font-size: 0.45rem;"></i> Pure Black Monochrome (Recruiter #1 Choice)
+        </span>
+    </div>
+
+    <div style="margin-left: auto;">
+        <div class="ats-strength-badge" id="atsScoreBadge" title="Calculated based on action verbs, quantifiable metrics, section hierarchy, and link completeness">
+            <i class="fa-solid fa-circle-check"></i>
+            <span>ATS Strength: <span class="score-val" id="atsScoreVal">96%</span> &bull; <span id="atsScoreLabel">Placement Ready</span></span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Dual-Pane Workspace -->
+<div class="resume-workspace">
+    <!-- LEFT PANE: Detailed Form Sections -->
+    <div class="editor-pane">
+        <!-- 1. Personal & Contact Info -->
+        <div class="editor-section-card">
+            <div class="editor-section-header">
+                <h3 class="editor-section-title">
+                    <i class="fa-solid fa-user-tie"></i> Contact & Credentials
+                </h3>
+                <span class="editor-helper-text">Recruiter Header</span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">Full Name</label>
+                <input type="text" id="inpName" class="form-control" value="{{ resume.full_name or (current_user.full_name or current_user.username or 'Candidate Name') }}" placeholder="Candidate Name">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">Professional Headline / Target Role</label>
+                <input type="text" id="inpTagline" class="form-control" value="Software Engineer | Distributed Systems & Machine Learning" placeholder="e.g. Software Engineer | Full-Stack & AI Systems">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label">Email Address</label>
+                    <input type="email" id="inpEmail" class="form-control" value="{{ resume.email or (current_user.email or 'student@careerx.ai') }}" placeholder="student@careerx.ai">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Phone Number</label>
+                    <input type="text" id="inpPhone" class="form-control" value="{{ resume.phone or '+91 98765 43210' }}" placeholder="+91 98765 43210">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label">Location (City, Country)</label>
+                    <input type="text" id="inpLocation" class="form-control" value="Bangalore, India" placeholder="Bangalore, India">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Portfolio / Personal Site</label>
+                    <input type="text" id="inpPortfolio" class="form-control" value="{{ resume.portfolio or 'yourportfolio.dev' }}" placeholder="yourportfolio.dev">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label">LinkedIn Profile URL</label>
+                    <input type="text" id="inpLinkedin" class="form-control" value="{{ resume.linkedin or 'linkedin.com/in/your-profile' }}" placeholder="linkedin.com/in/your-profile">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">GitHub Profile URL</label>
+                    <input type="text" id="inpGithub" class="form-control" value="{{ resume.github or 'github.com/your-username' }}" placeholder="github.com/your-username">
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Professional Summary -->
+        <div class="editor-section-card">
+            <div class="editor-section-header">
+                <h3 class="editor-section-title">
+                    <i class="fa-solid fa-align-left"></i> Professional Summary
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="optimizeSummaryWithAI()" style="font-size: 0.76rem; padding: 0.2rem 0.65rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> AI Polish Summary
+                </button>
+            </div>
+            <div class="form-group">
+                <textarea id="inpSummary" class="form-control" rows="3" placeholder="2-3 punchy sentences highlighting your core stack, engineering strengths, and placement goals.">{{ resume.summary if resume and resume.summary else 'Results-driven Software Engineer with proven expertise in architecting high-throughput full-stack systems, optimizing database pipelines, and deploying production machine learning models. Adept in modern distributed computing and algorithmic problem-solving with a passion for building robust, scalable products.' }}</textarea>
+                <div class="editor-helper-text">Tip: Recruiters read this in 6 seconds. Focus on quantifiable depth and technical competencies.</div>
+            </div>
+        </div>
+
+        <!-- 3. Education -->
+        <div class="editor-section-card">
+            <div class="editor-section-header">
+                <h3 class="editor-section-title">
+                    <i class="fa-solid fa-graduation-cap"></i> Education
+                </h3>
+                <span class="editor-helper-text">Academic Background</span>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label">University / Institute</label>
+                    <input type="text" id="inpCollege" class="form-control" value="{{ current_user.college or 'National Institute of Technology' }}" placeholder="Institute Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Graduation Year / Status</label>
+                    <input type="text" id="inpGradYear" class="form-control" value="Expected May 2026" placeholder="e.g. Expected May 2026">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label">Degree & Major</label>
+                    <input type="text" id="inpDegree" class="form-control" value="Bachelor of Technology in Artificial Intelligence & Data Science" placeholder="Degree & Major">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CGPA / GPA</label>
+                    <input type="text" id="inpCgpa" class="form-control" value="8.9 / 10 CGPA (Top 5%)" placeholder="e.g. 8.9 / 10 CGPA">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Relevant Coursework</label>
+                <input type="text" id="inpCoursework" class="form-control" value="Data Structures & Algorithms, Distributed Systems, Operating Systems, Database Management Systems, Machine Learning" placeholder="Key courses separated by commas">
+            </div>
+        </div>
+
+        <!-- 4. Work Experience & Internships -->
+        <div class="editor-section-card">
+            <div class="editor-section-header">
+                <h3 class="editor-section-title">
+                    <i class="fa-solid fa-briefcase"></i> Work Experience & Internships
+                </h3>
+                <button type="button" class="btn btn-outline btn-sm" onclick="optimizeExperienceWithAI()" style="font-size: 0.76rem; padding: 0.2rem 0.65rem;">
+                    <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> AI Polish Experience
+                </button>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1.8fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label">Role & Company</label>
+                    <input type="text" id="inpExpTitle" class="form-control" value="Software Engineer Intern — CloudScale Technologies" placeholder="e.g. Software Engineer Intern — Company Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Dates & Location</label>
+                    <input type="text" id="inpExpDate" class="form-control" value="Jun 2024 – Aug 2024 | Bangalore, India" placeholder="e.g. Jun 2024 – Aug 2024 | Hybrid">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Achievement Bullets (One per line)</label>
+                <textarea id="inpExpBullets" class="form-control" rows="3" placeholder="Enter bullet points (one per line). Start with strong action verbs.">• Architected asynchronous data ingestion pipeline using FastAPI, Celery, and Redis, reducing candidate profile ingestion latency by 42%.
+• Optimized complex PostgreSQL queries and added multi-column B-Tree indexes across 250,000+ records, slashing execution time by 60%.
+• Containerized microservices with Docker and configured automated CI/CD GitHub Actions workflows, accelerating deployment cycles to under 8 minutes.</textarea>
+            </div>
+        </div>
+
+        <!-- 5. Technical Projects -->
+        <div class="editor-section-card">
+            <div class="editor-section-header">
+                <h3 class="editor-section-title">
+                    <i class="fa-solid fa-folder-open"></i> Featured Technical Projects
+                </h3>
+                <span class="editor-helper-text">Google X-Y-Z Formula</span>
+            </div>
+
+            <!-- Project 1 -->
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-bottom: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <strong style="font-size: 0.88rem; color: var(--text);">Project #1</strong>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="optimizeBullet1WithAI()" style="font-size: 0.74rem; padding: 0.15rem 0.55rem;">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> AI Polish Bullets
+                    </button>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem; margin-bottom: 0.6rem;">
+                    <div class="form-group">
+                        <label class="form-label">Project Title & Tech Stack</label>
+                        <input type="text" id="inpProj1Title" class="form-control" value="CareerX – Placement Intelligence Platform (Python, Flask, SQLite, JS)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Year & Links</label>
+                        <input type="text" id="inpProj1Date" class="form-control" value="2026 | Demo &bull; GitHub">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bullets (One per line)</label>
+                    <textarea id="inpProj1Desc" class="form-control" rows="3">• Architected an end-to-end placement intelligence platform reducing tool-switching friction by 75% for 1,200+ active candidates.
+• Integrated automated multi-stage ATS resume scoring algorithms and real-time technical assessment simulators with automated evaluation benchmarks.
+• Constructed modular SQLite relational schema with automated indexing and query caching, maintaining sub-50ms response times under simulated peak loads.</textarea>
+                </div>
+            </div>
+
+            <!-- Project 2 -->
+            <div style="background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                    <strong style="font-size: 0.88rem; color: var(--text);">Project #2</strong>
+                    <button type="button" class="btn btn-outline btn-sm" onclick="optimizeBullet2WithAI()" style="font-size: 0.74rem; padding: 0.15rem 0.55rem;">
+                        <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> AI Polish Bullets
+                    </button>
+                </div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem; margin-bottom: 0.6rem;">
+                    <div class="form-group">
+                        <label class="form-label">Project Title & Tech Stack</label>
+                        <input type="text" id="inpProj2Title" class="form-control" value="Distributed Microservices API (Node.js, Docker, Redis, Go)">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Year & Links</label>
+                        <input type="text" id="inpProj2Date" class="form-control" value="2025 | GitHub">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bullets (One per line)</label>
+                    <textarea id="inpProj2Desc" class="form-control" rows="3">• Engineered asynchronous distributed microservices containerized with Docker; slashed database read loads by 45% via Redis caching across 10,000+ benchmarked requests.
+• Implemented token bucket rate limiting and zero-downtime health-check circuit breakers, achieving 99.95% system uptime during load tests.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Categorized Technical Skills -->
+        <div class="editor-section-card">
+            <div class="editor-section-header">
+                <h3 class="editor-section-title">
+                    <i class="fa-solid fa-code"></i> Technical Skills (Domain Categorized)
+                </h3>
+                <span class="editor-helper-text">Recruiter Scannable Format</span>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">Programming Languages</label>
+                <input type="text" id="inpSkillsLanguages" class="form-control" value="Python, Java, C++, JavaScript (ES6+), TypeScript, SQL, Bash" placeholder="Python, Java, C++, JavaScript, TypeScript, SQL">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">Frameworks & Libraries</label>
+                <input type="text" id="inpSkillsFrameworks" class="form-control" value="Flask, FastAPI, Django, React.js, Next.js, Node.js, PyTorch, Scikit-Learn, Tailwind CSS" placeholder="Flask, FastAPI, React, Node.js, PyTorch">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 0.75rem;">
+                <label class="form-label">Developer Tools, Cloud & Databases</label>
+                <input type="text" id="inpSkillsTools" class="form-control" value="PostgreSQL, SQLite, Redis, Docker, Kubernetes, AWS (S3, EC2), Git, GitHub Actions, Linux" placeholder="PostgreSQL, Docker, AWS, Git, Redis">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Core CS & Fundamentals</label>
+                <input type="text" id="inpSkillsCore" class="form-control" value="Data Structures & Algorithms, System Design, RESTful APIs, Object-Oriented Design, Microservices, CI/CD" placeholder="Data Structures & Algorithms, System Design, REST APIs">
+            </div>
+        </div>
+
+        <!-- 7. Certifications & Achievements -->
+        <div class="editor-section-card">
+            <div class="editor-section-header">
+                <h3 class="editor-section-title">
+                    <i class="fa-solid fa-award"></i> Certifications & Competitive Honors
+                </h3>
+                <span class="editor-helper-text">One item per line</span>
+            </div>
+            <div class="form-group">
+                <textarea id="inpCertifications" class="form-control" rows="3" placeholder="Enter certifications or honors (one per line)">• AWS Certified Cloud Practitioner (CLF-C02) — Amazon Web Services (2025)
+• Winner (1st Place / 450 Teams) — National Smart University Hackathon 2024
+• LeetCode Knight — Top 4% Globally (Rating: 1920+, 500+ algorithmic problems solved)</textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANE: Live A4 Resume Preview Sheet -->
+    <div class="resume-sheet-container">
+        <div class="resume-preview-header-bar">
+            <span><i class="fa-solid fa-eye" style="color: var(--accent);"></i> Real-Time Live Preview (A4 Standard)</span>
+            <span><i class="fa-solid fa-shield-halved" style="color: #10B981;"></i> 100% ATS Single Column Compliant</span>
+        </div>
+
+        <!-- Post-Save Quick Actions Banner -->
+        <div id="saveSuccessBanner" class="post-save-banner" style="display: none;">
+            <div style="display: flex; align-items: center; gap: 0.6rem;">
+                <i class="fa-solid fa-circle-check" style="color: #10B981; font-size: 1.15rem;"></i>
+                <div>
+                    <strong style="font-size: 0.88rem; color: var(--text-primary);">Resume Saved!</strong>
+                    <span style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 4px;">Ready to download for campus drives?</span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                <button type="button" onclick="downloadResumePDF()" class="btn btn-primary btn-sm" style="padding: 0.32rem 0.8rem; font-size: 0.78rem;">
+                    <i class="fa-solid fa-file-pdf"></i> Download PDF
+                </button>
+                <button type="button" onclick="downloadResumeDOC()" class="btn btn-outline btn-sm" style="padding: 0.32rem 0.8rem; font-size: 0.78rem;">
+                    <i class="fa-solid fa-file-word"></i> Word (.doc)
+                </button>
+                <button type="button" onclick="openDownloadModal()" class="btn btn-outline btn-sm" style="padding: 0.32rem 0.8rem; font-size: 0.78rem;" title="More download options">
+                    <i class="fa-solid fa-ellipsis"></i> More
+                </button>
+                <button type="button" onclick="dismissSaveBanner()" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 3px 6px; font-size: 0.9rem;" title="Dismiss banner">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- THE SIMULATED RESUME SHEET -->
+        <div class="resume-sheet template-ivy font-inter" id="resumePreviewSheet">
+            <!-- Header Section -->
+            <div class="res-header">
+                <h1 class="res-name" id="prevName">{{ resume.full_name or (current_user.full_name or current_user.username or 'Candidate Name') }}</h1>
+                <div class="res-tagline" id="prevTagline">Software Engineer | Distributed Systems & Machine Learning</div>
+                <div class="res-contact-bar" id="prevContact">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+
+            <!-- Professional Summary Section -->
+            <div id="prevSummarySection">
+                <div class="res-section-title">
+                    <span>Professional Summary</span>
+                </div>
+                <p class="res-summary-text" id="prevSummary">
+                    Results-driven Software Engineer with proven expertise in architecting high-throughput full-stack systems, optimizing database pipelines, and deploying production machine learning models.
+                </p>
+            </div>
+
+            <!-- Education Section -->
+            <div id="prevEducationSection">
+                <div class="res-section-title">
+                    <span>Education</span>
+                </div>
+                <div class="res-entry">
+                    <div class="res-entry-header">
+                        <span class="res-entry-title" id="prevCollege">National Institute of Technology</span>
+                        <span class="res-entry-date" id="prevGradYear">Expected May 2026</span>
+                    </div>
+                    <div class="res-entry-sub">
+                        <span id="prevDegree">Bachelor of Technology in Artificial Intelligence & Data Science</span>
+                        <span class="res-entry-badge" id="prevCgpa">8.9 / 10 CGPA (Top 5%)</span>
+                    </div>
+                    <div class="res-entry-desc" id="prevCourseworkWrap">
+                        <strong>Relevant Coursework:</strong> <span id="prevCoursework">Data Structures & Algorithms, Distributed Systems, Operating Systems, Database Management Systems, Machine Learning</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Experience Section -->
+            <div id="prevExperienceSection">
+                <div class="res-section-title">
+                    <span>Work Experience & Internships</span>
+                </div>
+                <div class="res-entry">
+                    <div class="res-entry-header">
+                        <span class="res-entry-title" id="prevExpTitle">Software Engineer Intern — CloudScale Technologies</span>
+                        <span class="res-entry-date" id="prevExpDate">Jun 2024 – Aug 2024 | Bangalore, India</span>
+                    </div>
+                    <ul class="res-bullet-list" id="prevExpBullets">
+                        <!-- Bullets rendered dynamically -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Projects Section -->
+            <div id="prevProjectsSection">
+                <div class="res-section-title">
+                    <span>Featured Technical Projects</span>
+                </div>
+
+                <div class="res-entry" id="prevProj1Entry">
+                    <div class="res-entry-header">
+                        <div>
+                            <span class="res-entry-title" id="prevProj1Title">CareerX – Placement Intelligence Platform</span>
+                            <span class="res-entry-tech" id="prevProj1Tech">(Python, Flask, SQLite, JS)</span>
+                        </div>
+                        <span class="res-entry-date" id="prevProj1Date">2026 | Demo &bull; GitHub</span>
+                    </div>
+                    <ul class="res-bullet-list" id="prevProj1Bullets">
+                        <!-- Project 1 bullets -->
+                    </ul>
+                </div>
+
+                <div class="res-entry" id="prevProj2Entry" style="margin-top: 0.5rem;">
+                    <div class="res-entry-header">
+                        <div>
+                            <span class="res-entry-title" id="prevProj2Title">Distributed Microservices API</span>
+                            <span class="res-entry-tech" id="prevProj2Tech">(Node.js, Docker, Redis, Go)</span>
+                        </div>
+                        <span class="res-entry-date" id="prevProj2Date">2025 | GitHub</span>
+                    </div>
+                    <ul class="res-bullet-list" id="prevProj2Bullets">
+                        <!-- Project 2 bullets -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Technical Skills Section -->
+            <div id="prevSkillsSection">
+                <div class="res-section-title">
+                    <span>Technical Proficiencies</span>
+                </div>
+                <div class="res-skills-container">
+                    <div class="res-skill-row" id="prevSkillRowLanguages">
+                        <span class="res-skill-label">Languages:</span>
+                        <span class="res-skill-items" id="prevSkillsLanguages">Python, Java, C++, JavaScript (ES6+), TypeScript, SQL, Bash</span>
+                    </div>
+                    <div class="res-skill-row" id="prevSkillRowFrameworks">
+                        <span class="res-skill-label">Frameworks & Libraries:</span>
+                        <span class="res-skill-items" id="prevSkillsFrameworks">Flask, FastAPI, Django, React.js, Next.js, Node.js, PyTorch, Scikit-Learn</span>
+                    </div>
+                    <div class="res-skill-row" id="prevSkillRowTools">
+                        <span class="res-skill-label">Tools, Cloud & DBs:</span>
+                        <span class="res-skill-items" id="prevSkillsTools">PostgreSQL, SQLite, Redis, Docker, Kubernetes, AWS, Git, Linux</span>
+                    </div>
+                    <div class="res-skill-row" id="prevSkillRowCore">
+                        <span class="res-skill-label">Core Competencies:</span>
+                        <span class="res-skill-items" id="prevSkillsCore">Data Structures & Algorithms, System Design, REST APIs, Microservices</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Certifications Section -->
+            <div id="prevCertSection">
+                <div class="res-section-title">
+                    <span>Certifications & Honors</span>
+                </div>
+                <ul class="res-bullet-list compact" id="prevCertList">
+                    <!-- Certifications rendered dynamically -->
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Download Resume Modal (Triggered automatically after Save & via Download button) -->
+<div id="resumeDownloadModal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 520px; text-align: center; padding: 2rem 1.75rem;">
+        <div style="display: flex; justify-content: flex-end; margin-top: -0.75rem; margin-right: -0.5rem;">
+            <button type="button" onclick="closeDownloadModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; padding: 4px 8px;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(16, 185, 129, 0.12); color: #10B981; display: flex; align-items: center; justify-content: center; font-size: 1.75rem; margin: 0 auto 1rem;">
+            <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <h3 style="font-size: 1.35rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.35rem;">
+            Resume Saved Successfully!
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.9rem; max-width: 420px; margin: 0 auto 1.5rem;">
+            Your latest ATS-optimized placement resume is saved. Select your preferred download format below:
+        </p>
+
+        <div class="download-modal-grid">
+            <!-- Option 1: PDF -->
+            <div class="download-option-card primary" onclick="downloadResumePDF()">
+                <div class="download-option-info">
+                    <div class="download-option-icon pdf">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <div class="download-option-title">Download as PDF <span class="badge badge-success" style="font-size: 0.65rem; margin-left: 6px;">Recommended</span></div>
+                        <div class="download-option-desc">Single-page A4, recruiter-tested & 100% ATS compliant</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-down-to-line" style="color: #10B981; font-size: 1.1rem;"></i>
+            </div>
+
+            <!-- Option 2: Word .doc -->
+            <div class="download-option-card" onclick="downloadResumeDOC()">
+                <div class="download-option-info">
+                    <div class="download-option-icon doc">
+                        <i class="fa-solid fa-file-word"></i>
+                    </div>
+                    <div>
+                        <div class="download-option-title">Download as Word (.doc)</div>
+                        <div class="download-option-desc">Editable Microsoft Word & Google Docs document</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-down-to-line" style="color: var(--text-muted); font-size: 1.1rem;"></i>
+            </div>
+
+            <!-- Option 3: JSON -->
+            <div class="download-option-card" onclick="downloadResumeJSON()">
+                <div class="download-option-info">
+                    <div class="download-option-icon json">
+                        <i class="fa-solid fa-code"></i>
+                    </div>
+                    <div>
+                        <div class="download-option-title">Export JSON Data</div>
+                        <div class="download-option-desc">Structured backup file of all fields and achievements</div>
+                    </div>
+                </div>
+                <i class="fa-solid fa-arrow-down-to-line" style="color: var(--text-muted); font-size: 1.1rem;"></i>
+            </div>
+        </div>
+
+        <div style="margin-top: 1.25rem; display: flex; justify-content: center; gap: 0.75rem;">
+            <button type="button" onclick="closeDownloadModal()" class="btn btn-outline btn-sm" style="border-radius: 8px; padding: 0.5rem 1.25rem;">
+                Continue Editing
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/resume.js') }}"></script>
+{% endblock %}

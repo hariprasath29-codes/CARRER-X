@@ -1,0 +1,1158 @@
+{% extends "base.html" %}
+
+{% block title %}Placement Cell & Student Performance Admin | CareerX{% endblock %}
+{% block page_title %}TPO Administration & Student Performance Hub{% endblock %}
+
+{% block extra_css %}
+<style>
+.rank-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.82rem;
+}
+.rank-badge-1 { background: rgba(245, 185, 66, 0.2); color: #B45309; border: 1px solid #F59E0B; }
+.rank-badge-2 { background: rgba(148, 163, 184, 0.2); color: #475569; }
+.rank-badge-3 { background: rgba(217, 119, 6, 0.15); color: #D97706; }
+.rank-badge-other { background: var(--bg-body); color: var(--text-secondary); }
+
+.readiness-val-high { color: #10B981; }
+.readiness-val-mid { color: var(--accent); }
+.readiness-val-low { color: #F59E0B; }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- TPO Administration Action Header -->
+<div class="card" style="margin-bottom: var(--spacing-standard); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--accent);">
+    <div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+            <span class="badge badge-warning"><i class="fa-solid fa-shield-halved"></i> TPO Officer Portal</span>
+            <span class="badge badge-primary"><i class="fa-solid fa-circle-check"></i> Authorized Session</span>
+        </div>
+        <h2 style="font-size: 1.5rem; margin: 0; color: var(--text-primary); font-weight: 700;">
+            Placement Operations &amp; Student Performance Command Center
+        </h2>
+        <p style="margin: 0.35rem 0 0 0; color: var(--text-secondary); font-size: 0.88rem;">
+            Supervise registered candidate performance, manage campus company recruitment drives, and track applicant hiring pipelines.
+        </p>
+    </div>
+    <div style="display: flex; gap: 0.65rem; flex-wrap: wrap;">
+        <a href="#performance-section" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-graduation-cap"></i> Student Performance
+        </a>
+        <a href="#drives-section" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-building-columns"></i> Publish Drive
+        </a>
+        <a href="#applications-section" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-briefcase"></i> Company Pipeline
+        </a>
+        <a href="{{ url_for('admin_export_csv') }}" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-file-csv"></i> Export Student Roster
+        </a>
+        <a href="{{ url_for('admin_export_applications_csv') }}" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-download"></i> Export Pipeline CSV
+        </a>
+    </div>
+</div>
+
+<!-- Admin View / Module Switcher Tabs (Separates admin modules into clean individual views) -->
+<div class="card" style="margin-bottom: 1.75rem; padding: 0.85rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); box-shadow: var(--shadow-sm);">
+    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+        <span style="font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-right: 0.35rem;">
+            <i class="fa-solid fa-layer-group" style="color: var(--accent);"></i> Modules:
+        </span>
+        <button type="button" class="btn btn-sm admin-section-tab active" data-target="all" onclick="showAdminSection('all')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-border-all"></i> All Sections
+        </button>
+        <button type="button" class="btn btn-sm btn-outline admin-section-tab" data-target="overview-section" onclick="showAdminSection('overview-section')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-chart-line"></i> Overview
+        </button>
+        <button type="button" class="btn btn-sm btn-outline admin-section-tab" data-target="performance-section" onclick="showAdminSection('performance-section')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-user-graduate"></i> Student Performance
+        </button>
+        <button type="button" class="btn btn-sm btn-outline admin-section-tab" data-target="drives-section" onclick="showAdminSection('drives-section')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-building-columns"></i> Campus Drives
+        </button>
+        <button type="button" class="btn btn-sm btn-outline admin-section-tab" data-target="applications-section" onclick="showAdminSection('applications-section')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-briefcase"></i> Company Pipeline
+        </button>
+        <button type="button" class="btn btn-sm btn-outline admin-section-tab" data-target="questions-section" onclick="showAdminSection('questions-section')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-circle-question"></i> Question Bank
+        </button>
+        <button type="button" class="btn btn-sm btn-outline admin-section-tab" data-target="notices-section" onclick="showAdminSection('notices-section')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-bullhorn"></i> Notices
+        </button>
+        <button type="button" class="btn btn-sm btn-outline admin-section-tab" data-target="access-section" onclick="showAdminSection('access-section')" style="border-radius: 999px; padding: 0.35rem 0.95rem; font-size: 0.82rem; font-weight: 600;">
+            <i class="fa-solid fa-user-shield"></i> Access Control
+        </button>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- OVERVIEW: PLATFORM PLACEMENT METRICS                                      -->
+<!-- ========================================================================= -->
+<div id="overview-section" class="admin-view-section" style="margin-bottom: 2rem;">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon indigo">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Registered Students</div>
+                <div class="value">{{ total_students }}</div>
+                <div style="font-size: 0.75rem; color: var(--accent); margin-top: 2px;">
+                    <i class="fa-solid fa-circle-check"></i> 100% active profiles
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon cyan">
+                <i class="fa-solid fa-building-columns"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Campus Placement Drives</div>
+                <div class="value">{{ total_drives }}</div>
+                <div style="font-size: 0.75rem; color: #0284C7; margin-top: 2px;">
+                    <i class="fa-solid fa-calendar-check"></i> Open drives active
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon rose">
+                <i class="fa-solid fa-briefcase"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Company Applications Tracked</div>
+                <div class="value">{{ total_apps }}</div>
+                <div style="font-size: 0.75rem; color: #E11D48; margin-top: 2px;">
+                    <i class="fa-solid fa-chart-line"></i> Across all students
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon amber">
+                <i class="fa-solid fa-trophy"></i>
+            </div>
+            <div class="stat-info">
+                <div class="label">Job Offers Secured</div>
+                <div class="value">{{ total_offers }}</div>
+                <div style="font-size: 0.75rem; color: #10B981; margin-top: 2px; font-weight: 600;">
+                    <i class="fa-solid fa-champagne-glasses"></i> Verified campus selections
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- SECTION 1: STUDENT PLACEMENT PERFORMANCE & READINESS ROSTER               -->
+<!-- ========================================================================= -->
+<div class="card admin-view-section" id="performance-section" style="margin-bottom: 2.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border-color);">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 style="font-size: 1.25rem; margin: 0; color: var(--text-primary); font-weight: 700;">
+                    <i class="fa-solid fa-chart-column" style="color: var(--accent); margin-right: 0.4rem;"></i> Student Placement Performance &amp; Readiness Roster
+                </h3>
+                <span class="badge badge-primary">{{ students_performance|length }} Candidates</span>
+            </div>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 0.85rem;">
+                Real-time placement preparedness, aptitude accuracy, ATS resume health, and active recruitment stage for every candidate.
+            </p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <div style="position: relative; min-width: 240px;">
+                <input type="text" id="studentSearchInput" class="form-control" placeholder="Search candidate, college, track..." style="padding-left: 2rem; font-size: 0.84rem;">
+                <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.82rem;"></i>
+            </div>
+            <select id="studentTierFilter" class="form-control" style="width: auto; font-size: 0.84rem;" onchange="filterStudentRoster()">
+                <option value="all">All Readiness Tiers</option>
+                <option value="ready">Placement Ready (>=85%)</option>
+                <option value="competitive">Competitive (70-84%)</option>
+                <option value="training">In Training (&lt;70%)</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="styled-table" id="studentPerformanceTable">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Rank</th>
+                    <th>Candidate &amp; University</th>
+                    <th>Target Track</th>
+                    <th>Aptitude Performance</th>
+                    <th>ATS Resume</th>
+                    <th>Verified Skills</th>
+                    <th>Company Pipeline</th>
+                    <th>Placement Readiness</th>
+                    <th style="text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in students_performance %}
+                <tr class="student-perf-row" data-name="{{ s.full_name|lower }} {{ s.username|lower }}" data-college="{{ s.college|lower }}" data-track="{{ s.target_role|lower }}" data-tier="{% if s.readiness >= 85 %}ready{% elif s.readiness >= 70 %}competitive{% else %}training{% endif %}">
+                    <td>
+                        <div class="rank-badge rank-badge-{{ loop.index if loop.index <= 3 else 'other' }}">
+                            #{{ s.rank }}
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.65rem;">
+                            <div style="width: 36px; height: 36px; border-radius: 50%; background: var(--accent-gradient); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.88rem; flex-shrink: 0;">
+                                {{ s.full_name[:1] }}
+                            </div>
+                            <div>
+                                <strong style="color: var(--text-primary); font-size: 0.92rem;">{{ s.full_name }}</strong>
+                                <span style="font-size: 0.72rem; color: var(--text-muted); margin-left: 4px;">@{{ s.username }}</span>
+                                <div style="font-size: 0.77rem; color: var(--text-secondary);">
+                                    {{ s.college }} &bull; {{ s.branch }} ({{ s.grad_year }})
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge badge-primary" style="font-weight: 500;">{{ s.target_role }}</span>
+                    </td>
+                    <td>
+                        <div style="min-width: 140px;">
+                            <div style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 3px;">
+                                <strong style="color: #0284C7;">{{ s.avg_aptitude }}% Acc.</strong>
+                                <span style="color: var(--text-muted); font-size: 0.74rem;">{{ s.aptitude_count }} drills</span>
+                            </div>
+                            <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                                <div class="progress-bar-inner" data-width="{{ s.avg_aptitude }}" style="height: 100%; background: #0284C7; border-radius: 99px;"></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: inline-flex; align-items: center; gap: 0.35rem; padding: 0.25rem 0.55rem; border-radius: var(--radius-sm); background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.25); color: #047857; font-size: 0.82rem; font-weight: 600;">
+                            <i class="fa-solid fa-file-shield"></i> {{ s.ats_score }}%
+                        </div>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                            <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">{{ s.skills_count }} Logged</span>
+                            <div style="display: flex; gap: 0.25rem; flex-wrap: wrap;">
+                                {% for sk in s.top_skills %}
+                                <span style="font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; background: var(--bg-body); border: 1px solid var(--border-color); color: var(--text-secondary);">{{ sk }}</span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div style="font-size: 0.85rem; font-weight: 600; color: var(--text-primary); margin-bottom: 2px;">
+                                {{ s.total_apps }} Applications
+                            </div>
+                            <div style="display: flex; gap: 0.3rem; flex-wrap: wrap;">
+                                {% if s.offers_count > 0 %}
+                                <span class="badge badge-success" style="font-size: 0.68rem; padding: 2px 6px;">
+                                    <i class="fa-solid fa-check"></i> {{ s.offers_count }} Offer{% if s.offers_count > 1 %}s{% endif %}
+                                </span>
+                                {% endif %}
+                                {% if s.interview_count > 0 %}
+                                <span class="badge badge-warning" style="font-size: 0.68rem; padding: 2px 6px;">
+                                    <i class="fa-solid fa-clock"></i> {{ s.interview_count }} Interview{% if s.interview_count > 1 %}s{% endif %}
+                                </span>
+                                {% endif %}
+                                {% if s.offers_count == 0 and s.interview_count == 0 %}
+                                <span class="badge" style="font-size: 0.68rem; padding: 2px 6px; background: rgba(148, 163, 184, 0.15); color: #475569;">In Pipeline</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <div>
+                            <div class="{% if s.readiness >= 85 %}readiness-val-high{% elif s.readiness >= 70 %}readiness-val-mid{% else %}readiness-val-low{% endif %}" style="font-size: 1.05rem; font-weight: 700;">
+                                {{ s.readiness }}%
+                            </div>
+                            <span class="badge {{ s.readiness_badge }}" style="font-size: 0.7rem; padding: 2px 6px;">
+                                {{ s.readiness_label }}
+                            </span>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <button type="button" class="btn btn-outline btn-sm" style="padding: 0.3rem 0.65rem; font-size: 0.78rem;" 
+                                onclick="openStudentModalById('{{ s.id }}')">
+                            <i class="fa-solid fa-id-card"></i> View Profile
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 2rem;">No student records found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- SECTION 2: CAMPUS PLACEMENT DRIVES ("COMPANY ADD" HUB & ACTIVE DRIVES)    -->
+<!-- ========================================================================= -->
+<div id="drives-section" class="admin-view-section" style="margin-bottom: 2.25rem;">
+    <!-- Publish Campus Drive (Company Add Form) -->
+    <div class="card" style="border-top: 4px solid var(--accent); margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.25rem; margin: 0; color: var(--text-primary); font-weight: 700;">
+                <i class="fa-solid fa-building-circle-check" style="color: var(--accent); margin-right: 0.5rem;"></i> Publish Campus Recruitment Drive
+            </h3>
+            <span class="badge badge-primary">Direct Company Add</span>
+        </div>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: -0.5rem; margin-bottom: 1.25rem;">
+            Register visiting recruiters and announce campus drive details directly to all student dashboards.
+        </p>
+
+        <form method="POST" action="{{ url_for('admin_add_drive') }}">
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Company Name *</label>
+                    <input type="text" name="company" class="form-control" placeholder="e.g. Google, Atlassian, Microsoft, Zoho" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Designation / Role *</label>
+                    <input type="text" name="role" class="form-control" placeholder="e.g. SDE-1, Cloud Engineer, Data Analyst" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Package (LPA) *</label>
+                    <input type="number" step="0.5" name="package_lpa" class="form-control" placeholder="e.g. 24.5" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Min CGPA *</label>
+                    <input type="number" step="0.1" name="min_cgpa" class="form-control" placeholder="e.g. 7.5" value="7.0" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Job Location</label>
+                    <input type="text" name="location" class="form-control" placeholder="e.g. Bengaluru / Hybrid" value="Bengaluru / Hybrid">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Drive Date *</label>
+                    <input type="date" name="drive_date" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Application Deadline *</label>
+                    <input type="date" name="deadline" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Job Description &amp; Eligibility Criteria</label>
+                <textarea name="description" class="form-control" rows="3" placeholder="Outline job responsibilities, required tech stack, eligibility batches, and assessment pattern..."></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-weight: 600;">
+                <i class="fa-solid fa-bullhorn" style="margin-right: 0.4rem;"></i> Publish Campus Drive to Students
+            </button>
+        </form>
+    </div>
+
+    <!-- Active Placement Drives Management Table -->
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+                <h3 style="font-size: 1.25rem; margin: 0; font-weight: 700;">
+                    <i class="fa-solid fa-building-shield" style="color: var(--accent); margin-right: 0.5rem;"></i> Active Campus Placement Drives
+                </h3>
+                <p style="margin: 0.25rem 0 0 0; color: var(--text-secondary); font-size: 0.84rem;">
+                    Visiting corporate recruiters, package details, minimum CGPA eligibility, and drive dates.
+                </p>
+            </div>
+            <span class="badge badge-primary">{{ drives|length }} Drives Configured</span>
+        </div>
+
+        <div class="table-responsive">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>Company Name</th>
+                        <th>Role / Designation</th>
+                        <th>Package (LPA)</th>
+                        <th>Min CGPA</th>
+                        <th>Location</th>
+                        <th>Drive Date</th>
+                        <th>Deadline</th>
+                        <th>Status</th>
+                        <th style="text-align: center;">Drive Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in drives %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-primary); font-size: 0.95rem;">{{ d.company }}</strong>
+                        </td>
+                        <td><span class="badge badge-primary" style="font-weight: 500;">{{ d.role }}</span></td>
+                        <td><strong style="color: #10B981; font-size: 0.95rem;">₹{{ d.package_lpa }} LPA</strong></td>
+                        <td><strong>{{ d.min_cgpa }}</strong></td>
+                        <td style="font-size: 0.82rem; color: var(--text-secondary);">{{ d.location }}</td>
+                        <td><i class="fa-regular fa-calendar" style="color: var(--accent); margin-right: 3px;"></i> {{ d.drive_date }}</td>
+                        <td style="color: #E11D48; font-weight: 600;">{{ d.deadline }}</td>
+                        <td>
+                            <span class="badge {% if d.status == 'Open' %}badge-success{% else %}badge-danger{% endif %}">
+                                {{ d.status }}
+                            </span>
+                        </td>
+                        <td style="text-align: center;">
+                            <form method="POST" action="{{ url_for('admin_toggle_drive', drive_id=d.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.65rem; font-size: 0.75rem;">
+                                    {% if d.status == 'Open' %}<i class="fa-solid fa-lock"></i> Close{% else %}<i class="fa-solid fa-lock-open"></i> Re-Open{% endif %}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">No campus drives listed yet. Use the form above to publish your first drive!</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- SECTION 5: OFFICIAL BROADCASTS & PLACEMENT NOTICES                        -->
+<!-- ========================================================================= -->
+<div id="notices-section" class="admin-view-section" style="margin-bottom: 2.25rem;">
+    <div class="card" style="border-top: 4px solid #F59E0B;">
+        <h3 style="margin-bottom: 0.5rem; font-size: 1.25rem; color: var(--text-primary); font-weight: 700;">
+            <i class="fa-solid fa-tower-broadcast" style="color: #F59E0B; margin-right: 0.5rem;"></i> Official Placement Notices &amp; Broadcasts
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1.25rem;">
+            Instant announcements, schedule updates, and notifications broadcast across all student dashboards.
+        </p>
+
+        <form method="POST" action="{{ url_for('admin_add_notice') }}">
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Notice Headline *</label>
+                    <input type="text" name="title" class="form-control" placeholder="e.g. Infosys Slot Rescheduled" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Priority</label>
+                    <select name="priority" class="form-control">
+                        <option value="Normal">Normal</option>
+                        <option value="High" selected>High Priority</option>
+                        <option value="Urgent">Urgent Alert</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Announcement Content *</label>
+                <textarea name="content" class="form-control" rows="3" placeholder="Full notice details broadcast instantly across student dashboards..." required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; font-weight: 600; background: #F59E0B; border-color: #F59E0B;">
+                <i class="fa-solid fa-paper-plane" style="margin-right: 0.4rem;"></i> Broadcast Notice to Students
+            </button>
+        </form>
+
+        <!-- Active Broadcasts Preview -->
+        <div style="margin-top: 1.5rem;">
+            <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: var(--text-primary); font-weight: 600;">
+                <i class="fa-solid fa-bullhorn" style="color: var(--accent); margin-right: 0.4rem;"></i> Active Campus Broadcasts
+            </h4>
+            <div style="display: flex; flex-direction: column; gap: 0.65rem; max-height: 240px; overflow-y: auto;">
+                {% for n in notices %}
+                <div style="padding: 0.75rem 1rem; border-radius: var(--radius-sm); background: var(--bg-body); border: 1px solid var(--border-color); font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 80%;">
+                        <strong style="color: var(--text-primary); font-size: 0.92rem;">{{ n.title }}</strong>
+                        <div style="color: var(--text-secondary); font-size: 0.8rem; margin-top: 2px;">{{ n.content }}</div>
+                    </div>
+                    <span class="badge {% if n.priority == 'Urgent' %}badge-danger{% elif n.priority == 'High' %}badge-warning{% else %}badge-primary{% endif %}" style="font-size: 0.72rem;">
+                        {{ n.priority }}
+                    </span>
+                </div>
+                {% else %}
+                <div style="color: var(--text-muted); font-size: 0.85rem; text-align: center; padding: 1.25rem;">No broadcasts posted yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- SECTION 3: STUDENT COMPANY APPLICATIONS & RECRUITMENT PIPELINE            -->
+<!-- ========================================================================= -->
+<div class="card admin-view-section" id="applications-section" style="margin-bottom: 2.25rem; border-top: 4px solid #10B981;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border-color);">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                <h3 style="font-size: 1.25rem; margin: 0; color: var(--text-primary); font-weight: 700;">
+                    <i class="fa-solid fa-briefcase" style="color: #10B981; margin-right: 0.5rem;"></i> Student Company Applications &amp; Recruitment Pipeline
+                </h3>
+                <span class="badge badge-success">{{ company_applications|length }} Applications</span>
+            </div>
+            <p style="margin: 0; color: var(--text-secondary); font-size: 0.85rem;">
+                Track and manage candidate progress across all recruiting companies. Change hiring stages from Applied to Interview and Offer.
+            </p>
+        </div>
+
+        <!-- Toolbar -->
+        <div style="display: flex; gap: 0.65rem; align-items: center; flex-wrap: wrap;">
+            <select id="companyFilterSelect" class="form-control" style="width: auto; font-size: 0.84rem;" onchange="filterCompanyApplications()">
+                <option value="all">All Companies</option>
+                {% for comp in unique_companies %}
+                <option value="{{ comp|lower }}">{{ comp }}</option>
+                {% endfor %}
+            </select>
+
+            <select id="stageFilterSelect" class="form-control" style="width: auto; font-size: 0.84rem;" onchange="filterCompanyApplications()">
+                <option value="all">All Hiring Stages</option>
+                <option value="applied">Applied</option>
+                <option value="screening">Screening</option>
+                <option value="interview">Interview</option>
+                <option value="offer">Offer Extended</option>
+                <option value="rejected">Rejected</option>
+            </select>
+
+            <button type="button" class="btn btn-primary btn-sm" onclick="toggleAddAppDrawer()">
+                <i class="fa-solid fa-plus"></i> Log Candidate Application
+            </button>
+        </div>
+    </div>
+
+    <!-- Quick Log Application Form (Collapsible) -->
+    <div id="addAppDrawer" style="display: none; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius-sm); padding: 1.25rem; margin-bottom: 1.5rem;">
+        <h4 style="font-size: 1rem; margin-bottom: 0.75rem; color: var(--text-primary); display: flex; align-items: center; justify-content: space-between;">
+            <span><i class="fa-solid fa-user-plus" style="color: var(--accent); margin-right: 0.4rem;"></i> Manually Assign Student to Company Application</span>
+            <button type="button" onclick="toggleAddAppDrawer()" style="background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="fa-solid fa-xmark"></i></button>
+        </h4>
+        <form method="POST" action="{{ url_for('admin_add_application') }}">
+            <div style="display: grid; grid-template-columns: 1.2fr 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Select Student Candidate *</label>
+                    <select name="user_id" class="form-control" required>
+                        <option value="">-- Choose Candidate --</option>
+                        {% for s in students_performance %}
+                        <option value="{{ s.id }}">{{ s.full_name }} (@{{ s.username }}) - {{ s.target_role }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Target Company *</label>
+                    <input type="text" name="company" class="form-control" placeholder="e.g. Google, Atlassian, Microsoft" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Role / Position *</label>
+                    <input type="text" name="role" class="form-control" placeholder="e.g. SDE 1" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1.2fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Package (LPA)</label>
+                    <input type="number" step="0.5" name="salary_lpa" class="form-control" placeholder="e.g. 26.0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Location</label>
+                    <input type="text" name="location" class="form-control" value="Bengaluru / Hybrid">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Initial Stage</label>
+                    <select name="status" class="form-control">
+                        <option value="Applied">Applied</option>
+                        <option value="Screening">Screening</option>
+                        <option value="Interview" selected>Interview</option>
+                        <option value="Offer">Offer</option>
+                    </select>
+                </div>
+                <div class="form-group" style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fa-solid fa-check"></i> Save Application
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Company Applications Table -->
+    <div class="table-responsive">
+        <table class="styled-table" id="companyApplicationsTable">
+            <thead>
+                <tr>
+                    <th style="width: 45px;">#</th>
+                    <th>Candidate Student</th>
+                    <th>Company &amp; Role</th>
+                    <th>Package (LPA)</th>
+                    <th>Applied Date</th>
+                    <th>Current Hiring Stage</th>
+                    <th>Update Hiring Stage</th>
+                    <th style="text-align: center;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ca in company_applications %}
+                <tr class="comp-app-row" data-company="{{ ca.company|lower }}" data-stage="{{ ca.status|lower }}">
+                    <td style="color: var(--text-muted); font-size: 0.78rem;">{{ ca.id }}</td>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--bg-body); border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; color: var(--accent);">
+                                {{ ca.full_name[:1] if ca.full_name else ca.username[:1] }}
+                            </div>
+                            <div>
+                                <strong style="color: var(--text-primary); font-size: 0.9rem;">{{ ca.full_name or ca.username }}</strong>
+                                <span style="font-size: 0.74rem; color: var(--text-muted); margin-left: 3px;">@{{ ca.username }}</span>
+                                <div style="font-size: 0.76rem; color: var(--text-secondary);">{{ ca.college or 'University' }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 0.92rem;">{{ ca.company }}</strong>
+                        <div style="font-size: 0.78rem; color: var(--text-secondary);">{{ ca.role }}</div>
+                    </td>
+                    <td>
+                        {% if ca.salary_lpa and ca.salary_lpa > 0 %}
+                        <strong style="color: #10B981; font-size: 0.92rem;">₹{{ ca.salary_lpa }} LPA</strong>
+                        {% else %}
+                        <span style="color: var(--text-muted); font-size: 0.8rem;">Standard CTC</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.82rem; color: var(--text-secondary);">
+                        <i class="fa-regular fa-clock" style="margin-right: 3px;"></i> {{ ca.apply_date or 'Recent' }}
+                    </td>
+                    <td>
+                        <span class="badge {% if ca.status == 'Offer' %}badge-success{% elif ca.status == 'Interview' %}badge-warning{% elif ca.status == 'Screening' %}badge-primary{% elif ca.status == 'Rejected' %}badge-danger{% else %}badge-info{% endif %}" style="font-size: 0.78rem; font-weight: 600;">
+                            {% if ca.status == 'Offer' %}<i class="fa-solid fa-trophy"></i> Offer Extended{% elif ca.status == 'Interview' %}<i class="fa-solid fa-user-tie"></i> Interview{% elif ca.status == 'Screening' %}<i class="fa-solid fa-filter"></i> Screening{% else %}<i class="fa-solid fa-paper-plane"></i> {{ ca.status }}{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <!-- Inline Stage Update Form -->
+                        <form method="POST" action="{{ url_for('admin_update_application', app_id=ca.id) }}" style="display: flex; gap: 0.35rem; align-items: center;">
+                            <select name="status" class="form-control" style="padding: 0.25rem 0.45rem; font-size: 0.78rem; height: auto;">
+                                <option value="Applied" {% if ca.status == 'Applied' %}selected{% endif %}>Applied</option>
+                                <option value="Screening" {% if ca.status == 'Screening' %}selected{% endif %}>Screening</option>
+                                <option value="Interview" {% if ca.status == 'Interview' %}selected{% endif %}>Interview</option>
+                                <option value="Offer" {% if ca.status == 'Offer' %}selected{% endif %}>Offer</option>
+                                <option value="Rejected" {% if ca.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                            </select>
+                            <button type="submit" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;" title="Save Stage Update">
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                        </form>
+                    </td>
+                    <td style="text-align: center;">
+                        <form method="POST" action="{{ url_for('admin_delete_application', app_id=ca.id) }}" style="display: inline;" onsubmit="return confirm('Remove application record for {{ ca.company }}?');">
+                            <button type="submit" class="btn btn-outline btn-sm" style="padding: 0.25rem 0.45rem; font-size: 0.72rem; color: #E11D48;" title="Delete Application">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 2rem;">No student applications tracked yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- SECTION 4: PLACEMENT QUESTION BANK MANAGER                               -->
+<!-- ========================================================================= -->
+<div id="questions-section" class="admin-view-section" style="margin-bottom: 2.25rem;">
+    <!-- Add Question to Question Bank -->
+    <div class="card" style="border-top: 4px solid var(--accent);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h3 style="font-size: 1.25rem; color: var(--accent); font-weight: 700; margin: 0;">
+                    <i class="fa-solid fa-circle-plus" style="margin-right: 0.5rem;"></i> Question Bank Placement Manager
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin: 0.25rem 0 0 0;">
+                    Create and publish questions to either the timed Aptitude practice arena or Technical Interview prep bank.
+                </p>
+            </div>
+            <div style="display: flex; gap: 0.35rem; background: var(--bg-body); padding: 0.25rem; border-radius: 999px; border: 1px solid var(--border-color);">
+                <button type="button" id="tabBtnAptitude" class="btn btn-sm" onclick="switchQTab('aptitude')" style="border-radius: 999px; padding: 0.35rem 1rem; font-size: 0.8rem; font-weight: 600; background: var(--accent); color: #fff; border: none; cursor: pointer;">
+                    <i class="fa-solid fa-bolt" style="margin-right: 0.35rem;"></i> Aptitude (MCQ)
+                </button>
+                <button type="button" id="tabBtnInterview" class="btn btn-sm btn-outline" onclick="switchQTab('interview')" style="border-radius: 999px; padding: 0.35rem 1rem; font-size: 0.8rem; font-weight: 600; border: none; color: var(--text-secondary); cursor: pointer;">
+                    <i class="fa-solid fa-code" style="margin-right: 0.35rem;"></i> Technical / HR Interview
+                </button>
+            </div>
+        </div>
+
+        <!-- Aptitude Question Form -->
+        <form id="formAptitudeQuestion" method="POST" action="{{ url_for('admin_add_question') }}">
+            <input type="hidden" name="question_type" value="aptitude">
+
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Aptitude Category</label>
+                <select name="category" class="form-control">
+                    <option value="Quantitative">Quantitative</option>
+                    <option value="Logical">Logical Reasoning</option>
+                    <option value="Verbal">Verbal Ability</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Question Statement</label>
+                <textarea name="question" class="form-control" rows="2" placeholder="Enter problem statement..." required></textarea>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Option A</label>
+                    <input type="text" name="option_a" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Option B</label>
+                    <input type="text" name="option_b" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Option C</label>
+                    <input type="text" name="option_c" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Option D</label>
+                    <input type="text" name="option_d" class="form-control" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Correct Option</label>
+                    <select name="correct_option" class="form-control">
+                        <option value="A">A</option>
+                        <option value="B">B</option>
+                        <option value="C">C</option>
+                        <option value="D">D</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Step-by-Step Explanation</label>
+                    <input type="text" name="explanation" class="form-control" placeholder="Formula or rationale...">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem; font-weight: 600;">
+                <i class="fa-solid fa-plus"></i> Add Aptitude Question to Bank
+            </button>
+        </form>
+
+        <!-- Technical / HR Interview Question Form -->
+        <form id="formInterviewQuestion" method="POST" action="{{ url_for('admin_add_question') }}" style="display: none;">
+            <input type="hidden" name="question_type" value="interview">
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem;">
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Interview Category</label>
+                    <select name="category" class="form-control">
+                        <option value="Python">Python</option>
+                        <option value="JavaScript">JavaScript</option>
+                        <option value="DBMS">DBMS</option>
+                        <option value="OOPs">OOPs</option>
+                        <option value="Data Science">Data Science</option>
+                        <option value="HR">HR / Behavioral</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" style="font-weight: 600;">Difficulty</label>
+                    <select name="difficulty" class="form-control">
+                        <option value="Easy">Easy</option>
+                        <option value="Medium" selected>Medium</option>
+                        <option value="Hard">Hard</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Interview Question</label>
+                <textarea name="question" class="form-control" rows="2" placeholder="e.g. Explain how database indexing works..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Model Benchmark Answer</label>
+                <textarea name="model_answer" class="form-control" rows="3" placeholder="Accurate technical answer..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" style="font-weight: 600;">Key Evaluation Points (Comma-separated)</label>
+                <input type="text" name="key_points" class="form-control" placeholder="e.g. B-tree, clustered, time complexity">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem; font-weight: 600; background: linear-gradient(135deg, #6366F1, #8B5CF6); border: none;">
+                <i class="fa-solid fa-plus"></i> Add Technical Interview Question to Bank
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- SECTION 6: SYSTEM ACCESS & PRIVILEGE CONTROL                              -->
+<!-- ========================================================================= -->
+<div id="access-section" class="admin-view-section" style="margin-bottom: 2.25rem;">
+    <!-- Registered Accounts & Privilege Management -->
+    <div class="card" style="border-top: 4px solid #64748B;">
+        <h3 style="margin-bottom: 0.75rem; font-size: 1.25rem; font-weight: 700;">
+            <i class="fa-solid fa-user-shield" style="color: var(--accent); margin-right: 0.5rem;"></i> System Access Control &amp; Role Permissions
+        </h3>
+        <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 1rem;">
+            Assign placement coordinator or administrative rights to campus staff.
+        </p>
+
+        <div class="table-responsive" style="max-height: 420px; overflow-y: auto;">
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>User Candidate / Officer</th>
+                        <th>Current Access Role</th>
+                        <th>Action Toggle</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for u in users %}
+                    <tr>
+                        <td>
+                            <strong style="color: var(--text-primary); font-size: 0.88rem;">{{ u.full_name or u.username }}</strong>
+                            <div style="font-size: 0.72rem; color: var(--text-muted);">{{ u.email }}</div>
+                        </td>
+                        <td>
+                            <span class="badge {% if u.role == 'admin' %}badge-warning{% else %}badge-success{% endif %}" style="font-size: 0.72rem;">
+                                {{ u.role.title() }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if u.id != current_user.id %}
+                            <form method="POST" action="{{ url_for('admin_toggle_role', user_id=u.id) }}" style="display: inline;">
+                                <button type="submit" class="btn btn-outline btn-sm" style="padding: 0.2rem 0.5rem; font-size: 0.72rem;">
+                                    Toggle
+                                </button>
+                            </form>
+                            {% else %}
+                            <span style="font-size: 0.72rem; color: var(--text-muted);">Current Logged In</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ========================================================================= -->
+<!-- INTERACTIVE STUDENT PERFORMANCE PROFILE MODAL                             -->
+<!-- ========================================================================= -->
+<div id="studentProfileModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 1000; align-items: center; justify-content: center; padding: 1.5rem;">
+    <div class="card" style="width: 100%; max-width: 720px; max-height: 90vh; overflow-y: auto; position: relative; border-radius: var(--radius-md); box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+        <!-- Close Button -->
+        <button type="button" onclick="closeStudentModal()" style="position: absolute; top: 1.25rem; right: 1.25rem; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-secondary); font-size: 0.95rem;">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+
+        <div id="modalContent">
+            <!-- Populated via openStudentModal() -->
+        </div>
+    </div>
+</div>
+
+<!-- Raw Student Performance Data payload (safely isolated from JavaScript parser) -->
+<script id="studentsJsonData" type="application/json">
+{{ students_performance|tojson|safe }}
+</script>
+
+<script>
+    // Toggle Aptitude vs Interview question fields
+    function toggleQTypeFields(val) {
+        document.getElementById('aptitudeFields').style.display = (val === 'aptitude') ? 'block' : 'none';
+        document.getElementById('interviewFields').style.display = (val === 'interview') ? 'block' : 'none';
+    }
+
+    // Toggle Add Application Drawer
+    function toggleAddAppDrawer() {
+        const d = document.getElementById('addAppDrawer');
+        d.style.display = d.style.display === 'none' ? 'block' : 'none';
+        if (d.style.display === 'block') {
+            d.scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    // Filter Student Performance Roster
+    function filterStudentRoster() {
+        const q = (document.getElementById('studentSearchInput').value || '').toLowerCase();
+        const tier = document.getElementById('studentTierFilter').value;
+        const rows = document.querySelectorAll('.student-perf-row');
+
+        rows.forEach(r => {
+            const name = r.getAttribute('data-name');
+            const college = r.getAttribute('data-college');
+            const track = r.getAttribute('data-track');
+            const rTier = r.getAttribute('data-tier');
+
+            const matchesText = !q || name.includes(q) || college.includes(q) || track.includes(q);
+            const matchesTier = (tier === 'all') || (rTier === tier);
+
+            r.style.display = (matchesText && matchesTier) ? '' : 'none';
+        });
+    }
+
+    document.getElementById('studentSearchInput').addEventListener('input', filterStudentRoster);
+
+    // Filter Company Applications
+    function filterCompanyApplications() {
+        const comp = document.getElementById('companyFilterSelect').value;
+        const stage = document.getElementById('stageFilterSelect').value;
+        const rows = document.querySelectorAll('.comp-app-row');
+
+        rows.forEach(r => {
+            const rComp = r.getAttribute('data-company');
+            const rStage = r.getAttribute('data-stage');
+
+            const matchesComp = (comp === 'all') || (rComp === comp);
+            const matchesStage = (stage === 'all') || (rStage === stage);
+
+            r.style.display = (matchesComp && matchesStage) ? '' : 'none';
+        });
+    }
+
+    // Open Student Performance Modal
+    function openStudentModal(student) {
+        const modal = document.getElementById('studentProfileModal');
+        const container = document.getElementById('modalContent');
+
+        let skillsHtml = '';
+        if (student.all_skills && student.all_skills.length > 0) {
+            skillsHtml = student.all_skills.map(sk => `
+                <div style="background: var(--bg-body); padding: 0.6rem 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: var(--text-primary);">${sk.skill_name}</strong>
+                        <div style="font-size: 0.72rem; color: var(--text-muted);">${sk.category}</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <span class="badge ${sk.status === 'Mastered' ? 'badge-success' : 'badge-primary'}" style="font-size: 0.7rem;">${sk.status}</span>
+                        <div style="font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-top: 2px;">${sk.proficiency}%</div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            skillsHtml = '<div style="color: var(--text-muted); font-size: 0.82rem;">No verified skills logged yet.</div>';
+        }
+
+        let appsHtml = '';
+        if (student.all_apps && student.all_apps.length > 0) {
+            appsHtml = student.all_apps.map(ap => `
+                <div style="padding: 0.65rem 0.85rem; border-radius: var(--radius-sm); background: var(--bg-body); border: 1px solid var(--border-color); font-size: 0.82rem; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong style="color: var(--text-primary);">${ap.company}</strong> &bull; <span style="color: var(--text-secondary);">${ap.role}</span>
+                        <div style="font-size: 0.74rem; color: #10B981; font-weight: 600;">₹${ap.salary_lpa || 'Standard'} LPA</div>
+                    </div>
+                    <span class="badge ${ap.status === 'Offer' ? 'badge-success' : (ap.status === 'Interview' ? 'badge-warning' : 'badge-primary')}">
+                        ${ap.status}
+                    </span>
+                </div>
+            `).join('');
+        } else {
+            appsHtml = '<div style="color: var(--text-muted); font-size: 0.82rem;">No company applications recorded yet.</div>';
+        }
+
+        container.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color);">
+                <div style="width: 54px; height: 54px; border-radius: 50%; background: var(--accent-gradient); color: white; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; font-weight: 700; flex-shrink: 0;">
+                    ${student.full_name ? student.full_name[0] : student.username[0]}
+                </div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.35rem; color: var(--text-primary);">${student.full_name}</h3>
+                    <div style="color: var(--text-muted); font-size: 0.84rem;">@${student.username} &bull; ${student.email}</div>
+                    <div style="font-size: 0.82rem; color: var(--text-secondary); margin-top: 2px;">
+                        ${student.college} &bull; ${student.branch} (Batch of ${student.grad_year})
+                    </div>
+                </div>
+            </div>
+
+            <!-- Score Cards -->
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; margin-bottom: 1.5rem;">
+                <div style="background: var(--bg-body); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Composite Readiness</div>
+                    <div style="font-size: 1.35rem; font-weight: 700; color: #10B981; margin: 3px 0;">${student.readiness}%</div>
+                    <span class="badge ${student.readiness_badge}" style="font-size: 0.68rem;">${student.readiness_label}</span>
+                </div>
+
+                <div style="background: var(--bg-body); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Aptitude Accuracy</div>
+                    <div style="font-size: 1.35rem; font-weight: 700; color: #0284C7; margin: 3px 0;">${student.avg_aptitude}%</div>
+                    <span style="font-size: 0.72rem; color: var(--text-secondary);">${student.aptitude_count} timed drills</span>
+                </div>
+
+                <div style="background: var(--bg-body); padding: 0.85rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); text-align: center;">
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">ATS Resume Score</div>
+                    <div style="font-size: 1.35rem; font-weight: 700; color: var(--accent); margin: 3px 0;">${student.ats_score}%</div>
+                    <span class="badge badge-success" style="font-size: 0.68rem;">ATS Verified</span>
+                </div>
+            </div>
+
+            <!-- Verified Skills Grid -->
+            <div style="margin-bottom: 1.5rem;">
+                <h4 style="font-size: 0.95rem; margin-bottom: 0.65rem; color: var(--text-primary); font-weight: 600;">
+                    <i class="fa-solid fa-code" style="color: var(--accent); margin-right: 0.4rem;"></i> Verified Technical Proficiencies (${student.skills_count})
+                </h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; max-height: 180px; overflow-y: auto;">
+                    ${skillsHtml}
+                </div>
+            </div>
+
+            <!-- Company Applications History -->
+            <div>
+                <h4 style="font-size: 0.95rem; margin-bottom: 0.65rem; color: var(--text-primary); font-weight: 600;">
+                    <i class="fa-solid fa-briefcase" style="color: #10B981; margin-right: 0.4rem;"></i> Recruitment & Company Pipeline (${student.total_apps})
+                </h4>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem; max-height: 180px; overflow-y: auto;">
+                    ${appsHtml}
+                </div>
+            </div>
+        `;
+
+        modal.style.display = 'flex';
+    }
+
+    function closeStudentModal() {
+        document.getElementById('studentProfileModal').style.display = 'none';
+    }
+
+    // Close on backdrop click
+    document.getElementById('studentProfileModal').addEventListener('click', function(e) {
+        if (e.target === this) closeStudentModal();
+    });
+
+    // Question Bank Tab Switching (Aptitude vs Interview)
+    function switchQTab(type) {
+        const formApt = document.getElementById('formAptitudeQuestion');
+        const formIntv = document.getElementById('formInterviewQuestion');
+        const btnApt = document.getElementById('tabBtnAptitude');
+        const btnIntv = document.getElementById('tabBtnInterview');
+
+        if (type === 'interview') {
+            if (formApt) formApt.style.display = 'none';
+            if (formIntv) formIntv.style.display = 'block';
+            if (btnApt) {
+                btnApt.style.background = 'transparent';
+                btnApt.style.color = 'var(--text-secondary)';
+            }
+            if (btnIntv) {
+                btnIntv.style.background = 'var(--accent)';
+                btnIntv.style.color = '#fff';
+            }
+        } else {
+            if (formApt) formApt.style.display = 'block';
+            if (formIntv) formIntv.style.display = 'none';
+            if (btnApt) {
+                btnApt.style.background = 'var(--accent)';
+                btnApt.style.color = '#fff';
+            }
+            if (btnIntv) {
+                btnIntv.style.background = 'transparent';
+                btnIntv.style.color = 'var(--text-secondary)';
+            }
+        }
+    }
+    window.switchQTab = switchQTab;
+    window.toggleQTypeFields = switchQTab;
+
+    // Admin Module Section Switching (Separates merged tools into individual views)
+    function showAdminSection(targetId) {
+        const sections = document.querySelectorAll('.admin-view-section');
+        const tabs = document.querySelectorAll('.admin-section-tab');
+        const sidebarLinks = document.querySelectorAll('.admin-nav-link');
+
+        tabs.forEach(tab => {
+            if (tab.getAttribute('data-target') === targetId) {
+                tab.classList.add('active');
+                tab.classList.remove('btn-outline');
+            } else {
+                tab.classList.remove('active');
+                tab.classList.add('btn-outline');
+            }
+        });
+
+        sidebarLinks.forEach(link => {
+            const href = link.getAttribute('href') || '';
+            const linkTarget = href.includes('#') ? href.split('#')[1] : '';
+            if (targetId === 'all' || linkTarget === targetId) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+        });
+
+        if (targetId === 'all') {
+            sections.forEach(sec => sec.style.display = '');
+        } else {
+            sections.forEach(sec => {
+                if (sec.id === targetId) {
+                    sec.style.display = 'block';
+                    sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    sec.style.display = 'none';
+                }
+            });
+        }
+
+        if (window.history && window.history.pushState) {
+            if (targetId === 'all') {
+                window.history.pushState(null, null, window.location.pathname);
+            } else {
+                window.history.pushState(null, null, '#' + targetId);
+            }
+        }
+    }
+    window.showAdminSection = showAdminSection;
+
+    // In-memory student performance dictionary
+    const studentsDataMap = {};
+    try {
+        const jsonEl = document.getElementById('studentsJsonData');
+        if (jsonEl) {
+            const rawList = JSON.parse(jsonEl.textContent || '[]');
+            rawList.forEach(function(s) {
+                studentsDataMap[String(s.id)] = s;
+            });
+        }
+    } catch (err) {
+        console.error('Error parsing student data:', err);
+    }
+
+    function openStudentModalById(studentId) {
+        const student = studentsDataMap[String(studentId)];
+        if (student) openStudentModal(student);
+    }
+    window.openStudentModalById = openStudentModalById;
+
+    // Direct hash or parameter handling on page load / hash change
+    function checkAdminHash() {
+        // Initialize progress bar widths
+        document.querySelectorAll('.progress-bar-inner').forEach(el => {
+            const w = el.getAttribute('data-width');
+            if (w) el.style.width = w + '%';
+        });
+
+        const hash = window.location.hash.replace('#', '');
+        if (hash && document.getElementById(hash)) {
+            showAdminSection(hash);
+        }
+    }
+    window.addEventListener('DOMContentLoaded', checkAdminHash);
+    window.addEventListener('hashchange', checkAdminHash);
+</script>
+{% endblock %}

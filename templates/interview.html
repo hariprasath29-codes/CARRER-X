@@ -1,0 +1,506 @@
+{% extends "base.html" %}
+
+{% block title %}{{ selected_cat }} Interview Questions & Answers | CareerX{% endblock %}
+{% block page_title %}Technical Interview Question Bank{% endblock %}
+
+{% block extra_css %}
+<style>
+.cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    border-radius: 9999px;
+    padding: 0.45rem 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    background: var(--bg-body);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+}
+.cat-pill:hover {
+    border-color: var(--accent);
+    color: var(--text-primary);
+}
+.cat-pill.active {
+    font-weight: 600;
+    background: var(--accent);
+    color: #FFFFFF;
+    border: 1px solid var(--accent);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+}
+.cat-pill .cat-pill-icon {
+    color: var(--accent);
+}
+.cat-pill.active .cat-pill-icon {
+    color: #FFFFFF;
+}
+.cat-pill .cat-pill-count {
+    font-size: 0.72rem;
+    padding: 0.12rem 0.5rem;
+    border-radius: 999px;
+    margin-left: 0.15rem;
+    font-weight: 700;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+.cat-pill.active .cat-pill-count {
+    background: rgba(255, 255, 255, 0.25);
+    color: #FFFFFF;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Module Hero / Header Card -->
+<div class="card" style="margin-bottom: 1.5rem; background: var(--bg-card); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); padding: 1.5rem 1.75rem; border-radius: var(--radius-md);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.25rem;">
+        <div>
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.45rem;">
+                <span class="badge badge-warning" style="font-size: 0.76rem; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">
+                    <i class="fa-solid fa-fire"></i> Placement Ready Bank
+                </span>
+                <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
+                    {{ total_questions|default(48) }} Curated Questions Across 6 Domains
+                </span>
+            </div>
+            <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">
+                {{ selected_cat }} Interview Preparation
+            </h2>
+            <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 680px; margin: 0; line-height: 1.55;">
+                High-yield conceptual questions asked by top tech employers (Amazon, Microsoft, TCS Digital, Zoho, Infosys DSE). Master benchmark model answers and critical evaluator checkpoints.
+            </p>
+        </div>
+        <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
+            <button type="button" class="btn btn-primary" onclick="openAddQuestionModal()" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; background: linear-gradient(135deg, #6366F1, #8B5CF6); border: none; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35); cursor: pointer;">
+                <i class="fa-solid fa-circle-plus"></i> Add Question
+            </button>
+            <a href="{{ url_for('aptitude_view') }}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; border-color: var(--border-color); color: var(--text-primary);">
+                <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> Practice Aptitude
+            </a>
+            <a href="{{ url_for('ats_checker') }}" class="btn btn-outline" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; border-color: var(--border-color); color: var(--text-primary);">
+                <i class="fa-solid fa-file-shield" style="color: var(--accent);"></i> ATS Scanner
+            </a>
+        </div>
+    </div>
+
+    <!-- Category Tabs Navigation -->
+    <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.65rem; flex-wrap: wrap;">
+        {% set cat_icons = {
+            'Python': 'fa-brands fa-python',
+            'JavaScript': 'fa-brands fa-js',
+            'DBMS': 'fa-solid fa-database',
+            'OOPs': 'fa-solid fa-cubes',
+            'Data Science': 'fa-solid fa-brain',
+            'HR': 'fa-solid fa-user-tie'
+        } %}
+        {% for cat in categories %}
+        {% set count = category_counts.get(cat, 0) if category_counts else 8 %}
+        {% set is_active = (cat == selected_cat) %}
+        <a href="{{ url_for('interview_prep', category=cat) }}" 
+           class="btn btn-sm cat-pill {% if is_active %}active{% endif %}">
+            <i class="{{ cat_icons.get(cat, 'fa-solid fa-code') }} cat-pill-icon"></i>
+            <span>{{ cat }}</span>
+            <span class="cat-pill-count">
+                {{ count }}
+            </span>
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Controls Bar: Live Search, Difficulty Filter, Expand/Collapse Toggle -->
+<div class="card" style="margin-bottom: 1.25rem; padding: 0.9rem 1.25rem; background: var(--bg-card); border: 1px solid var(--border-color);">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        
+        <!-- Live Search Input -->
+        <div style="position: relative; flex: 1; min-width: 260px; max-width: 440px;">
+            <i class="fa-solid fa-magnifying-glass" style="position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 0.85rem;"></i>
+            <input type="text" id="interviewSearchInput" placeholder="Filter questions, keywords, or concepts..." 
+                   class="form-control" style="padding-left: 2.3rem; padding-right: 2rem; font-size: 0.88rem; height: 38px; border-radius: var(--radius-sm);" />
+            <button id="clearSearchBtn" type="button" style="display: none; position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.85rem;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Difficulty Filter Pills -->
+        <div style="display: flex; gap: 0.35rem; align-items: center;" id="difficultyFilterGroup">
+            <span style="font-size: 0.8rem; color: var(--text-muted); margin-right: 0.35rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">Level:</span>
+            <button type="button" class="btn btn-sm btn-outline diff-filter-btn active" data-diff="all" style="border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.78rem;">All</button>
+            <button type="button" class="btn btn-sm btn-outline diff-filter-btn" data-diff="Easy" style="border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.78rem; color: var(--accent-emerald);">Easy</button>
+            <button type="button" class="btn btn-sm btn-outline diff-filter-btn" data-diff="Medium" style="border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.78rem; color: var(--accent-gold);">Medium</button>
+            <button type="button" class="btn btn-sm btn-outline diff-filter-btn" data-diff="Hard" style="border-radius: 999px; padding: 0.25rem 0.75rem; font-size: 0.78rem; color: var(--accent-crimson);">Hard</button>
+        </div>
+
+        <!-- Global Expand / Collapse All -->
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button type="button" id="toggleAllAnswersBtn" class="btn btn-outline btn-sm" style="display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.8rem;">
+                <i class="fa-solid fa-angles-down" id="toggleAllIcon"></i>
+                <span id="toggleAllText">Expand All</span>
+            </button>
+            <span id="questionCountBadge" style="font-size: 0.82rem; color: var(--text-muted); font-weight: 500;">
+                Showing {{ questions|length }} of {{ questions|length }}
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- Questions Accordion / Flashcards List -->
+<div id="questionsContainer" style="display: flex; flex-direction: column; gap: 1rem;">
+    {% for q in questions %}
+    <div class="card interview-q-card" 
+         id="q-card-{{ q.id }}"
+         data-difficulty="{{ q.difficulty }}"
+         data-question="{{ q.question|lower }}"
+         data-answer="{{ q.model_answer|lower }}"
+         data-keypoints="{{ (q.key_points or '')|lower }}"
+         style="padding: 1.25rem 1.4rem; transition: all 0.2s ease; border: 1px solid var(--border-color); background: var(--bg-card);">
+        
+        <!-- Question Header Clickable Row -->
+        <div class="q-header-row" 
+             style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; cursor: pointer;"
+             onclick="toggleAnswer('ans-{{ q.id }}', this)">
+            <div style="display: flex; align-items: flex-start; gap: 0.9rem; flex: 1;">
+                <span style="color: var(--text-muted); font-weight: 700; font-size: 0.82rem; margin-top: 0.2rem; min-width: 26px;">
+                    #{{ loop.index }}
+                </span>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem; flex-wrap: wrap;">
+                        <span class="badge {% if q.difficulty == 'Easy' %}badge-success{% elif q.difficulty == 'Medium' %}badge-warning{% else %}badge-danger{% endif %}" style="font-size: 0.72rem; padding: 0.15rem 0.55rem;">
+                            {{ q.difficulty }}
+                        </span>
+                        <span style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; font-weight: 600; letter-spacing: 0.5px;">
+                            {{ q.category }}
+                        </span>
+                    </div>
+                    <h3 class="q-title-text" style="font-size: 1.05rem; font-weight: 600; color: var(--text-primary); line-height: 1.4; margin: 0;">
+                        {{ q.question }}
+                    </h3>
+                </div>
+            </div>
+
+            <!-- Header Controls: Copy & Chevron -->
+            <div style="display: flex; align-items: center; gap: 0.6rem; margin-top: 0.15rem;">
+                <button type="button" 
+                        class="btn btn-outline btn-sm copy-btn" 
+                        title="Copy model answer" 
+                        onclick="event.stopPropagation(); copyQuestionAnswer('{{ q.id }}', this);"
+                        style="padding: 0.2rem 0.55rem; font-size: 0.75rem; border-color: rgba(255,255,255,0.12);">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
+                <div class="chevron-wrapper" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(255,255,255,0.04);">
+                    <i class="fa-solid fa-chevron-down chevron-icon" style="color: var(--text-muted); font-size: 0.82rem; transition: transform 0.25s ease;"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Answer Dropdown Accordion Panel -->
+        <div id="ans-{{ q.id }}" class="q-answer-panel" style="display: none; margin-top: 1.15rem; padding-top: 1.15rem; border-top: 1px solid var(--border-color);">
+            
+            <!-- Benchmark Model Answer -->
+            <div style="margin-bottom: 1rem;">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <div style="font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.6px; font-weight: 700; color: var(--accent); display: flex; align-items: center; gap: 0.4rem;">
+                        <i class="fa-solid fa-award"></i> Benchmark Model Answer
+                    </div>
+                </div>
+                <div id="raw-ans-{{ q.id }}" class="model-answer-content" style="font-size: 0.93rem; color: var(--text-primary); line-height: 1.65; white-space: pre-line; background: #F8FAFC; padding: 1rem 1.25rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+{{ q.model_answer }}
+                </div>
+            </div>
+
+            <!-- Key Evaluator Checkpoints -->
+            {% if q.key_points %}
+            <div style="background: #FFFBEB; padding: 0.85rem 1.15rem; border-radius: var(--radius-sm); font-size: 0.85rem; color: #92400E; border: 1px solid #FDE68A; border-left: 4px solid #D97706; display: flex; align-items: flex-start; gap: 0.6rem;">
+                <i class="fa-solid fa-key" style="color: #D97706; margin-top: 0.15rem;"></i>
+                <div>
+                    <strong style="color: #B45309;">Evaluator Checkpoints:</strong>
+                    <span style="color: #78350F; margin-left: 0.25rem; font-weight: 500;">{{ q.key_points }}</span>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+    {% else %}
+    <div class="card" style="text-align: center; padding: 3.5rem 1.5rem; color: var(--text-muted);">
+        <i class="fa-solid fa-code" style="font-size: 2.8rem; margin-bottom: 1rem; opacity: 0.35;"></i>
+        <h3 style="font-size: 1.2rem; color: var(--text-primary); margin-bottom: 0.5rem;">No Questions Found</h3>
+        <p style="font-size: 0.9rem; max-width: 450px; margin: 0 auto 1.25rem auto;">
+            No questions are currently loaded in this category. Click another category pill above to explore.
+        </p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Empty State for Search Filter -->
+<div id="noSearchResultsCard" class="card" style="display: none; text-align: center; padding: 3rem 1.5rem; color: var(--text-muted); border: 1px dashed var(--border-color);">
+    <i class="fa-solid fa-filter-circle-xmark" style="font-size: 2.5rem; margin-bottom: 0.85rem; opacity: 0.4;"></i>
+    <h3 style="font-size: 1.15rem; color: var(--text-primary); margin-bottom: 0.4rem;">No Matching Questions</h3>
+    <p style="font-size: 0.88rem; max-width: 400px; margin: 0 auto 1rem auto;">
+        We couldn't find any questions matching your current search term or difficulty filter.
+    </p>
+    <button type="button" id="resetSearchFilterBtn" class="btn btn-outline btn-sm" style="border-radius: 999px;">
+        <i class="fa-solid fa-rotate-left"></i> Reset Search & Filters
+    </button>
+</div>
+
+<!-- Inline JavaScript for Immediate, Bug-Free Responsiveness -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('interviewSearchInput');
+    const clearSearchBtn = document.getElementById('clearSearchBtn');
+    const diffButtons = document.querySelectorAll('.diff-filter-btn');
+    const toggleAllBtn = document.getElementById('toggleAllAnswersBtn');
+    const toggleAllIcon = document.getElementById('toggleAllIcon');
+    const toggleAllText = document.getElementById('toggleAllText');
+    const countBadge = document.getElementById('questionCountBadge');
+    const noResultsCard = document.getElementById('noSearchResultsCard');
+    const resetSearchBtn = document.getElementById('resetSearchFilterBtn');
+    const questionCards = Array.from(document.querySelectorAll('.interview-q-card'));
+
+    let currentDifficulty = 'all';
+    let currentSearchTerm = '';
+    let areAllExpanded = false;
+
+    // Filter Logic
+    function applyFilters() {
+        let visibleCount = 0;
+
+        questionCards.forEach(card => {
+            const cardDiff = card.getAttribute('data-difficulty') || '';
+            const cardQ = card.getAttribute('data-question') || '';
+            const cardA = card.getAttribute('data-answer') || '';
+            const cardKey = card.getAttribute('data-keypoints') || '';
+
+            const matchesDiff = (currentDifficulty === 'all') || (cardDiff.toLowerCase() === currentDifficulty.toLowerCase());
+            const matchesSearch = !currentSearchTerm || 
+                                  cardQ.includes(currentSearchTerm) || 
+                                  cardA.includes(currentSearchTerm) || 
+                                  cardKey.includes(currentSearchTerm);
+
+            if (matchesDiff && matchesSearch) {
+                card.style.display = 'block';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+
+        // Update Counter
+        if (countBadge) {
+            countBadge.textContent = `Showing ${visibleCount} of ${questionCards.length}`;
+        }
+
+        // Empty state visibility
+        if (noResultsCard) {
+            noResultsCard.style.display = (visibleCount === 0 && questionCards.length > 0) ? 'block' : 'none';
+        }
+
+        // Show/hide clear search button
+        if (clearSearchBtn) {
+            clearSearchBtn.style.display = currentSearchTerm ? 'block' : 'none';
+        }
+    }
+
+    // Search Input Listener
+    if (searchInput) {
+        searchInput.addEventListener('input', function(e) {
+            currentSearchTerm = e.target.value.trim().toLowerCase();
+            applyFilters();
+        });
+    }
+
+    // Clear Search Button
+    if (clearSearchBtn) {
+        clearSearchBtn.addEventListener('click', function() {
+            if (searchInput) {
+                searchInput.value = '';
+                currentSearchTerm = '';
+                searchInput.focus();
+                applyFilters();
+            }
+        });
+    }
+
+    // Difficulty Filter Buttons
+    diffButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            diffButtons.forEach(b => b.classList.remove('active', 'btn-primary'));
+            this.classList.add('active');
+            currentDifficulty = this.getAttribute('data-diff') || 'all';
+            applyFilters();
+        });
+    });
+
+    // Reset Filters Button
+    if (resetSearchBtn) {
+        resetSearchBtn.addEventListener('click', function() {
+            if (searchInput) searchInput.value = '';
+            currentSearchTerm = '';
+            currentDifficulty = 'all';
+            diffButtons.forEach(b => {
+                b.classList.remove('active');
+                if (b.getAttribute('data-diff') === 'all') b.classList.add('active');
+            });
+            applyFilters();
+        });
+    }
+
+    // Expand / Collapse All
+    if (toggleAllBtn) {
+        toggleAllBtn.addEventListener('click', function() {
+            areAllExpanded = !areAllExpanded;
+            questionCards.forEach(card => {
+                const panel = card.querySelector('.q-answer-panel');
+                const chevron = card.querySelector('.chevron-icon');
+                if (panel) {
+                    panel.style.display = areAllExpanded ? 'block' : 'none';
+                }
+                if (chevron) {
+                    chevron.style.transform = areAllExpanded ? 'rotate(180deg)' : 'rotate(0deg)';
+                }
+            });
+
+            if (toggleAllText) {
+                toggleAllText.textContent = areAllExpanded ? 'Collapse All' : 'Expand All';
+            }
+            if (toggleAllIcon) {
+                toggleAllIcon.className = areAllExpanded ? 'fa-solid fa-angles-up' : 'fa-solid fa-angles-down';
+            }
+        });
+    }
+});
+
+// Self-contained Accordion Toggle Function
+window.toggleAnswer = function(id, trigger) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const chevron = trigger ? trigger.querySelector('.chevron-icon') : null;
+
+    if (el.style.display === 'none' || !el.style.display) {
+        el.style.display = 'block';
+        if (chevron) chevron.style.transform = 'rotate(180deg)';
+    } else {
+        el.style.display = 'none';
+        if (chevron) chevron.style.transform = 'rotate(0deg)';
+    }
+};
+
+// Copy Answer to Clipboard with Visual Feedback
+window.copyQuestionAnswer = function(id, btn) {
+    const rawAnswer = document.getElementById('raw-ans-' + id);
+    if (!rawAnswer) return;
+
+    const textToCopy = rawAnswer.innerText.trim();
+    navigator.clipboard.writeText(textToCopy).then(() => {
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fa-solid fa-check" style="color: var(--accent-emerald);"></i> Copied!';
+        btn.style.borderColor = 'var(--accent-emerald)';
+        setTimeout(() => {
+            btn.innerHTML = originalHtml;
+            btn.style.borderColor = 'rgba(255,255,255,0.12)';
+        }, 1800);
+    }).catch(err => {
+        console.error('Copy failed:', err);
+        if (window.showToast) window.showToast('Copied to clipboard', 'info');
+    });
+};
+
+// Modal open/close controls
+window.openAddQuestionModal = function() {
+    const modal = document.getElementById('addQuestionModal');
+    if (modal) {
+        modal.style.display = 'flex';
+        const qInput = modal.querySelector('textarea[name="question"]');
+        if (qInput) setTimeout(() => qInput.focus(), 100);
+    }
+};
+
+window.closeAddQuestionModal = function() {
+    const modal = document.getElementById('addQuestionModal');
+    if (modal) modal.style.display = 'none';
+};
+
+// Close modal on click outside or escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') closeAddQuestionModal();
+});
+
+const addQModalEl = document.getElementById('addQuestionModal');
+if (addQModalEl) {
+    addQModalEl.addEventListener('click', function(e) {
+        if (e.target === this) closeAddQuestionModal();
+    });
+}
+</script>
+
+<!-- Add Technical / HR Interview Question Modal -->
+<div id="addQuestionModal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(5px); z-index: 9999; align-items: center; justify-content: center; padding: 1.25rem;">
+    <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-md); width: 100%; max-width: 640px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35); overflow: hidden; animation: modalFadeIn 0.25s ease;">
+        <!-- Modal Header -->
+        <div style="padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: rgba(99, 102, 241, 0.05);">
+            <div style="display: flex; align-items: center; gap: 0.65rem;">
+                <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(99, 102, 241, 0.15); color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 1.15rem;">
+                    <i class="fa-solid fa-code"></i>
+                </div>
+                <div>
+                    <h3 style="font-size: 1.15rem; font-weight: 700; color: var(--text-primary); margin: 0;">Add Interview Question</h3>
+                    <p style="font-size: 0.8rem; color: var(--text-secondary); margin: 0;">Contribute a placement interview question to the {{ selected_cat }} domain bank</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeAddQuestionModal()" style="background: none; border: none; font-size: 1.25rem; color: var(--text-muted); cursor: pointer; padding: 0.25rem; border-radius: 6px; transition: color 0.15s ease;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Modal Form -->
+        <form method="POST" action="{{ url_for('interview_add_question') }}" style="padding: 1.5rem;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" style="font-weight: 600; font-size: 0.85rem;">Interview Category</label>
+                    <select name="category" class="form-control" style="font-size: 0.9rem;" required>
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if cat == selected_cat %}selected{% endif %}>{{ cat }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group" style="margin-bottom: 0;">
+                    <label class="form-label" style="font-weight: 600; font-size: 0.85rem;">Difficulty Level</label>
+                    <select name="difficulty" class="form-control" style="font-size: 0.9rem;" required>
+                        <option value="Easy">Easy (Fundamentals)</option>
+                        <option value="Medium" selected>Medium (Standard Interview)</option>
+                        <option value="Hard">Hard (Deep Dive / Advanced)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label" style="font-weight: 600; font-size: 0.85rem;">Question Statement <span style="color: var(--accent-crimson); font-weight: bold;">*</span></label>
+                <textarea name="question" class="form-control" rows="2" placeholder="e.g., Explain the difference between clustered and non-clustered indexes in SQL..." required style="font-size: 0.9rem; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label" style="font-weight: 600; font-size: 0.85rem;">Model Benchmark Answer <span style="color: var(--accent-crimson); font-weight: bold;">*</span></label>
+                <textarea name="model_answer" class="form-control" rows="4" placeholder="Detailed, professional technical answer expected by interviewers..." required style="font-size: 0.9rem; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label" style="font-weight: 600; font-size: 0.85rem;">Key Evaluation Checkpoints (Comma-separated)</label>
+                <input type="text" name="key_points" class="form-control" placeholder="e.g., B-tree organization, leaf node pointers, lookup speed" style="font-size: 0.9rem;">
+                <small style="color: var(--text-muted); font-size: 0.75rem; margin-top: 0.25rem; display: block;">Key keywords helping candidates benchmark their answers during interview prep.</small>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; align-items: center; border-top: 1px solid var(--border-color); padding-top: 1.25rem;">
+                <button type="button" class="btn btn-outline" onclick="closeAddQuestionModal()" style="font-weight: 500;">
+                    Cancel
+                </button>
+                <button type="submit" class="btn btn-primary" style="font-weight: 600; display: inline-flex; align-items: center; gap: 0.5rem; background: linear-gradient(135deg, #6366F1, #8B5CF6); border: none; padding: 0.55rem 1.4rem;">
+                    <i class="fa-solid fa-plus"></i> Add Question to Bank
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

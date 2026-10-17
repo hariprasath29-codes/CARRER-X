@@ -1,0 +1,768 @@
+/* ==========================================================================
+   CAREERX - EXECUTIVE ATS RESUME BUILDER & EXPORT STYLES (resume.css)
+   Ivy League / Silicon Valley / Executive FAANG Standard
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+/* --- Workspace Layout --- */
+.resume-workspace {
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: 1.75rem;
+    align-items: start;
+    margin-bottom: 3rem;
+}
+
+/* Toolbar & Control Bar */
+.resume-toolbar-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.resume-toolbar-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.resume-toolbar-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+}
+
+/* Customizer Bar (Templates, Fonts, Colors) */
+.resume-customizer-bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1.25rem;
+    padding: 0.75rem 1rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1.25rem;
+}
+
+.customizer-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-2);
+}
+
+.customizer-select {
+    padding: 0.35rem 0.75rem;
+    font-size: 0.82rem;
+    font-weight: 500;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.customizer-select:focus {
+    border-color: var(--accent);
+}
+
+.color-swatches {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.color-swatch-btn {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s;
+    padding: 0;
+}
+
+.color-swatch-btn:hover {
+    transform: scale(1.15);
+}
+
+.color-swatch-btn.active {
+    border-color: var(--text);
+    box-shadow: 0 0 0 2px var(--surface);
+}
+
+/* ATS Strength Pill */
+.ats-strength-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0.85rem;
+    border-radius: 9999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    background: rgba(16, 185, 129, 0.1);
+    color: #059669;
+    border: 1px solid rgba(16, 185, 129, 0.25);
+}
+
+.ats-strength-badge .score-val {
+    font-size: 0.92rem;
+    font-weight: 800;
+}
+
+/* Left Pane: Form Editor Styles */
+.editor-section-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem 1.4rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    transition: border-color 0.2s;
+}
+
+.editor-section-card:hover {
+    border-color: var(--border-light);
+}
+
+.editor-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.editor-section-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin: 0;
+}
+
+.editor-section-title i {
+    color: var(--accent);
+    font-size: 0.95rem;
+}
+
+.editor-helper-text {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+/* Right Pane: Resume Canvas Simulation */
+.resume-sheet-container {
+    position: sticky;
+    top: 85px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resume-preview-header-bar {
+    width: 100%;
+    max-width: 790px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* The A4 Simulation Sheet */
+.resume-sheet {
+    --res-primary: #000000;
+    --res-accent: #000000;
+    --res-text: #000000;
+    --res-muted: #1F2937;
+    --res-rule: #000000;
+    --res-bg: #FFFFFF;
+
+    background: var(--res-bg);
+    color: var(--res-text);
+    width: 100%;
+    max-width: 790px;
+    min-height: 1020px;
+    padding: 2.75rem 2.85rem;
+    border-radius: 4px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05),
+                0 20px 30px -10px rgba(15, 23, 42, 0.15),
+                0 0 0 1px rgba(15, 23, 42, 0.08);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.48;
+    position: relative;
+    box-sizing: border-box;
+    transition: font-family 0.2s, box-shadow 0.2s;
+}
+
+/* Font Family Overrides */
+.resume-sheet.font-inter {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.resume-sheet.font-merriweather {
+    font-family: 'Merriweather', Georgia, 'Times New Roman', serif;
+}
+
+.resume-sheet.font-jakarta {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+}
+
+/* Universal Tagline Pure Black Rule */
+.resume-sheet .res-tagline {
+    color: #000000 !important;
+}
+
+/* -------------------------------------------------------------
+   TEMPLATE 1: IVY LEAGUE ATS (FAANG / Fortune 500 Standard)
+   Clean, authoritative, centered letterhead, 100% ATS score
+   ------------------------------------------------------------- */
+.resume-sheet.template-ivy .res-header {
+    text-align: center;
+    margin-bottom: 1.1rem;
+    padding-bottom: 0.35rem;
+}
+
+.resume-sheet.template-ivy .res-name {
+    font-size: 1.95rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    color: #000000 !important;
+    text-transform: uppercase;
+    margin: 0 0 0.2rem 0;
+    line-height: 1.15;
+}
+
+.resume-sheet.template-ivy .res-tagline {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #000000 !important;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.45rem;
+    text-transform: uppercase;
+}
+
+.resume-sheet.template-ivy .res-contact-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.45rem;
+    font-size: 0.82rem;
+    color: #000000 !important;
+}
+
+.resume-sheet.template-ivy .res-contact-bar .contact-sep {
+    color: #000000 !important;
+    font-weight: 700;
+}
+
+.resume-sheet.template-ivy .res-contact-bar a {
+    color: #000000 !important;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.resume-sheet.template-ivy .res-contact-bar a:hover {
+    color: #000000 !important;
+    text-decoration: underline;
+}
+
+.resume-sheet.template-ivy .res-section-title {
+    font-size: 0.86rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: #000000 !important;
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 0.2rem;
+    margin: 0.95rem 0 0.5rem 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+/* -------------------------------------------------------------
+   TEMPLATE 2: SILICON MODERN (Pure Black Executive Version)
+   ------------------------------------------------------------- */
+.resume-sheet.template-modern .res-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 0.85rem;
+    margin-bottom: 1.1rem;
+    gap: 1.5rem;
+}
+
+.resume-sheet.template-modern .res-name {
+    font-size: 1.85rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #000000 !important;
+    margin: 0 0 0.2rem 0;
+    line-height: 1.15;
+}
+
+.resume-sheet.template-modern .res-tagline {
+    font-size: 0.86rem;
+    font-weight: 700;
+    color: #000000 !important;
+    margin-bottom: 0;
+}
+
+.resume-sheet.template-modern .res-contact-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.2rem;
+    font-size: 0.8rem;
+    color: #000000 !important;
+    text-align: right;
+}
+
+.resume-sheet.template-modern .res-contact-bar .contact-sep {
+    display: none;
+}
+
+.resume-sheet.template-modern .res-contact-bar a {
+    color: #000000 !important;
+    text-decoration: none;
+}
+
+.resume-sheet.template-modern .res-contact-bar a:hover {
+    color: #000000 !important;
+    text-decoration: underline;
+}
+
+.resume-sheet.template-modern .res-section-title {
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #000000 !important;
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 0.2rem;
+    margin: 0.95rem 0 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* -------------------------------------------------------------
+   TEMPLATE 3: EXECUTIVE MINIMALIST (Compact High-Density)
+   High information density, timeless serif/sans, ultra crisp
+   ------------------------------------------------------------- */
+.resume-sheet.template-minimal {
+    padding: 2.2rem 2.4rem;
+}
+
+.resume-sheet.template-minimal .res-header {
+    text-align: left;
+    margin-bottom: 0.85rem;
+    padding-bottom: 0.45rem;
+    border-bottom: 1.5px solid #000000 !important;
+}
+
+.resume-sheet.template-minimal .res-name {
+    font-size: 1.7rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: #000000 !important;
+    margin: 0 0 0.15rem 0;
+}
+
+.resume-sheet.template-minimal .res-tagline {
+    font-size: 0.84rem;
+    font-weight: 700;
+    color: #000000 !important;
+    margin-bottom: 0.35rem;
+}
+
+.resume-sheet.template-minimal .res-contact-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    font-size: 0.8rem;
+    color: #000000 !important;
+}
+
+.resume-sheet.template-minimal .res-contact-bar .contact-sep {
+    color: #000000 !important;
+}
+
+.resume-sheet.template-minimal .res-contact-bar a {
+    color: #000000 !important;
+    text-decoration: none;
+}
+
+.resume-sheet.template-minimal .res-contact-bar a:hover {
+    color: #000000 !important;
+    text-decoration: underline;
+}
+
+.resume-sheet.template-minimal .res-section-title {
+    font-size: 0.82rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.09em;
+    color: #000000 !important;
+    border-bottom: 1.5px solid #000000 !important;
+    padding-bottom: 0.15rem;
+    margin: 0.8rem 0 0.4rem 0;
+}
+
+/* -------------------------------------------------------------
+   SHARED RESUME ENTRY STYLES (Professional Recruiter Layout)
+   ------------------------------------------------------------- */
+.res-entry {
+    margin-bottom: 0.65rem;
+}
+
+.res-entry:last-child {
+    margin-bottom: 0.25rem;
+}
+
+.res-entry-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-weight: 700;
+    font-size: 0.88rem;
+    color: var(--res-primary);
+    line-height: 1.35;
+}
+
+.res-entry-title {
+    font-weight: 700;
+    color: var(--res-primary);
+}
+
+.res-entry-tech {
+    font-weight: 500;
+    color: var(--res-muted);
+    font-size: 0.82rem;
+    margin-left: 0.35rem;
+}
+
+.res-entry-date {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--res-muted);
+    text-align: right;
+    white-space: nowrap;
+    margin-left: 0.75rem;
+}
+
+.res-entry-sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.82rem;
+    color: var(--res-muted);
+    margin-top: 0.1rem;
+    margin-bottom: 0.25rem;
+    line-height: 1.35;
+}
+
+.res-entry-badge {
+    font-weight: 600;
+    color: var(--res-primary);
+}
+
+.res-entry-desc {
+    font-size: 0.82rem;
+    color: var(--res-text);
+    line-height: 1.45;
+    margin: 0.2rem 0;
+}
+
+/* Semantic Bullet Lists (X-Y-Z Formula) */
+.res-bullet-list {
+    margin: 0.25rem 0 0.45rem 0;
+    padding-left: 1.15rem;
+    list-style-type: disc;
+}
+
+.res-bullet-list li {
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--res-text);
+    margin-bottom: 0.2rem;
+    position: relative;
+}
+
+.res-bullet-list li strong {
+    font-weight: 700;
+    color: var(--res-primary);
+}
+
+.res-bullet-list.compact li {
+    margin-bottom: 0.15rem;
+}
+
+/* Categorized Technical Skills (Recruiter Standard) */
+.res-skills-container {
+    margin-top: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.28rem;
+}
+
+.res-skill-row {
+    display: flex;
+    align-items: baseline;
+    font-size: 0.82rem;
+    line-height: 1.45;
+    gap: 0.5rem;
+}
+
+.res-skill-label {
+    font-weight: 700;
+    color: var(--res-primary);
+    min-width: 165px;
+    flex-shrink: 0;
+}
+
+.res-skill-items {
+    color: var(--res-text);
+    flex-grow: 1;
+}
+
+/* Summary paragraph */
+.res-summary-text {
+    font-size: 0.82rem;
+    line-height: 1.48;
+    color: var(--res-text);
+    margin: 0.25rem 0 0.65rem 0;
+    text-align: justify;
+}
+
+/* -------------------------------------------------------------
+   PRINT & PDF EXPORT PERFECTION (Single Page Guaranteed)
+   ------------------------------------------------------------- */
+@media print {
+    @page {
+        size: A4;
+        margin: 8mm 12mm;
+    }
+
+    /* Hide everything except the resume sheet */
+    body {
+        background: #FFFFFF !important;
+        color: #000000 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    body * {
+        visibility: hidden !important;
+    }
+
+    .resume-sheet-container,
+    .resume-sheet,
+    .resume-sheet * {
+        visibility: visible !important;
+    }
+
+    .app-sidebar,
+    .app-header,
+    .resume-toolbar-card,
+    .editor-section-card,
+    .resume-preview-header-bar,
+    .card,
+    .btn,
+    .customizer-bar,
+    .toast-container,
+    .modal-overlay,
+    .post-save-banner {
+        display: none !important;
+    }
+
+    .resume-workspace {
+        display: block !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .resume-sheet-container {
+        position: static !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .resume-sheet {
+        position: absolute !important;
+        left: 0 !important;
+        top: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0.5cm 0.7cm !important;
+        box-shadow: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        background: #FFFFFF !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .resume-sheet a {
+        color: #000000 !important;
+        text-decoration: none !important;
+    }
+
+    .res-entry,
+    .res-section-title,
+    .res-bullet-list li {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 1080px) {
+    .resume-workspace {
+        grid-template-columns: 1fr;
+    }
+    .resume-sheet-container {
+        position: static;
+        margin-top: 1.5rem;
+    }
+    .resume-sheet {
+        max-width: 100%;
+        padding: 2rem 1.75rem;
+    }
+}
+
+/* -------------------------------------------------------------
+   POST-SAVE DOWNLOAD MODAL & ACTION BANNER STYLES
+   ------------------------------------------------------------- */
+.post-save-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    background: rgba(16, 185, 129, 0.08);
+    border: 1px solid rgba(16, 185, 129, 0.35);
+    border-radius: 10px;
+    padding: 0.85rem 1.15rem;
+    margin-bottom: 1.15rem;
+    animation: slideDownFade 0.3s ease;
+}
+
+@keyframes slideDownFade {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.download-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.85rem;
+    margin: 1.25rem 0;
+}
+
+.download-option-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+    background: var(--bg-secondary);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.download-option-card:hover {
+    border-color: var(--accent);
+    background: rgba(99, 102, 241, 0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.download-option-card.primary {
+    border-color: rgba(16, 185, 129, 0.4);
+    background: rgba(16, 185, 129, 0.07);
+}
+
+.download-option-card.primary:hover {
+    border-color: #10B981;
+    background: rgba(16, 185, 129, 0.14);
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.15);
+}
+
+.download-option-info {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+}
+
+.download-option-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+}
+
+.download-option-icon.pdf {
+    background: rgba(239, 68, 68, 0.12);
+    color: #EF4444;
+}
+
+.download-option-icon.doc {
+    background: rgba(59, 130, 246, 0.12);
+    color: #2563EB;
+}
+
+.download-option-icon.json {
+    background: rgba(99, 102, 241, 0.12);
+    color: #6366F1;
+}
+
+.download-option-title {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.download-option-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+

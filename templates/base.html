@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CareerX – Placement Assistant{% endblock %}</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <!-- Google Fonts: Outfit & Fira Code -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Chart.js for Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="{{ url_for('admin_panel') if current_user and current_user.role == 'admin' else url_for('dashboard') }}" class="brand-logo">
+                    <div class="logo-badge">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span>Career<span style="color: var(--primary);">X</span> <span class="badge badge-primary" style="font-size: 0.65rem; padding: 2px 7px; margin-left: 4px; vertical-align: middle;">PRO</span></span>
+                </a>
+                <button id="mobileSidebarClose" class="mobile-sidebar-close" aria-label="Close sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                {% if current_user and current_user.role == 'admin' %}
+                <!-- Admin Management Navigation (Separated into distinct modules) -->
+                <div class="nav-section-title">Admin Management</div>
+                <a href="{{ url_for('admin_panel') }}#overview-section" class="nav-item admin-nav-link" data-tab="overview">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>TPO Overview</span>
+                </a>
+                <a href="{{ url_for('admin_panel') }}#performance-section" class="nav-item admin-nav-link" data-tab="performance">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Student Performance</span>
+                </a>
+                <a href="{{ url_for('admin_panel') }}#drives-section" class="nav-item admin-nav-link" data-tab="drives">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>Campus Drives</span>
+                </a>
+                <a href="{{ url_for('admin_panel') }}#applications-section" class="nav-item admin-nav-link" data-tab="applications">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Company Pipeline</span>
+                </a>
+                <a href="{{ url_for('admin_panel') }}#questions-section" class="nav-item admin-nav-link" data-tab="questions">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <span>Question Bank</span>
+                </a>
+                <a href="{{ url_for('admin_panel') }}#notices-section" class="nav-item admin-nav-link" data-tab="notices">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Placement Notices</span>
+                </a>
+                <a href="{{ url_for('admin_panel') }}#access-section" class="nav-item admin-nav-link" data-tab="access">
+                    <i class="fa-solid fa-user-shield"></i>
+                    <span>Access Control</span>
+                </a>
+                {% else %}
+                <!-- Regular Student Navigation -->
+                <div class="nav-section-title">Preparation Hub</div>
+                <a href="{{ url_for('dashboard') }}" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('roadmap_view') }}" class="nav-item">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Career Roadmap</span>
+                </a>
+
+                <div class="nav-section-title">Resume & ATS</div>
+                <a href="{{ url_for('resume_builder') }}" class="nav-item">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>Create Resume</span>
+                </a>
+                <a href="{{ url_for('ats_checker') }}" class="nav-item">
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>ATS Scanner</span>
+                </a>
+
+                <div class="nav-section-title">Assessments & Practice</div>
+                <a href="{{ url_for('aptitude_view') }}" class="nav-item">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Aptitude Trainer</span>
+                </a>
+                <a href="{{ url_for('interview_prep') }}" class="nav-item">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Tech Interview Prep</span>
+                </a>
+
+                <div class="nav-section-title">Career Tracking</div>
+                <a href="{{ url_for('skills_view') }}" class="nav-item">
+                    <i class="fa-solid fa-award"></i>
+                    <span>Skill Tracker</span>
+                </a>
+                <a href="{{ url_for('applications_view') }}" class="nav-item">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Job Tracker</span>
+                </a>
+                <a href="{{ url_for('leaderboard') }}" class="nav-item">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                {% endif %}
+            </nav>
+
+            <div class="sidebar-footer">
+                {% if current_user %}
+                <div class="user-mini-profile">
+                    <div class="user-avatar">
+                        {{ current_user.full_name[:1] if current_user.full_name else current_user.username[:1] }}
+                    </div>
+                    <div class="user-meta">
+                        <div class="name">{{ current_user.full_name or current_user.username }}</div>
+                        <div class="role">{{ current_user.target_role or 'Student' }}</div>
+                    </div>
+                </div>
+                <a href="{{ url_for('profile') }}" title="Profile & Settings" style="color: var(--text-muted); padding: 5px;">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+                {% endif %}
+            </div>
+        </aside>
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button id="mobileNavToggle" class="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="header-title">{% block page_title %}Dashboard{% endblock %}</h2>
+                </div>
+
+                <div class="header-right">
+                    {% if current_user %}
+                    <a href="{{ url_for('logout') }}" class="btn btn-outline btn-sm" title="Sign Out">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </header>
+
+            <!-- Page Body -->
+            <div class="content-body">
+                <!-- Flash Notification Messages -->
+                <div class="flash-container">
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">
+                                    <i class="fa-solid fa-circle-info"></i>
+                                    <span>{{ message }}</span>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                </div>
+
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Global App Scripts -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

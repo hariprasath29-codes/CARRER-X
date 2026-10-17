@@ -1,0 +1,153 @@
+{% extends "base.html" %}
+
+{% block title %}ATS Resume Scanner | CareerX{% endblock %}
+{% block page_title %}AI Applicant Tracking System (ATS) Scanner{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 1.45rem; margin-bottom: 0.35rem;">Smart Resume Keyword & ATS Evaluator</h2>
+            <p style="color: var(--text-secondary); font-size: 0.92rem; margin: 0;">
+                Upload your PDF resume or paste text to test ATS compliance against high-yield job role requirements.
+            </p>
+        </div>
+        <a href="{{ url_for('resume_builder') }}" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-file-pen"></i> Create / Edit in Resume Studio
+        </a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;">
+    <!-- Scanner Upload Form -->
+    <div class="card">
+        <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem; color: var(--accent);">
+            <i class="fa-solid fa-cloud-arrow-up" style="margin-right: 0.5rem;"></i> Resume Input & Target Role
+        </h3>
+
+        <form id="atsScanForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Target Placement Role</label>
+                <select name="target_role" id="atsTargetRole" class="form-control">
+                    {% for r in roles %}
+                    <option value="{{ r }}">{{ r }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Upload Resume (PDF or TXT)</label>
+                <div style="border: 2px dashed rgba(79, 70, 229, 0.35); border-radius: var(--radius-md); padding: 2rem; text-align: center; background: rgba(79, 70, 229, 0.04); cursor: pointer;" onclick="document.getElementById('fileInput').click()">
+                    <i class="fa-solid fa-file-pdf" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 0.75rem;"></i>
+                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Click to browse or drag & drop resume PDF</div>
+                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Max size 10MB (.pdf, .txt)</div>
+                    <input type="file" id="fileInput" name="resume_file" accept=".pdf,.txt" style="display: none;" onchange="updateFileName(this)">
+                    <div id="selectedFileName" style="margin-top: 0.75rem; font-weight: 600; color: #059669; font-size: 0.88rem;"></div>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">
+                &mdash; OR PASTE RAW TEXT &mdash;
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Resume Content</label>
+                <textarea name="resume_text" id="resumeTextInput" class="form-control" rows="5" placeholder="Paste your resume sections, skills, and project descriptions here..."></textarea>
+            </div>
+
+            <button type="submit" id="scanSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem;">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <span>Analyze ATS Match Score</span>
+            </button>
+        </form>
+    </div>
+
+    <!-- Live Scan Report Card -->
+    <div class="card" id="atsReportCard">
+        <div id="emptyPlaceholder" style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+            <i class="fa-solid fa-file-shield" style="font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+            <h3 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 0.35rem;">Awaiting Resume Scan</h3>
+            <p style="font-size: 0.9rem;">Submit your resume on the left to view keyword match score and gap analysis.</p>
+        </div>
+
+        <div id="reportContent" style="display: none;">
+            <!-- Header Score -->
+            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
+                <div>
+                    <span class="badge badge-primary" id="repRoleBadge">Software Engineer</span>
+                    <h3 style="font-size: 1.4rem; margin-top: 0.35rem;" id="repVerdict">Strong ATS Compatibility</h3>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 2.5rem; font-weight: 800; font-family: var(--font); color: var(--accent-emerald);" id="repScore">
+                        88%
+                    </div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Match Score</div>
+                </div>
+            </div>
+
+            <!-- Matched Skills -->
+            <div style="margin-bottom: 1.25rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #059669; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-circle-check"></i> Matched Competencies (<span id="repMatchedCount">0</span>)
+                </div>
+                <div id="repMatchedWrap" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+            </div>
+
+            <!-- Missing Skills -->
+            <div style="margin-bottom: 1.25rem;">
+                <div style="font-size: 0.85rem; font-weight: 700; color: #E11D48; margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> Missing Role Keywords (<span id="repMissingCount">0</span>)
+                </div>
+                <div id="repMissingWrap" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+            </div>
+
+            <!-- AI Improvement Tips -->
+            <div>
+                <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-gold); margin-bottom: 0.5rem;">
+                    <i class="fa-solid fa-lightbulb"></i> Recommended ATS Fixes
+                </div>
+                <ul id="repTipsList" style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Scan History -->
+{% if history %}
+<div class="card" style="margin-top: 2rem;">
+    <h3 style="margin-bottom: 1rem; font-size: 1.15rem;">Recent Scan Log</h3>
+    <div class="table-responsive">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Role</th>
+                    <th>Score</th>
+                    <th>Matched Skills</th>
+                    <th>Missing Skills</th>
+                    <th>Scan Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for scan in history %}
+                <tr>
+                    <td><strong>{{ scan.target_role }}</strong></td>
+                    <td>
+                        <span class="badge {% if scan.score >= 80 %}badge-success{% elif scan.score >= 60 %}badge-warning{% else %}badge-danger{% endif %}">
+                            {{ scan.score }}%
+                        </span>
+                    </td>
+                    <td style="font-size: 0.84rem;">{{ scan.matched_skills }}</td>
+                    <td style="font-size: 0.84rem; color: #FDA4AF;">{{ scan.missing_skills }}</td>
+                    <td>{{ scan.created_at[:10] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/ats.js') }}"></script>
+{% endblock %}

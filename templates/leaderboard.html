@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Leaderboard | CareerX{% endblock %}
+{% block page_title %}Student Placement Leaderboard{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: var(--spacing-standard);">
+    <h2
+        style="font-family: var(--font); font-size: 1.45rem; margin-bottom: 0.25rem; color: var(--text-primary); font-weight: 700;">
+        Campus & Global Placement Rankings</h2>
+    <p style="color: var(--text-secondary); font-size: 0.92rem;">
+        Composite placement score calculated from Aptitude Accuracy (45%), Technical Assessment Rating (35%), and Verified
+        Technical Skills (20%).
+    </p>
+</div>
+
+<!-- Podium Top 3 Cards -->
+<div
+    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--spacing-standard); margin-bottom: var(--spacing-standard);">
+    {% for student in leaderboard[:3] %}
+    <div class="card podium-card rank-{{ student.rank }}">
+        <div style="position: absolute; top: 1rem; right: 1rem;">
+            {% if student.rank == 1 %}
+            <span class="badge"
+                style="background: rgba(245, 185, 66, 0.15); color: var(--gold-rank); border: 1px solid rgba(245, 185, 66, 0.4); font-family: var(--font); font-weight: 700;"><i
+                    class="fa-solid fa-crown" style="color: var(--gold-rank);"></i> Rank #1</span>
+            {% elif student.rank == 2 %}
+            <span class="badge"
+                style="background: rgba(148, 163, 184, 0.15); color: #94A3B8; border: 1px solid rgba(148, 163, 184, 0.35); font-family: var(--font); font-weight: 600;">Rank
+                #2</span>
+            {% else %}
+            <span class="badge"
+                style="background: rgba(217, 119, 6, 0.15); color: #D97706; border: 1px solid rgba(217, 119, 6, 0.35); font-family: var(--font); font-weight: 600;">Rank
+                #3</span>
+            {% endif %}
+        </div>
+
+        <div class="podium-avatar">
+            {{ student.full_name[:1] }}
+        </div>
+
+        <h3
+            style="font-family: var(--font); font-size: 1.25rem; margin-bottom: 0.25rem; color: var(--text-primary); font-weight: 600;">
+            {{ student.full_name }}</h3>
+        <div style="color: var(--text-muted); font-size: 0.82rem; margin-bottom: 1rem;">{{ student.college }} &bull; {{
+            student.target_role }}</div>
+
+        <div class="podium-stats-row">
+            <div>
+                <div class="rank-text-{{ student.rank }}" style="font-size: 1.35rem;">{{ student.composite_score }}
+                </div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Composite</div>
+            </div>
+            <div>
+                <div style="font-size: 1.35rem; font-weight: 700; font-family: var(--font); color: #38BDF8;">{{
+                    student.avg_aptitude }}%</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Aptitude</div>
+            </div>
+            <div>
+                <div style="font-size: 1.35rem; font-weight: 700; font-family: var(--font); color: #10B981;">{{
+                    student.avg_interview }}</div>
+                <div style="font-size: 0.72rem; color: var(--text-muted); text-transform: uppercase;">Assessment</div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Full Ranking Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>Rank</th>
+                    <th>Student Name</th>
+                    <th>College & Department</th>
+                    <th>Target Track</th>
+                    <th>Aptitude Acc.</th>
+                    <th>Assessment Score</th>
+                    <th>Skills</th>
+                    <th>Composite Score</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in leaderboard %}
+                <tr {% if current_user and student.id==current_user.id %}style="background: var(--accent-soft);" {%
+                    endif %}>
+                    <td>
+                        <strong class="{% if student.rank <= 3 %}rank-text-{{ student.rank }}{% endif %}">
+                            #{{ student.rank }}
+                        </strong>
+                    </td>
+                    <td>
+                        <strong style="color: var(--text-primary);">{{ student.full_name }}</strong>
+                        {% if current_user and student.id == current_user.id %}
+                        <span class="badge badge-primary" style="margin-left: 6px; font-size: 0.7rem;">You</span>
+                        {% endif %}
+                    </td>
+                    <td style="font-size: 0.84rem;">{{ student.college }} ({{ student.branch }})</td>
+                    <td><span class="badge badge-primary">{{ student.target_role }}</span></td>
+                    <td>{{ student.avg_aptitude }}%</td>
+                    <td>{{ student.avg_interview }}/10</td>
+                    <td>{{ student.skills_count }} Logged</td>
+                    <td>
+                        <strong style="font-size: 1.05rem; font-family: var(--font); color: #10B981;">
+                            {{ student.composite_score }}
+                        </strong>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

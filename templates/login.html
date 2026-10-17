@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CareerX – Placement Assistant</title>
+    <!-- Live Server Auto-Redirect to Root index.html -->
+    <script>
+        if ((window.location.port === '5500' || window.location.port === '5501' || window.location.port === '3000' || window.location.protocol === 'file:') && window.location.pathname.includes('/templates/')) {
+            window.location.replace('../index.html' + window.location.search);
+        }
+    </script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16x16.png') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" onerror="this.onerror=null;this.href='../static/css/style.css';">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/intro.css') }}" onerror="this.onerror=null;this.href='../static/css/intro.css';">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.07) 0px, transparent 50%), #F8FAFC;
+            position: relative;
+            z-index: 10;
+            box-sizing: border-box;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: #FFFFFF;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: 20px;
+            padding: 1.85rem 2.1rem;
+            box-shadow: 0 18px 40px -12px rgba(79, 70, 229, 0.09), 0 0 0 1px rgba(255, 255, 255, 0.9);
+            position: relative;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 1.15rem;
+        }
+
+        .auth-badge {
+            width: 50px;
+            height: 50px;
+            border-radius: 13px;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.35rem;
+            margin: 0 auto 0.65rem;
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.26);
+        }
+
+        .auth-title {
+            font-family: var(--font);
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            letter-spacing: -0.02em;
+            margin: 0;
+            line-height: 1.25;
+        }
+
+        .auth-sub {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: 0.25rem;
+        }
+
+        .demo-credentials-box {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 0.7rem 0.9rem;
+            margin-bottom: 1.1rem;
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+        }
+
+        .demo-credentials-box strong {
+            color: var(--accent);
+        }
+
+        .form-icon-wrap {
+            position: relative;
+        }
+
+        .form-icon-wrap i {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.88rem;
+        }
+
+        .form-icon-wrap .form-control {
+            padding: 0.65rem 0.9rem 0.65rem 38px;
+            border-radius: 9px;
+            border: 1px solid #E2E8F0;
+            background: #FFFFFF;
+            font-size: 0.9rem;
+        }
+
+        .form-icon-wrap .form-control:focus {
+            border-color: #6366F1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ============================================================== -->
+    <!-- CINEMATIC CAREERX INTRO & 3D PORTAL OVERLAY                     -->
+    <!-- ============================================================== -->
+    <div id="intro-overlay">
+        <canvas id="intro-canvas"></canvas>
+        <div class="intro-glow-bg"></div>
+        <div class="intro-grid-overlay"></div>
+        <div class="intro-flash-bloom"></div>
+
+        <!-- Controls: Audio Toggle & Instant Skip -->
+        <div class="intro-controls">
+            <button id="soundToggleBtn" class="intro-btn" title="Toggle Sound FX">
+                <i class="fa-solid fa-volume-high"></i>
+                <span class="sound-label">Sound On</span>
+            </button>
+            <button id="skipIntroBtn" class="intro-btn" title="Skip directly to Login">
+                <span>Skip</span>
+                <i class="fa-solid fa-forward-step"></i>
+            </button>
+        </div>
+
+        <!-- Center Stage -->
+        <div class="intro-stage">
+            <div class="intro-pill">
+                <i class="fa-solid fa-graduation-cap"></i>
+                <span>Placement Assistant</span>
+            </div>
+
+            <div class="intro-brand-wrapper">
+                <div class="intro-brand-title">
+                    <span class="intro-career-text"></span><span class="intro-cursor"></span>
+                    <div class="intro-x-wrapper">
+                        <span class="intro-x-char">X</span>
+                        <div class="intro-shockwave"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="intro-tagline">
+                Your Next-Gen Campus Placement & Career Intelligence Platform
+            </div>
+
+            <div class="intro-features-row">
+                <div class="intro-feature-chip">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Tech Interview Prep</span>
+                </div>
+                <div class="intro-feature-chip">
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>ATS Resume Scanner</span>
+                </div>
+                <div class="intro-feature-chip">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Timed Aptitude Suite</span>
+                </div>
+                <div class="intro-feature-chip">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Career Roadmap</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================== -->
+    <!-- LOGIN INTERFACE (REVEALED AFTER 3D ZOOM)                       -->
+    <!-- ============================================================== -->
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-badge">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h1 class="auth-title">Welcome to Career<span style="color: var(--accent);">X</span></h1>
+                <p class="auth-sub">Your All-in-One Placement Assistant</p>
+            </div>
+
+            <!-- Flash Notifications -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }}" style="margin-bottom: 1.25rem;">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <div class="demo-credentials-box">
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 7px;">
+                    <strong style="color: var(--text-primary); font-size: 0.82rem;"><i class="fa-solid fa-bolt"
+                            style="color: var(--accent);"></i> Quick 1-Click Access</strong>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem;">
+                    <a href="{{ url_for('quick_login', role='student') }}" class="btn btn-outline btn-sm"
+                        style="text-align: center; text-decoration: none; font-size: 0.8rem; padding: 0.45rem 0.6rem; border-radius: 8px; justify-content: center; font-weight: 600;">
+                        <i class="fa-solid fa-user-graduate" style="color: #4F46E5;"></i> Student Demo
+                    </a>
+                    <a href="{{ url_for('quick_login', role='admin') }}" class="btn btn-outline btn-sm"
+                        style="text-align: center; text-decoration: none; font-size: 0.8rem; padding: 0.45rem 0.6rem; border-radius: 8px; justify-content: center; font-weight: 600;">
+                        <i class="fa-solid fa-shield-halved" style="color: #059669;"></i> Admin Demo
+                    </a>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group" style="margin-bottom: 0.95rem;">
+                    <label class="form-label"
+                        style="display: block; margin-bottom: 0.3rem; font-weight: 600; font-size: 0.85rem; color: var(--text-primary);">Username
+                        or Email</label>
+                    <div class="form-icon-wrap">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" name="username" class="form-control" placeholder="Enter username or email"
+                            required autofocus>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.05rem;">
+                    <label class="form-label"
+                        style="display: block; margin-bottom: 0.3rem; font-weight: 600; font-size: 0.85rem; color: var(--text-primary);">Password</label>
+                    <div class="form-icon-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="password" class="form-control" placeholder="Enter password"
+                            required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary"
+                    style="width: 100%; padding: 0.75rem; font-size: 0.94rem; margin-top: 0.35rem; display: flex; align-items: center; justify-content: center; gap: 8px; border-radius: 9px;">
+                    <span>Sign In to Dashboard</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1rem; font-size: 0.86rem; color: var(--text-secondary);">
+                Don't have an account?
+                <a href="{{ url_for('register') }}"
+                    style="font-weight: 700; color: var(--accent); text-decoration: none;">Create an Account</a>
+            </div>
+
+            <div
+                style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; padding-top: 0.85rem; border-top: 1px solid #E2E8F0; font-size: 0.76rem; color: var(--text-muted); flex-wrap: wrap;">
+                <span><i class="fa-solid fa-circle-check" style="color: #10B981;"></i> 98.4% Placement Target</span>
+                <span><i class="fa-solid fa-shield-halved" style="color: #6366F1;"></i> Enterprise Secured</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Replay Intro Floating Button -->
+    <button id="replayIntroBtn" class="replay-intro-trigger" title="Replay the CareerX intro sequence">
+        <i class="fa-solid fa-rotate-right"></i>
+        <span>Replay Intro</span>
+    </button>
+
+    <!-- Intro Script -->
+    <script src="{{ url_for('static', filename='js/intro.js') }}" onerror="this.onerror=null;var s=document.createElement('script');s.src='../static/js/intro.js';document.body.appendChild(s);"></script>
+</body>
+
+</html>

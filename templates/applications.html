@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Job Tracker | CareerX{% endblock %}
+{% block page_title %}Placement & Job Application Tracker{% endblock %}
+
+{% block content %}
+<div class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div>
+            <h2 style="font-size: 1.45rem; margin-bottom: 0.25rem;">Application Pipeline & Drive Monitor</h2>
+            <p style="color: var(--text-secondary); font-size: 0.92rem;">
+                Manage on-campus and off-campus recruitment processes from initial submission to final offer.
+            </p>
+        </div>
+        <button onclick="openAppModal()" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-plus"></i> Log New Application
+        </button>
+    </div>
+</div>
+
+<!-- Filter & Search Bar -->
+<div class="card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            <button class="btn btn-outline btn-sm app-filter active" data-filter="All">All ({{ applications|length }})</button>
+            <button class="btn btn-outline btn-sm app-filter" data-filter="Applied">Applied</button>
+            <button class="btn btn-outline btn-sm app-filter" data-filter="Screening">Screening</button>
+            <button class="btn btn-outline btn-sm app-filter" data-filter="Interview">Interview</button>
+            <button class="btn btn-outline btn-sm app-filter" data-filter="Offer" style="color: #059669; font-weight: 600;">Offers</button>
+            <button class="btn btn-outline btn-sm app-filter" data-filter="Rejected" style="color: #E11D48; font-weight: 600;">Rejected</button>
+        </div>
+        <div>
+            <input type="text" id="appSearchInput" class="form-control" placeholder="Search company or role..." style="padding: 0.45rem 0.85rem; font-size: 0.85rem; width: 240px;">
+        </div>
+    </div>
+</div>
+
+<!-- Applications Table -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="styled-table" id="appsTable">
+            <thead>
+                <tr>
+                    <th>Company</th>
+                    <th>Role</th>
+                    <th>Location</th>
+                    <th>Package (LPA)</th>
+                    <th>Date Applied</th>
+                    <th>Status</th>
+                    <th>Notes & Timeline</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr class="app-row" data-status="{{ app.status }}" data-search="{{ app.company.lower() }} {{ app.role.lower() }}">
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 1rem;">{{ app.company }}</strong>
+                    </td>
+                    <td>{{ app.role }}</td>
+                    <td style="font-size: 0.84rem;"><i class="fa-solid fa-location-dot" style="color: var(--text-muted); margin-right: 4px;"></i> {{ app.location or 'Remote' }}</td>
+                    <td>
+                        <strong style="color: var(--accent-gold);">{{ app.salary_lpa }} LPA</strong>
+                    </td>
+                    <td>{{ app.apply_date or 'Recent' }}</td>
+                    <td>
+                        <select data-app-id="{{ app.id }}" class="app-status-select form-control" style="padding: 0.3rem 0.6rem; font-size: 0.8rem; width: auto; font-weight: 600;">
+                            <option value="Applied" {% if app.status == 'Applied' %}selected{% endif %}>Applied</option>
+                            <option value="Screening" {% if app.status == 'Screening' %}selected{% endif %}>Screening</option>
+                            <option value="Interview" {% if app.status == 'Interview' %}selected{% endif %}>Interview</option>
+                            <option value="Offer" {% if app.status == 'Offer' %}selected{% endif %}>Offer</option>
+                            <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Rejected</option>
+                        </select>
+                    </td>
+                    <td style="font-size: 0.82rem; color: var(--text-secondary); max-width: 250px;">
+                        {{ app.notes or 'No notes recorded.' }}
+                    </td>
+                    <td>
+                        <button type="button" data-app-id="{{ app.id }}" class="btn-delete-app" style="background: transparent; border: none; color: var(--text-muted); cursor: pointer; padding: 4px;" title="Delete Application">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+                        No applications tracked yet. Click <strong>"Log New Application"</strong> to begin your job pipeline!
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Log Application Modal -->
+<div id="addAppModal" class="modal-overlay">
+    <div class="modal-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.25rem;">Log Job Application</h3>
+            <button onclick="closeAppModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.2rem; cursor: pointer;">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <form id="appForm">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Company Name *</label>
+                    <input type="text" id="modalCompany" class="form-control" placeholder="e.g. Microsoft" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Role Title *</label>
+                    <input type="text" id="modalRole" class="form-control" placeholder="e.g. Software Engineer (L3)" required>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Location</label>
+                    <input type="text" id="modalLocation" class="form-control" placeholder="e.g. Bengaluru / Hybrid">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">CTC / Salary (LPA)</label>
+                    <input type="number" step="0.5" id="modalSalary" class="form-control" placeholder="e.g. 24.5">
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Application Date</label>
+                    <input type="date" id="modalDate" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Pipeline Status</label>
+                    <select id="modalStatus" class="form-control">
+                        <option value="Applied" selected>Applied</option>
+                        <option value="Screening">Screening (OA/Resume)</option>
+                        <option value="Interview">Interview Round</option>
+                        <option value="Offer">Offer Received</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notes, Recruiter Contact, or Next Steps</label>
+                <textarea id="modalNotes" class="form-control" rows="2" placeholder="e.g. Online Assessment cleared on Monday. Round 1 DSA scheduled for Friday."></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                <button type="button" onclick="closeAppModal()" class="btn btn-outline btn-sm">Cancel</button>
+                <button type="submit" class="btn btn-primary btn-sm">Save Application</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/applications.js') }}"></script>
+{% endblock %}
