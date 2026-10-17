@@ -318,7 +318,8 @@ def init_db(existing_conn=None):
 
     conn.commit()
     seed_data(cursor, conn)
-    conn.close()
+    if should_close:
+        conn.close()
 
 def seed_data(cursor, conn):
     """Inserts default accounts, rich placement question banks, and demo records."""
@@ -971,8 +972,6 @@ def seed_data(cursor, conn):
         ''', sample_notices)
 
     conn.commit()
-    if should_close:
-        conn.close()
 
 if __name__ == '__main__':
     init_db()

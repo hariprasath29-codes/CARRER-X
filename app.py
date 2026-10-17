@@ -356,6 +356,7 @@ def check_and_award_badge(user_id, badge_key, badge_name, badge_desc, badge_icon
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static', 'img'), 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
+@app.route('/app.py')
 @app.route('/')
 def home():
     if 'user_id' in session:
