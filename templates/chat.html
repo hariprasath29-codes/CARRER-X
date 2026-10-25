@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Career Assistant & Placement Coach | CareerX{% endblock %}
+{% block page_title %}AI Career Assistant{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/chat.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="chat-container-card card">
+    <!-- Chat Sessions Sidebar -->
+    <aside class="chat-sidebar" id="chatSidebar">
+        <div class="chat-sidebar-header">
+            <button type="button" class="btn btn-primary new-chat-btn" id="newChatBtn">
+                <i class="fa-solid fa-plus"></i> New Chat
+            </button>
+        </div>
+
+        <div class="chat-sessions-list" id="chatSessionsList">
+            {% if sessions %}
+                {% for s in sessions %}
+                <div class="chat-session-item {% if loop.first %}active{% endif %}" data-session-id="{{ s.id }}">
+                    <i class="fa-regular fa-message session-icon"></i>
+                    <span class="session-title" title="{{ s.title }}">{{ s.title }}</span>
+                    <button type="button" class="session-delete-btn" title="Delete conversation" onclick="event.stopPropagation(); deleteSession({{ s.id }});">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-sessions-notice" id="emptySessionsNotice">
+                    <i class="fa-solid fa-comments"></i>
+                    <p>No past chats yet. Start a new conversation!</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="chat-sidebar-footer">
+            <div class="user-role-badge">
+                <i class="fa-solid fa-bullseye"></i>
+                <span>{{ user_info.target_role or 'Software Engineer' }}</span>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Chat Conversation Window -->
+    <main class="chat-main-window">
+        <!-- Chat Top Bar -->
+        <header class="chat-header">
+            <div class="chat-header-left">
+                <button type="button" class="btn btn-outline btn-sm sidebar-toggle-btn" id="sidebarToggleBtn" title="Toggle Chat History">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="bot-status-wrap">
+                    <div class="bot-avatar-badge">
+                        <i class="fa-solid fa-robot"></i>
+                        <span class="status-dot"></span>
+                    </div>
+                    <div>
+                        <h3 class="bot-name">CareerX Placement AI Coach</h3>
+                        <span class="bot-tagline">Trained on DSA, System Design, HR & ATS taxonomies</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-header-actions">
+                <div class="dropdown-role-select">
+                    <label for="chatRoleSelect" class="sr-only">Target Role</label>
+                    <select id="chatRoleSelect" class="form-control form-control-sm">
+                        <option value="Software Engineer" {% if user_info and user_info.target_role == 'Software Engineer' %}selected{% endif %}>Software Engineer</option>
+                        <option value="AI/ML Engineer" {% if user_info and user_info.target_role == 'AI/ML Engineer' %}selected{% endif %}>AI/ML Engineer</option>
+                        <option value="Full Stack Developer" {% if user_info and user_info.target_role == 'Full Stack Developer' %}selected{% endif %}>Full Stack Developer</option>
+                        <option value="Data Scientist" {% if user_info and user_info.target_role == 'Data Scientist' %}selected{% endif %}>Data Scientist</option>
+                        <option value="Cloud / DevOps" {% if user_info and user_info.target_role == 'Cloud / DevOps' %}selected{% endif %}>Cloud / DevOps</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-outline btn-sm" id="clearChatBtn" title="Clear messages in view">
+                    <i class="fa-solid fa-rotate-right"></i> Reset
+                </button>
+            </div>
+        </header>
+
+        <!-- Messages Stream Container -->
+        <div class="chat-messages-stream" id="chatMessagesStream">
+            <!-- Welcome Initial Screen -->
+            <div class="chat-welcome-banner" id="chatWelcomeBanner">
+                <div class="welcome-icon">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2>How can I assist your placement preparation today?</h2>
+                <p>Ask coding problems, get system design explanations, draft STAR behavioral answers, or optimize your resume keywords.</p>
+
+                <!-- Suggested Prompt Pills -->
+                <div class="prompt-suggestions-grid">
+                    <button type="button" class="prompt-pill" onclick="sendSuggestedPrompt(this.innerText)">
+                        <i class="fa-solid fa-code"></i> Explain Two Pointers vs Sliding Window pattern
+                    </button>
+                    <button type="button" class="prompt-pill" onclick="sendSuggestedPrompt(this.innerText)">
+                        <i class="fa-solid fa-database"></i> What are ACID properties in database transactions?
+                    </button>
+                    <button type="button" class="prompt-pill" onclick="sendSuggestedPrompt(this.innerText)">
+                        <i class="fa-solid fa-user-tie"></i> Tell me about yourself using the STAR framework
+                    </button>
+                    <button type="button" class="prompt-pill" onclick="sendSuggestedPrompt(this.innerText)">
+                        <i class="fa-solid fa-file-shield"></i> How do I improve my resume ATS match score?
+                    </button>
+                    <button type="button" class="prompt-pill" onclick="sendSuggestedPrompt(this.innerText)">
+                        <i class="fa-solid fa-network-wired"></i> Explain the difference between Layer 4 and Layer 7 Load Balancers
+                    </button>
+                    <button type="button" class="prompt-pill" onclick="sendSuggestedPrompt(this.innerText)">
+                        <i class="fa-solid fa-bolt"></i> Shortcuts for Quantitative train and distance questions
+                    </button>
+                </div>
+            </div>
+
+            <!-- Messages appended here dynamically by JS -->
+            <div class="messages-list" id="messagesList"></div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                <div class="bot-avatar-mini"><i class="fa-solid fa-robot"></i></div>
+                <div class="dots-wrap">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <span class="typing-text">CareerX AI is generating answer...</span>
+            </div>
+        </div>
+
+        <!-- Chat Input Footer -->
+        <footer class="chat-input-footer">
+            <form id="chatForm" class="chat-form" onsubmit="event.preventDefault(); submitChatMessage();">
+                <div class="chat-input-wrapper">
+                    <textarea id="chatInput" 
+                              class="chat-textarea" 
+                              placeholder="Ask a technical or placement question... (Press Enter to send, Shift+Enter for newline)" 
+                              rows="1" 
+                              required></textarea>
+                    <button type="submit" class="btn btn-primary chat-send-btn" id="sendBtn" title="Send message">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </div>
+            </form>
+            <div class="chat-disclaimer">
+                <span>CareerX AI Placement Assistant v2.0 &bull; Verify critical code syntax before technical interviews.</span>
+            </div>
+        </footer>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+{% endblock %}

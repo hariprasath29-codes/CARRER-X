@@ -590,7 +590,12 @@ def dashboard():
 @app.route('/chat')
 @login_required
 def chat():
-    return redirect(url_for('dashboard'))
+    user_id = session['user_id']
+    conn = get_db_connection()
+    sessions = conn.execute("SELECT * FROM chat_sessions WHERE user_id = ? ORDER BY updated_at DESC", (user_id,)).fetchall()
+    user_info = conn.execute("SELECT target_role, full_name, college FROM users WHERE id = ?", (user_id,)).fetchone()
+    conn.close()
+    return render_template('chat.html', sessions=sessions, user_info=user_info)
 
 @app.route('/api/chat/sessions', methods=['GET'])
 @login_required
