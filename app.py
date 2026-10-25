@@ -1464,8 +1464,27 @@ def admin_panel():
     total_quizzes = conn.execute("SELECT COUNT(*) FROM aptitude_scores").fetchone()[0]
 
     # Campus Placement Drives & Notices
-    drives = conn.execute("SELECT * FROM placement_drives ORDER BY created_at DESC").fetchall()
+    raw_drives = conn.execute("SELECT * FROM placement_drives ORDER BY created_at DESC").fetchall()
     notices = conn.execute("SELECT * FROM placement_notices ORDER BY created_at DESC").fetchall()
+
+    # Advanced TPO Analytics: Placement Rate & CTC Highlights
+    placed_students_count = sum(1 for s in students_performance if s['offers_count'] > 0)
+    total_students_count = len(students_performance)
+    placement_rate = round((placed_students_count / total_students_count) * 100, 1) if total_students_count > 0 else 0.0
+
+    all_salaries = [d['package_lpa'] for d in raw_drives if d['package_lpa']] + [a['salary_lpa'] for a in company_applications if a['salary_lpa']]
+    highest_package = max(all_salaries) if all_salaries else 0.0
+
+    offer_salaries = [a['salary_lpa'] for a in company_applications if a['status'] == 'Offer' and a['salary_lpa'] and a['salary_lpa'] > 0]
+    avg_package = round(sum(offer_salaries) / len(offer_salaries), 1) if offer_salaries else (round(sum(all_salaries) / len(all_salaries), 1) if all_salaries else 0.0)
+
+    # Attach live applicant count to each drive
+    drives = []
+    for d in raw_drives:
+        d_dict = dict(d)
+        cnt = conn.execute("SELECT COUNT(*) FROM job_applications WHERE LOWER(company) = LOWER(?)", (d['company'],)).fetchone()[0]
+        d_dict['applicant_count'] = cnt
+        drives.append(d_dict)
 
     unique_companies = sorted(list(set([d['company'] for d in drives] + [a['company'] for a in company_applications])))
 
@@ -1477,13 +1496,17 @@ def admin_panel():
                            company_applications=company_applications,
                            unique_companies=unique_companies,
                            total_users=total_users,
-                           total_students=len(students_performance),
+                           total_students=total_students_count,
                            total_apps=total_apps,
                            total_offers=total_offers,
                            total_quizzes=total_quizzes,
                            total_drives=len(drives),
                            drives=drives,
-                           notices=notices)
+                           notices=notices,
+                           placed_students_count=placed_students_count,
+                           placement_rate=placement_rate,
+                           highest_package=highest_package,
+                           avg_package=avg_package)
 
 @app.route('/admin/drive/add', methods=['POST'])
 @login_required
@@ -1537,6 +1560,37 @@ def admin_toggle_drive(drive_id):
     conn.close()
     return redirect(url_for('admin_panel') + '#drives-section')
 
+@app.route('/admin/drive/delete/<int:drive_id>', methods=['POST'])
+@login_required
+@admin_required
+def admin_delete_drive(drive_id):
+    conn = get_db_connection()
+    drive = conn.execute("SELECT company FROM placement_drives WHERE id = ?", (drive_id,)).fetchone()
+    if drive:
+        conn.execute("DELETE FROM placement_drives WHERE id = ?", (drive_id,))
+        conn.commit()
+        flash(f'Placement drive for {drive["company"]} removed successfully.', 'info')
+    conn.close()
+    return redirect(url_for('admin_panel') + '#drives-section')
+
+@app.route('/admin/drive/broadcast/<int:drive_id>', methods=['POST'])
+@login_required
+@admin_required
+def admin_broadcast_drive(drive_id):
+    conn = get_db_connection()
+    drive = conn.execute("SELECT company, role, package_lpa, drive_date, deadline FROM placement_drives WHERE id = ?", (drive_id,)).fetchone()
+    if drive:
+        title = f"📢 Upcoming Drive: {drive['company']} ({drive['role']})"
+        content = f"{drive['company']} is recruiting for {drive['role']} (₹{drive['package_lpa']} LPA). Drive Date: {drive['drive_date']}. Application Deadline: {drive['deadline']}. Check requirements and apply from your dashboard!"
+        conn.execute('''
+            INSERT INTO placement_notices (title, content, priority, posted_by)
+            VALUES (?, ?, 'Urgent', 'TPO Placement Cell')
+        ''', (title, content))
+        conn.commit()
+        flash(f'Instant broadcast reminder sent to all students for {drive["company"]}!', 'success')
+    conn.close()
+    return redirect(url_for('admin_panel') + '#notices-section')
+
 @app.route('/admin/notice/add', methods=['POST'])
 @login_required
 @admin_required
@@ -1566,6 +1620,17 @@ def admin_add_notice():
     conn.commit()
     conn.close()
     flash('Placement notice successfully broadcast to all students!', 'success')
+    return redirect(url_for('admin_panel') + '#notices-section')
+
+@app.route('/admin/notice/delete/<int:notice_id>', methods=['POST'])
+@login_required
+@admin_required
+def admin_delete_notice(notice_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM placement_notices WHERE id = ?", (notice_id,))
+    conn.commit()
+    conn.close()
+    flash('Placement notice removed.', 'info')
     return redirect(url_for('admin_panel') + '#notices-section')
 
 @app.route('/admin/application/update/<int:app_id>', methods=['POST'])
