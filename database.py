@@ -689,6 +689,214 @@ def seed_data(cursor, conn):
             'Do you have any questions for us? (Strategic reverse-interview questions).',
             'Never say "No, everything was clear". Ask strategic questions that demonstrate high engineering engagement:\n\n1. "What does the typical onboarding ramp-up and initial 90-day milestone look like for an associate engineer joining this team?"\n2. "What is the biggest technical or scaling bottleneck your engineering team is actively solving this quarter?"\n3. "How does the engineering team balance shipping rapid product features with paying down technical debt?"',
             'Avoid mundane questions; ask high-level engineering culture, scaling challenges, and 90-day success metrics questions.'
+        ),
+
+        # ==========================================
+        # 7. DATA STRUCTURES & ALGORITHMS (8 Questions)
+        # ==========================================
+        (
+            'DSA', 'Easy',
+            'Explain the Two Sum problem and compare the Brute Force vs Hash Map approach.',
+            'Problem: Given an array of integers and a target sum, find indices of two numbers such that they add up to target.\n\n1. Brute Force (O(N^2) Time, O(1) Space): Nested loops compare every pair (i, j). If arr[i] + arr[j] == target, return indices. Inefficient for large arrays.\n\n2. Hash Map (O(N) Time, O(N) Space): Traverse array once. For each element X, compute complement = target - X. Check if complement exists in the Hash Map. If yes, return current index and hash_map[complement]. Otherwise, store hash_map[X] = current index. This reduces time from quadratic to linear by trading space.',
+            'Complement calculation (target - X); Hash map O(1) average lookup; O(N) time vs O(N^2) brute force; space-time tradeoff.'
+        ),
+        (
+            'DSA', 'Easy',
+            'How do you detect a cycle in a singly linked list? Explain Floyd\'s Cycle-Finding Algorithm.',
+            'Floyd\'s Cycle-Finding Algorithm (Tortoise and Hare):\n- Use two pointers: slow moving 1 step at a time, and fast moving 2 steps at a time, both starting at head.\n- If the linked list has no cycle, fast or fast.next reaches NULL.\n- If a cycle exists, fast enters the cycle and reduces the distance to slow by 1 node in each iteration, guaranteeing they collide inside the loop in O(N) time and O(1) auxiliary space.\n\nAlternative: Hash Set storing visited node addresses (O(N) time, O(N) space), but Floyd\'s uses optimal O(1) space.',
+            'Two-pointer Tortoise & Hare; slow (1 step) vs fast (2 steps); O(N) time and O(1) space complexity; collision condition.'
+        ),
+        (
+            'DSA', 'Medium',
+            'How do you reverse a Singly Linked List iteratively and recursively?',
+            '1. Iterative Approach (O(N) Time, O(1) Space):\nMaintain three pointers: prev = None, curr = head, and next_node = None. In a loop while curr is not null:\n- next_node = curr.next\n- curr.next = prev (reverse link)\n- prev = curr\n- curr = next_node\nWhen loop terminates, prev points to the new head.\n\n2. Recursive Approach (O(N) Time, O(N) Call Stack Space):\nBase case: if head is null or head.next is null, return head. Recursively reverse the rest: new_head = reverse(head.next). Set head.next.next = head and head.next = None. Return new_head.',
+            'Three pointers (prev, curr, next_node); pointer reversal; O(N) time O(1) space; recursive base case and call stack overhead.'
+        ),
+        (
+            'DSA', 'Medium',
+            'How do you validate if a Binary Tree is a valid Binary Search Tree (BST)?',
+            'A binary tree is a valid BST if for every node:\n- All nodes in its left subtree have values strictly LESS than the node value.\n- All nodes in its right subtree have values strictly GREATER than the node value.\n\nTechniques:\n1. Recursive Range Invariant (O(N) Time, O(H) Space): Pass acceptable range (min_val, max_val) initialized to (-inf, +inf). At each node, verify min_val < node.val < max_val. Recurse left with (min_val, node.val) and right with (node.val, max_val).\n\n2. Inorder Traversal (O(N) Time, O(H) Space): Inorder traversal of a BST yields values in strictly ascending sorted order. Track prev_val and verify curr.val > prev_val.',
+            'Strict inequality invariant; subtree global bounds (min, max); recursive range checking; inorder traversal monotonic property.'
+        ),
+        (
+            'DSA', 'Medium',
+            'Explain Breadth-First Search (BFS) vs Depth-First Search (DFS) on graphs with use cases.',
+            '1. Breadth-First Search (BFS):\n- Traverses graph level by level using a FIFO Queue.\n- Time: O(V + E), Space: O(V).\n- Use Case: Finding the shortest path in unweighted graphs, peer-to-peer networks, web crawlers.\n\n2. Depth-First Search (DFS):\n- Explores as deep as possible along each branch before backtracking using a LIFO Stack or Recursion.\n- Time: O(V + E), Space: O(V) for recursion stack.\n- Use Case: Topological sorting in DAGs, cycle detection, connected components, solving mazes/backtracking puzzles.',
+            'FIFO Queue (BFS) vs LIFO Stack/Recursion (DFS); O(V + E) complexity; shortest path in unweighted graph (BFS); topological sort & cycle detection (DFS).'
+        ),
+        (
+            'DSA', 'Medium',
+            'What is the difference between Array, Hash Table, and Binary Search Tree in search performance?',
+            '1. Unsorted Array: Search O(N) linear scan; Insertion O(1) at end.\n2. Sorted Array: Search O(log N) via Binary Search; Insertion O(N) due to shifting elements.\n3. Hash Table: Search O(1) average time via hash function; worst-case O(N) under severe hash collisions. Does not maintain sorted order.\n4. Balanced BST (AVL / Red-Black Tree): Search O(log N) guaranteed; Insertion & Deletion O(log N); supports ordered operations (floor, ceiling, range queries).',
+            'Time complexities; array shifting vs binary search; hash collision degradation; balanced tree guarantees and range query capabilities.'
+        ),
+        (
+            'DSA', 'Hard',
+            'Explain the 0/1 Knapsack problem and how Dynamic Programming solves it.',
+            'Problem: Given weights and values of N items and a knapsack of capacity W, find the maximum value that fits in the knapsack without dividing items.\n\nWhy Greedy fails: Greedy approach by value/weight ratio fails for 0/1 knapsack because taking a high-ratio item might leave unused capacity that prevents fitting a superior combination.\n\nDP Solution (O(N * W) Time, O(W) Space):\nDefine dp[w] as maximum value achievable with capacity w.\nFor each item with weight wt and value val:\n  Traverse w backwards from W down to wt:\n    dp[w] = max(dp[w], dp[w - wt] + val)\nReversing the inner loop prevents using the same item multiple times in 0/1 knapsack.',
+            'Overlapping subproblems; optimal substructure; failure of greedy approach; DP 2D state vs 1D space-optimized recurrence.'
+        ),
+        (
+            'DSA', 'Hard',
+            'How do you design and implement an LRU (Least Recently Used) Cache with O(1) operations?',
+            'An LRU Cache requires two data structures working in unison:\n1. Hash Map (Dictionary): Maps keys to Doubly Linked List node references for O(1) key lookups.\n2. Doubly Linked List (DLL): Tracks access recency with sentinel head (most recently used) and tail (least recently used) nodes.\n\nOperations:\n- get(key): If key in map, retrieve node, move it to head (MRU), return value. Else return -1.\n- put(key, value): If key exists, update value and move to head. If key is new: create node, insert at head, and add to map. If cache exceeds capacity: remove tail.prev node from DLL and delete its key from map.',
+            'Doubly Linked List + Hash Map combination; O(1) get and put; sentinel head/tail nodes; eviction policy and node detachment.'
+        ),
+
+        # ==========================================
+        # 8. OPERATING SYSTEMS (8 Questions)
+        # ==========================================
+        (
+            'Operating Systems', 'Easy',
+            'What is the difference between a Process and a Thread?',
+            '1. Process: An executing instance of a program in its own independent virtual address space (code, data, heap, stack). Managed via a Process Control Block (PCB). High context-switching overhead; IPC required for inter-process communication.\n\n2. Thread: The smallest unit of CPU execution within a process ("lightweight process"). Threads share the parent process\'s address space, open files, and heap, but maintain their own Thread Control Block (TCB), program counter, and stack. Context-switching is fast; communication is direct via shared memory, requiring synchronization (locks/mutexes).',
+            'Address space isolation (PCB) vs shared memory (TCB); stack per thread; context switch overhead; IPC vs shared memory synchronization.'
+        ),
+        (
+            'Operating Systems', 'Easy',
+            'What is a Deadlock and what are the 4 Coffman Conditions required for a deadlock to occur?',
+            'A Deadlock is a situation where a set of processes are permanently blocked because each process holds resources and waits for resources held by others in the set.\n\nCoffman Conditions (all 4 must hold simultaneously):\n1. Mutual Exclusion: At least one resource must be held in a non-shareable mode.\n2. Hold and Wait: A process holds at least one resource while waiting to acquire additional resources.\n3. No Preemption: Resources cannot be forcibly taken; they must be released voluntarily.\n4. Circular Wait: A closed loop chain of processes exists where P0 waits for P1, P1 waits for P2, ..., Pn waits for P0.',
+            'Mutual Exclusion; Hold and Wait; No Preemption; Circular Wait; Resource Allocation Graph (RAG); Banker\'s algorithm.'
+        ),
+        (
+            'Operating Systems', 'Medium',
+            'Explain Virtual Memory, Paging, and Page Faults.',
+            '1. Virtual Memory: An abstraction providing each process with an illusion of contiguous, dedicated physical memory larger than actual RAM, using disk space (swap/pagefile) as an overflow backing store.\n\n2. Paging: Memory management scheme that divides virtual memory into fixed-size blocks called Pages, and physical RAM into blocks of identical size called Page Frames.\n- Memory Management Unit (MMU) translates virtual addresses to physical addresses using Page Tables and a hardware cache called Translation Lookaside Buffer (TLB).\n\n3. Page Fault: A hardware interrupt raised when a program accesses a virtual page whose valid bit in the page table is 0 (not loaded in RAM). The OS fetches the required page from disk into a free frame.',
+            'Virtual address translation; MMU and TLB cache; Page vs Page Frame; Page fault interrupt; Demand paging.'
+        ),
+        (
+            'Operating Systems', 'Medium',
+            'What are CPU Scheduling Algorithms? Compare FCFS, SJF, and Round Robin.',
+            'CPU Scheduling decides which ready process receives the CPU core:\n1. First-Come, First-Served (FCFS): Non-preemptive. Simple FIFO queue. Suffers from the "Convoy Effect" where short processes wait behind long CPU-burst processes.\n2. Shortest Job First (SJF): Non-preemptive or preemptive (SRTF). Provably optimal minimum average waiting time, but suffers from starvation of long processes and requires future CPU burst prediction.\n3. Round Robin (RR): Preemptive. Assigns a fixed Time Quantum to each process cyclically. Ideal for time-sharing systems. If quantum is too large, it degenerates into FCFS; if too small, context-switch overhead dominates.',
+            'FCFS convoy effect; SJF optimal waiting time & starvation risk; Round Robin time quantum tuning; preemptive vs non-preemptive.'
+        ),
+        (
+            'Operating Systems', 'Medium',
+            'Explain Mutex vs Semaphore and the Critical Section Problem.',
+            'The Critical Section is a segment of code where shared resources (memory, files) are accessed, which must not be executed concurrently by multiple threads.\n\n1. Mutex (Mutual Exclusion Object):\n- Locking mechanism with ownership. Only the thread that locks the mutex can unlock it. State is binary (0 or 1). Suitable for serializing access to a single shared object.\n\n2. Semaphore:\n- Signaling mechanism based on an integer counter with wait() (P) and signal() (V) atomic operations. Has no concept of ownership (one thread can increment while another decrements).\n- Binary Semaphore: Value 0 or 1.\n- Counting Semaphore: Value N, used to throttle access to a pool of N identical resources (e.g., connection pool).',
+            'Critical section problem; Mutex ownership vs Semaphore signaling; Counting semaphore resource throttling; atomic wait/signal operations.'
+        ),
+        (
+            'Operating Systems', 'Medium',
+            'What are Inter-Process Communication (IPC) mechanisms in modern operating systems?',
+            'Because processes have isolated address spaces, the OS provides IPC channels:\n1. Pipes & Named Pipes (FIFOs): Half-duplex or full-duplex byte streams between related (or unrelated via FIFO) processes.\n2. Shared Memory: Fastest IPC method. OS maps a common memory segment into the address spaces of multiple processes. Processes read/write directly, requiring semaphores to prevent race conditions.\n3. Message Queues: Linked lists of formatted messages stored in OS kernel space.\n4. Sockets: Bidirectional network endpoints enabling communication between processes on the same machine or across networks.\n5. Signals: Asynchronous software notifications (e.g., SIGINT, SIGKILL, SIGSEGV).',
+            'Pipes/FIFOs; Shared Memory (fastest, zero-copy); Message Queues; Sockets (network-capable); Signals (asynchronous interrupts).'
+        ),
+        (
+            'Operating Systems', 'Hard',
+            'What is Thrashing in Operating Systems, and how does the Working Set Model prevent it?',
+            'Thrashing occurs when a computer\'s CPU spends more time swapping pages into and out of RAM to/from disk than executing actual instructions. It happens when total memory demands of active processes exceed available physical RAM, causing continuous page faults.\n\nWorking Set Model (Peter Denning):\n- Defines the Working Set W(t, delta) of a process as the set of pages referenced by the process during the most recent delta time window.\n- If the sum of working sets of all active processes exceeds physical RAM, the OS suspends one or more entire processes (swapping them out to disk) to allocate adequate frames to remaining processes until thrashing stops.',
+            'High page fault frequency; CPU utilization collapse; Working Set Model window (delta); process suspension and degree of multiprogramming control.'
+        ),
+        (
+            'Operating Systems', 'Hard',
+            'Explain User Space vs Kernel Space, Context Switching, and System Calls.',
+            'Modern CPUs enforce hardware protection rings (Ring 0 = Kernel Space, Ring 3 = User Space):\n1. User Space: Where user applications run with restricted privileges, unable to directly access hardware or arbitrary physical memory.\n2. Kernel Space: Where the OS core, device drivers, and kernel data structures run with full hardware privileges.\n\nSystem Calls:\nWhen an application requires hardware services (e.g., read(), write(), fork(), socket()), it issues a software interrupt or CPU trap instruction (syscall/sysenter). The CPU switches execution privilege from Ring 3 to Ring 0, saves process registers, executes the kernel service routine, and returns to user space.\n\nContext Switch Overhead:\nSaves CPU registers, program counter, and stack pointer; flushes or invalidates TLB page table caches; updates process state in PCB.',
+            'Ring 0 vs Ring 3 privileges; software trap / syscall interface; saving and restoring registers; TLB cache invalidation overhead.'
+        ),
+
+        # ==========================================
+        # 9. SYSTEM DESIGN (8 Questions)
+        # ==========================================
+        (
+            'System Design', 'Easy',
+            'What is the difference between Horizontal Scaling and Vertical Scaling?',
+            '1. Vertical Scaling (Scale Up):\n- Adding more resources (CPU cores, RAM, SSD storage) to an existing single server.\n- Pros: Simple architecture, zero network latency between services, no distributed data consistency issues.\n- Cons: Hard hardware ceiling, expensive high-end servers, single point of failure (SPOF), downtime required for upgrades.\n\n2. Horizontal Scaling (Scale Out):\n- Adding more commodity servers to a distributed pool coordinated by a Load Balancer.\n- Pros: Theoretically infinite scaling, high availability and fault tolerance (if one server crashes, others absorb traffic).\n- Cons: Architectural complexity, requires load balancers, stateless application design, distributed caching, and eventual consistency challenges.',
+            'Scale Up vs Scale Out; Single Point of Failure (SPOF); hardware ceilings; Load balancer requirements; stateless application architecture.'
+        ),
+        (
+            'System Design', 'Easy',
+            'Compare Monolithic Architecture vs Microservices Architecture.',
+            '1. Monolithic Architecture:\n- Entire application (UI, business logic, data access) is built and deployed as a single unified executable codebase.\n- Pros: Simple development, straightforward testing, fast local function calls, atomic database transactions.\n- Cons: Deployment bottlenecks (any bug can crash whole system), difficult to scale individual components, tight coupling.\n\n2. Microservices Architecture:\n- Decomposes the application into a collection of small, loosely coupled, autonomous services organized around business domains.\n- Each service communicates via lightweight network protocols (REST, gRPC, Message Queues) and typically owns its private database.\n- Pros: Independent deployment, polyglot technology stack, horizontal scaling per service, isolated fault domains.\n- Cons: Network latency, distributed tracing complexity, complex distributed transactions (Saga pattern), operational overhead.',
+            'Single deployment unit vs autonomous services; database-per-service pattern; network latency; fault isolation; Saga pattern for distributed transactions.'
+        ),
+        (
+            'System Design', 'Medium',
+            'Explain Load Balancing Strategies: Layer 4 vs Layer 7 and common load balancing algorithms.',
+            'Load Balancers distribute incoming traffic across multiple backend servers:\n\n1. Layer 4 (Transport Layer) Balancing:\n- Directs traffic based on IP address and TCP/UDP ports without inspecting application payload. Very fast, low CPU overhead, protocol agnostic.\n\n2. Layer 7 (Application Layer) Balancing:\n- Inspects HTTP headers, cookies, URL paths, and query parameters. Enables intelligent routing (e.g., routing /api/video to streaming servers and /api/auth to auth servers), SSL termination, and cookie-based sticky sessions.\n\nAlgorithms:\n- Round Robin: Sequentially distributes requests.\n- Least Connections: Routes to server with fewest active connections.\n- IP Hash: Hashes client IP to ensure same client hits same server.\n- Weighted Round Robin: Distributes proportionally to server CPU/RAM capacities.',
+            'Layer 4 (IP/port) vs Layer 7 (HTTP header/path); SSL termination; Round Robin, Least Connections, IP Hash; reverse proxies (Nginx, HAProxy).'
+        ),
+        (
+            'System Design', 'Medium',
+            'Explain Caching Strategies: Cache-Aside, Write-Through, and Write-Back.',
+            'Caching stores frequently accessed data in fast in-memory stores (Redis, Memcached):\n\n1. Cache-Aside (Lazy Loading):\n- Application checks cache first. On cache hit, returns data. On cache miss, reads from database, writes data into cache, and returns it.\n- Pros: Cache contains only requested data; resilient to cache node failures.\n- Cons: Cache miss penalty on first request; stale data risk if DB updated directly.\n\n2. Write-Through:\n- Application writes to cache, and cache synchronously writes to the database before confirming success.\n- Pros: Data in cache is never stale; read hits are fast.\n- Cons: Higher write latency because every write hits both cache and database.\n\n3. Write-Back (Write-Behind):\n- Application writes only to cache immediately, and cache asynchronously flushes batched writes to database in the background.\n- Pros: Ultra-fast write speeds; reduces database write IOPS.\n- Cons: Risk of permanent data loss if cache crashes before flushing to disk.',
+            'Cache-Aside (read-through miss); Write-Through synchronous consistency; Write-Back asynchronous flushing; TTL eviction and cache stampede.'
+        ),
+        (
+            'System Design', 'Medium',
+            'Explain Database Sharding vs Database Replication.',
+            '1. Database Replication (Read Scaling & Redundancy):\n- Copies identical database data from a primary (master) node to one or more replica (slave) nodes.\n- All write queries (INSERT, UPDATE, DELETE) go to the primary node; read queries (SELECT) are distributed across read replicas.\n- Handles read-heavy workloads and failover, but does not solve write-heavy bottlenecks or storage limits.\n\n2. Database Sharding (Horizontal Partitioning):\n- Splits a large database horizontally across multiple independent database servers based on a Shard Key (e.g., user_id % num_shards or range-based).\n- Each shard holds a unique subset of total rows.\n- Solves write bottlenecks and storage limits, but introduces complexities: cross-shard JOINs, distributed transactions, and re-sharding.',
+            'Master-slave replication; read scalability; Sharding key selection; horizontal partitioning; cross-shard joins and rebalancing complexity.'
+        ),
+        (
+            'System Design', 'Medium',
+            'Explain Rate Limiting Algorithms: Token Bucket vs Leaky Bucket vs Sliding Window.',
+            'Rate Limiting protects backend services from abuse, DDoS, and cascading failures:\n\n1. Token Bucket:\n- A bucket with capacity B holds tokens added at a constant rate R per second. Each request consumes 1 token. If bucket has tokens, request is allowed; if empty, request is rejected (HTTP 429). Allows sudden traffic bursts up to capacity B.\n\n2. Leaky Bucket:\n- Requests enter a FIFO queue of capacity B. Requests are processed and leaked at a constant, smooth rate R. If queue overflows, new requests drop. Smooths traffic and eliminates bursts.\n\n3. Sliding Window Log / Counter:\n- Tracks timestamps or weighted sub-window counters over the recent sliding interval (e.g., last 60 seconds). Accurately prevents boundary burst anomalies present in Fixed Window counters.',
+            'Token Bucket (burst tolerance); Leaky Bucket (smooth constant output); Sliding Window Counter (accurate boundary handling); HTTP 429 Too Many Requests.'
+        ),
+        (
+            'System Design', 'Hard',
+            'Explain the CAP Theorem and PACELC in Distributed Systems.',
+            'CAP Theorem (Eric Brewer):\nIn a distributed asynchronous network, you can guarantee at most TWO out of three properties:\n1. Consistency (C): Every read receives the most recent write or an error.\n2. Availability (A): Every non-failing node returns a non-error response, without guarantee that it contains the most recent write.\n3. Partition Tolerance (P): The system continues to operate despite arbitrary network message loss or delays.\nBecause network partitions (P) are inevitable in physical distributed networks, systems must choose between CP (e.g., HBase, Zookeeper) or AP (e.g., Cassandra, DynamoDB).\n\nPACELC Theorem Extension:\nIf there is a Partition (P), trade off Availability (A) vs Consistency (C); Else (E), trade off Latency (L) vs Consistency (C). Explains normal operation trade-offs.',
+            'Consistency vs Availability during Partition; CP systems vs AP systems; Eventual consistency; PACELC extension for normal latency trade-offs.'
+        ),
+        (
+            'System Design', 'Hard',
+            'Explain Message Queues and Event-Driven Architecture: Kafka vs RabbitMQ.',
+            'Message Queues decouple producers from consumers, buffering spikes and enabling asynchronous processing:\n\n1. RabbitMQ (AMQP Message Broker):\n- Smart broker, dumb consumer model. Routes messages via Exchanges (Direct, Fanout, Topic) into in-memory FIFO Queues.\n- Messages are deleted from the queue once acknowledged by consumers. Ideal for transactional, complex routing, task-queue workloads (Celery).\n\n2. Apache Kafka (Distributed Event Streaming Platform):\n- Dumb broker, smart consumer model. Organizes messages into partitioned, append-only, immutable commit logs on disk.\n- Messages persist for a configurable retention window (e.g., 7 days) regardless of consumption.\n- Consumers track their own read pointer (offset), allowing replayability and massive horizontal throughput for real-time analytics and event sourcing.',
+            'Point-to-point queue vs distributed commit log; message acknowledgment vs persistent log retention; Kafka partition offset; RabbitMQ AMQP exchanges.'
+        ),
+
+        # ==========================================
+        # 10. COMPUTER NETWORKS (8 Questions)
+        # ==========================================
+        (
+            'Computer Networks', 'Easy',
+            'Explain the OSI 7-Layer Model and the protocols operating at each layer.',
+            'The OSI (Open Systems Interconnection) reference model standardizes network communication:\n1. Physical Layer: Transmits raw bit streams over physical medium (cables, fiber, RF). Protocols: Ethernet physical specs, RS-232.\n2. Data Link Layer: Node-to-node framing, MAC addressing, error detection (CRC). Protocols: Ethernet 802.3, Wi-Fi 802.11, ARP.\n3. Network Layer: Logical packet routing and host-to-host addressing across networks. Protocols: IPv4, IPv6, ICMP, OSPF, BGP.\n4. Transport Layer: End-to-end process-to-process communication, segmentation, flow/error control. Protocols: TCP, UDP.\n5. Session Layer: Establishes, manages, and terminates presentation sessions. Protocols: RPC, NetBIOS.\n6. Presentation Layer: Data format translation, character encoding, encryption, compression. Protocols: SSL/TLS, JPEG, JSON.\n7. Application Layer: High-level network services directly facing user software. Protocols: HTTP/HTTPS, DNS, FTP, SMTP, SSH.',
+            '7 OSI layers mnemonic; PDU types (Bits, Frames, Packets, Segments, Data); MAC vs IP addressing; protocols per layer.'
+        ),
+        (
+            'Computer Networks', 'Easy',
+            'Compare TCP vs UDP with real-world application examples.',
+            '1. TCP (Transmission Control Protocol):\n- Connection-Oriented: Establishes connection via 3-way handshake before transmitting data.\n- Reliable: Guarantees delivery via acknowledgments (ACKs) and retransmission of lost packets.\n- Ordered Delivery: Sequences packets so receiver reassembles them in exact sender order.\n- Flow & Congestion Control: Regulates transmission speed to prevent overwhelming receiver or network.\n- Use Cases: Web browsing (HTTP/HTTPS), file transfer (FTP), email (SMTP), SSH.\n\n2. UDP (User Datagram Protocol):\n- Connectionless: Sends datagrams without prior handshake.\n- Unreliable: No ACKs, no retransmission; best-effort delivery.\n- Low Overhead & Fast: Lightweight 8-byte header (compared to TCP\'s 20-60 bytes).\n- Use Cases: Live video/voice streaming (VoIP, WebRTC), online multiplayer gaming, DNS queries, DHCP.',
+            'Connection-oriented vs connectionless; ACK retransmission; ordered vs out-of-order; 20-byte TCP header vs 8-byte UDP header; latency vs reliability.'
+        ),
+        (
+            'Computer Networks', 'Medium',
+            'Explain the TCP 3-Way Handshake and 4-Way Connection Teardown.',
+            '1. TCP 3-Way Handshake (Connection Establishment):\n- Step 1 (SYN): Client picks random initial sequence number x and sends [SYN, seq=x] to server.\n- Step 2 (SYN-ACK): Server receives SYN, allocates buffers, picks sequence number y, and replies with [SYN-ACK, seq=y, ack=x+1].\n- Step 3 (ACK): Client receives SYN-ACK and responds with [ACK, ack=y+1, seq=x+1]. Connection is now ESTABLISHED.\n\n2. 4-Way Teardown (Connection Termination):\n- Step 1 (FIN): Client finishes sending data and sends [FIN] to server.\n- Step 2 (ACK): Server receives FIN, sends [ACK], enters CLOSE_WAIT state. Client enters FIN_WAIT_2.\n- Step 3 (FIN): Server finishes pending transmissions and sends its own [FIN].\n- Step 4 (ACK): Client responds with [ACK] and enters TIME_WAIT state (typically 2 * Maximum Segment Lifetime) before closing, ensuring final ACK is received.',
+            'SYN, SYN-ACK, ACK sequence numbers; half-duplex close; TIME_WAIT state and 2MSL protection; connection termination steps.'
+        ),
+        (
+            'Computer Networks', 'Medium',
+            'What happens when you type "https://www.google.com" in a browser and press Enter?',
+            'Step-by-step lifecycle:\n1. URL Parsing: Browser extracts protocol (HTTPS), domain (www.google.com), and default port (443).\n2. DNS Lookup: Checks Browser Cache -> OS Cache -> Router Cache -> ISP Resolver -> Root -> TLD -> Authoritative nameserver to resolve IP address.\n3. TCP Connection: Browser initiates TCP 3-way handshake with Google server on port 443.\n4. TLS Handshake: Client and server negotiate cipher suites, verify Google\'s SSL certificate via Root CA, and establish symmetric session keys.\n5. HTTP Request: Browser sends encrypted GET / HTTP/1.1 request with headers.\n6. Server Response: Google server processes request, queries backends, and returns HTTP 200 OK with HTML payload.\n7. Browser Rendering: Browser engine parses HTML (DOM tree), CSS (CSSOM tree), executes JavaScript, and paints the page.',
+            'DNS resolution hierarchy; TCP 3-way handshake; TLS cryptographic handshake; HTTP request-response cycle; critical rendering path (DOM/CSSOM).'
+        ),
+        (
+            'Computer Networks', 'Medium',
+            'Explain HTTP vs HTTPS and how the SSL/TLS Handshake works.',
+            '1. Difference:\n- HTTP (Port 80) transmits plaintext over TCP, susceptible to eavesdropping, packet sniffing, and Man-in-the-Middle (MITM) attacks.\n- HTTPS (Port 443) layers HTTP over TLS (Transport Layer Security), providing Confidentiality (encryption), Integrity (message authentication codes), and Authentication (digital certificates).\n\n2. TLS 1.2/1.3 Handshake:\n- Client Hello: Sends supported TLS version, cipher suites, and a random number (Client Random).\n- Server Hello: Picks cipher suite, sends Server Random, and presents its X.509 Digital Certificate.\n- Certificate Verification: Browser validates the certificate against built-in Trusted Root Certificate Authorities (CAs).\n- Key Exchange: Client and server exchange Diffie-Hellman parameters or pre-master secret to independently derive identical Symmetric Session Keys.\n- Finished: Future HTTP messages are encrypted with symmetric keys (e.g., AES-GCM) for high-speed security.',
+            'Port 80 vs 443; CIA triad; asymmetric encryption (handshake key exchange) vs symmetric encryption (bulk data transfer); CA validation.'
+        ),
+        (
+            'Computer Networks', 'Medium',
+            'Explain DNS (Domain Name System) Architecture: Recursive vs Iterative resolution.',
+            'DNS is the hierarchical, distributed database translating human-readable domain names into machine-routable IP addresses:\n\n1. Hierarchy:\n- Root Nameservers (13 named root authority clusters worldwide).\n- Top-Level Domain (TLD) Nameservers (.com, .org, .in).\n- Authoritative Nameservers (managed by DNS hosts like Cloudflare, Route53 containing actual zone files).\n\n2. Query Types:\n- Recursive Query: Client asks the local ISP/DNS Resolver (e.g., 8.8.8.8) to return the final answer. The resolver assumes full responsibility for discovering the IP.\n- Iterative Query: The resolver queries the Root nameserver (which refers it to the TLD nameserver), then queries the TLD nameserver (which refers it to the Authoritative nameserver), and finally queries the Authoritative nameserver for the A/AAAA record.',
+            'DNS hierarchy (Root, TLD, Authoritative); Recursive resolver vs iterative referrals; DNS caching and TTL; A, AAAA, CNAME, MX records.'
+        ),
+        (
+            'Computer Networks', 'Hard',
+            'Compare REST APIs vs WebSockets vs gRPC.',
+            '1. REST (Representational State Transfer):\n- Protocol: HTTP/1.1 or HTTP/2.\n- Communication: Stateless request-response cycle. Each request requires new TCP/TLS overhead unless keep-alive connection is maintained. Data payload typically JSON.\n- Best for: Public APIs, CRUD web services, standard microservice communication.\n\n2. WebSockets:\n- Protocol: WS/WSS operating over a single persistent TCP socket connection initiated via an HTTP 101 Upgrade header.\n- Communication: Full-duplex bidirectional streaming. Both client and server can send messages at any time with minimal 2-byte frame overhead.\n- Best for: Real-time chat apps, live stock tickers, multiplayer gaming, collaborative documents.\n\n3. gRPC (Google Remote Procedure Call):\n- Protocol: HTTP/2 transport with Protocol Buffers (Protobuf) binary serialization.\n- Communication: Multiplexed bidirectional streaming, strictly typed schema definitions (.proto), high performance.\n- Best for: Low-latency inter-service microservice communication in distributed backends.',
+            'Request-response vs full-duplex persistent vs HTTP/2 multiplexing; JSON vs Protocol Buffers binary format; REST vs WebSockets vs gRPC use cases.'
+        ),
+        (
+            'Computer Networks', 'Hard',
+            'Explain Network Address Translation (NAT) and IPv4 vs IPv6.',
+            '1. IPv4 vs IPv6:\n- IPv4: 32-bit addresses (~4.3 billion unique IPs), represented in dotted-decimal notation (192.168.1.1). Exhausted globally.\n- IPv6: 128-bit addresses (~3.4 * 10^38 unique IPs), represented in hexadecimal notation (2001:0db8:85a3::8a2e:0370:7334). Built-in IPsec, auto-configuration (SLAAC), and no need for NAT.\n\n2. Network Address Translation (NAT / PAT):\n- Technique where a network router modifies network address information in IP packet headers while in transit across a traffic routing device.\n- Port Address Translation (PAT / NAT Overload): Maps thousands of private local IP addresses (e.g., RFC 1918 192.168.x.x, 10.x.x.x) to a single public IP address using unique source port numbers in a NAT Translation Table.\n- Conserves scarce public IPv4 addresses and provides basic inbound security.',
+            '32-bit vs 128-bit addressing; RFC 1918 private IP ranges; Port Address Translation (PAT); NAT translation table; IPv6 header simplification.'
         )
     ]
     for q in sample_interviews:

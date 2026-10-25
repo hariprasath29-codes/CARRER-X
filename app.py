@@ -1063,8 +1063,8 @@ def submit_aptitude_test():
 @login_required
 def interview_prep():
     conn = get_db_connection()
-    categories = ['Python', 'JavaScript', 'DBMS', 'OOPs', 'Data Science', 'HR']
-    selected_cat = request.args.get('category', 'Python')
+    categories = ['DSA', 'Python', 'JavaScript', 'DBMS', 'OOPs', 'Operating Systems', 'System Design', 'Computer Networks', 'Data Science', 'HR']
+    selected_cat = request.args.get('category', 'DSA')
     questions = conn.execute("SELECT * FROM interview_questions WHERE category = ? ORDER BY id ASC", (selected_cat,)).fetchall()
     
     # Aggregate category counts for badges
@@ -1117,7 +1117,7 @@ def mock_interview():
     conn = get_db_connection()
     user_id = session['user_id']
     past_interviews = conn.execute("SELECT * FROM interview_scores WHERE user_id = ? ORDER BY taken_at DESC LIMIT 5", (user_id,)).fetchall()
-    categories = ['Python', 'JavaScript', 'DBMS', 'OOPs', 'Data Science', 'HR']
+    categories = ['DSA', 'Python', 'JavaScript', 'DBMS', 'OOPs', 'Operating Systems', 'System Design', 'Computer Networks', 'Data Science', 'HR']
     conn.close()
     return render_template('mock_interview.html', past_interviews=past_interviews, categories=categories)
 

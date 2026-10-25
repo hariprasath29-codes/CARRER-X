@@ -61,14 +61,14 @@
                     <i class="fa-solid fa-fire"></i> Placement Ready Bank
                 </span>
                 <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 500;">
-                    {{ total_questions|default(48) }} Curated Questions Across 6 Domains
+                    {{ total_questions|default(80) }} Curated Questions Across 10 Domains
                 </span>
             </div>
             <h2 style="font-size: 1.6rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.35rem;">
                 {{ selected_cat }} Interview Preparation
             </h2>
             <p style="color: var(--text-secondary); font-size: 0.92rem; max-width: 680px; margin: 0; line-height: 1.55;">
-                High-yield conceptual questions asked by top tech employers (Amazon, Microsoft, TCS Digital, Zoho, Infosys DSE). Master benchmark model answers and critical evaluator checkpoints.
+                High-yield conceptual questions asked by top tech employers (Amazon, Microsoft, Google, TCS Digital, Zoho, Infosys DSE). Master benchmark model answers and critical evaluator checkpoints.
             </p>
         </div>
         <div style="display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;">
@@ -87,10 +87,14 @@
     <!-- Category Tabs Navigation -->
     <div style="margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--border-color); display: flex; gap: 0.65rem; flex-wrap: wrap;">
         {% set cat_icons = {
+            'DSA': 'fa-solid fa-code-branch',
             'Python': 'fa-brands fa-python',
             'JavaScript': 'fa-brands fa-js',
             'DBMS': 'fa-solid fa-database',
             'OOPs': 'fa-solid fa-cubes',
+            'Operating Systems': 'fa-solid fa-microchip',
+            'System Design': 'fa-solid fa-network-wired',
+            'Computer Networks': 'fa-solid fa-globe',
             'Data Science': 'fa-solid fa-brain',
             'HR': 'fa-solid fa-user-tie'
         } %}
