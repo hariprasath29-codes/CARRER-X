@@ -5,7 +5,7 @@ def run_tests():
     client = app.test_client()
 
     print("==================================================")
-    print("CAREERX – AI PLACEMENT ASSISTANT: INTEGRATION TEST")
+    print("CAREERX – PLACEMENT READINESS PLATFORM: INTEGRATION TEST")
     print("==================================================")
 
     # 1. Student Authentication

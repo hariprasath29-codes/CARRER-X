@@ -369,7 +369,7 @@ def seed_data(cursor, conn):
             ('Verbal', 'Choose the synonym of "METICULOUS":', 'Careless', 'Thorough and precise', 'Hasty', 'Vague', 'B', 'Meticulous means showing great attention to detail; very careful and precise.'),
             ('Verbal', 'Select the antonym of "MITIGATE":', 'Aggravate', 'Alleviate', 'Soothe', 'Diminish', 'A', 'Mitigate means to make less severe. The opposite is aggravate or exacerbate.'),
             ('Verbal', 'Identify the grammatically correct sentence:', 'Neither of the candidates were selected.', 'Neither of the candidates was selected.', 'Neither candidates are selected.', 'Neither candidate have been selected.', 'B', '"Neither of" refers to singular items individually and requires the singular verb "was".'),
-            ('Verbal', 'Fill in the blank: "She has been working on this AI project _____ January."', 'for', 'since', 'from', 'in', 'B', 'We use "since" to denote a specific starting point in time in continuous tenses.'),
+            ('Verbal', 'Fill in the blank: "She has been working on this software project _____ January."', 'for', 'since', 'from', 'in', 'B', 'We use "since" to denote a specific starting point in time in continuous tenses.'),
             ('Verbal', 'Select the correct meaning of the idiom: "Bite the bullet"', 'To give up easily', 'To face a difficult situation with courage', 'To get into an argument', 'To make a hasty decision', 'B', '"Bite the bullet" means accepting and enduring an inevitable hardship with bravery.')
         ]
         cursor.executemany('''

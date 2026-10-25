@@ -79,7 +79,7 @@ def public_status():
         return '', 204
     return jsonify({
         'status': 'online',
-        'app': 'CareerX AI Placement Assistant',
+        'app': 'CareerX Placement Platform',
         'port': 5000
     })
 
@@ -90,7 +90,7 @@ def api_health():
     return jsonify({
         'status': 'online',
         'health': 'ok',
-        'app': 'CareerX AI Placement Assistant',
+        'app': 'CareerX Placement Platform',
         'port': 5000
     })
 
@@ -397,7 +397,7 @@ def register():
         conn.commit()
 
         # Seed initial starter roadmap for new student
-        default_steps = ["Master Fundamentals of Programming", "Build 2 Full Stack / AI Projects"]
+        default_steps = ["Master Fundamentals of Programming", "Build 2 Full Stack / Software Projects"]
         conn.execute('''
             INSERT INTO roadmaps (user_id, career_role, completed_steps_json, current_milestone, progress_pct)
             VALUES (?, ?, ?, ?, ?)
@@ -585,7 +585,7 @@ def dashboard():
                            notices=notices)
 
 # -------------------------------------------------------------
-# CHATGPT-LIKE AI CHAT INTERFACE & APIS
+# CONVERSATIONAL CAREER ASSISTANT & APIS
 # -------------------------------------------------------------
 @app.route('/chat')
 @login_required

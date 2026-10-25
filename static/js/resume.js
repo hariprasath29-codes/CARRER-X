@@ -503,7 +503,7 @@ function setInputValue(id, val) {
     if (el) el.value = val;
 }
 
-// AI Optimizers
+// Smart Keyword Optimizers
 window.optimizeSummaryWithAI = function() {
     setInputValue('inpSummary', 'Results-driven Software Engineer with proven expertise in developing scalable full-stack applications, optimizing relational/NoSQL database queries, and deploying production machine learning microservices. Passionate about engineering clean, maintainable architecture in fast-paced collaborative agile environments.');
     updateResumePreview();

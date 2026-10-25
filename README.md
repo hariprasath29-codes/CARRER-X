@@ -114,7 +114,7 @@ http://127.0.0.1:5000
 Carrer X project/
 ├── app.py                     # Flask web server, authentication, and REST API routes
 ├── database.py                # Database schema, migrations, and seed data
-├── ai_engine.py               # AI interview evaluator, ATS parser, and conversational advisor
+├── ai_engine.py               # Technical assessment evaluator, ATS parser, and conversational advisor
 ├── test_suite.py              # Automated full-stack integration test suite
 ├── requirements.txt           # Python library dependencies
 ├── .gitignore                 # Version control exclusion rules

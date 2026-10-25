@@ -235,11 +235,11 @@ def evaluate_mock_answer(question, user_answer, key_points=""):
     }
 
 # -------------------------------------------------------------
-# 3. CONVERSATIONAL AI PLACEMENT ASSISTANT
+# 3. CONVERSATIONAL CAREER ASSISTANT
 # -------------------------------------------------------------
 def get_ai_chat_response(prompt, chat_history=None, user_context=None):
     """
-    Intelligent Placement Assistant conversational brain.
+    Placement Assistant conversational brain.
     Provides structured, markdown-rich guidance on placement prep,
     DSA, System Design, HR interview questions, resume review, and career paths.
     """
@@ -255,12 +255,12 @@ def get_ai_chat_response(prompt, chat_history=None, user_context=None):
         if user_context:
             name = user_context.get('name') or user_context.get('full_name') or 'Student'
         return (
-            f"Hello **{name}**! 👋 Welcome to **CareerX – AI Placement Assistant**.\n\n"
+            f"Hello **{name}**! 👋 Welcome to **CareerX Placement Assistant**.\n\n"
             "I'm here to help you crack your campus placements and off-campus tech drives. Here is what we can do today:\n\n"
             "- 🧠 **DSA & Coding Prep**: Ask me to explain algorithms, solve questions, or optimize time/space complexity.\n"
             "- 🎯 **Technical Assessments**: Practice technical (Python, JS, SQL, OOPs) and engineering questions.\n"
             "- 📄 **Resume & ATS Strategy**: Get recommendations to pass applicant tracking filters.\n"
-            "- 🗺️ **Career Roadmaps**: Personalized milestone guides for AI, Full-Stack, Cloud, and Data Science.\n"
+            "- 🗺️ **Career Roadmaps**: Personalized milestone guides for Full-Stack, Backend, Cloud, and Data Science.\n"
             "- ⚡ **Aptitude Mastery**: Shortcuts and tricks for Quantitative, Logical, and Verbal rounds.\n\n"
             "What would you like to prepare right now?"
         )
@@ -329,7 +329,7 @@ def get_ai_chat_response(prompt, chat_history=None, user_context=None):
                 "### 🎯 Master Formula: 'Tell Me About Yourself'\n\n"
                 "Never recite your resume line-by-line! Deliver a crisp **90-second pitch** using the **Present ➔ Past ➔ Future** structure:\n\n"
                 "1. **Present (30 sec)**:\n"
-                "   *\"I am currently in my final year of B.Tech in AI & Data Science at [College]. My core focus is building scalable backend systems and applied machine learning models, with strong proficiency in Python, Flask, and SQL.\"*\n\n"
+                "   *\"I am currently in my final year of B.Tech in Computer Science & Engineering at [College]. My core focus is building scalable backend systems and high-throughput web applications, with strong proficiency in Python, Flask, and SQL.\"*\n\n"
                 "2. **Past (30 sec)**:\n"
                 "   *\"Recently, I built 'CareerX', an end-to-end placement preparation assistant that automates resume ATS analysis and technical assessment evaluations. I also cleared online assessments and solved 150+ DSA problems.\"*\n\n"
                 "3. **Future (30 sec)**:\n"
@@ -344,7 +344,7 @@ def get_ai_chat_response(prompt, chat_history=None, user_context=None):
                 "2. **Fast Learner**: Highlight how quickly you adapt to modern toolchains (Docker, Cloud, REST APIs).\n"
                 "3. **Team Culture & Ownership**: Demonstrate that you take pride in shipping robust, tested code.\n\n"
                 "**Sample Response**:\n"
-                "> *\"You should hire me because I offer a strong balance of theoretical computer science fundamentals and real-world project execution. Through my projects in AI and full-stack development, I have developed the ability to break down complex business requirements into clean, scalable software architecture. I am enthusiastic, learn quickly from code reviews, and am excited to contribute to your engineering milestones from Day 1.\"*"
+                "> *\"You should hire me because I offer a strong balance of theoretical computer science fundamentals and real-world project execution. Through my projects in full-stack and distributed systems development, I have developed the ability to break down complex business requirements into clean, scalable software architecture. I am enthusiastic, learn quickly from code reviews, and am excited to contribute to your engineering milestones from Day 1.\"*"
             )
         else:
             return (

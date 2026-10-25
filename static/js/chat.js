@@ -1,5 +1,5 @@
 /**
- * CareerX AI Career Assistant & Placement Coach
+ * CareerX Career Assistant & Placement Coach
  * Client Script (chat.js)
  */
 
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } catch (err) {
             typingIndicator.style.display = 'none';
             console.error('Chat error:', err);
-            appendMessageBubble('assistant', '⚠️ *Network error communicating with CareerX AI engine. Please verify your connection.*');
+            appendMessageBubble('assistant', '⚠️ *Network error communicating with CareerX assistant engine. Please verify your connection.*');
         }
 
         scrollToBottom();
@@ -276,7 +276,7 @@ document.addEventListener('DOMContentLoaded', function () {
         return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
 
-    // Lightweight Markdown formatter for AI responses
+    // Lightweight Markdown formatter for assistant responses
     function formatMarkdown(text) {
         if (!text) return '';
         let html = text;
