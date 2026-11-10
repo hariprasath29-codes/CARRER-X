@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard | CareerX – Placement Assistant</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="static/css/style.css">
+    <link rel="stylesheet" href="static/css/dashboard.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="brand-logo">
+                    <div class="logo-badge">
+                        <i class="fa-solid fa-graduation-cap"></i>
+                    </div>
+                    <span>Career<span style="color: var(--primary);">X</span> <span class="badge badge-primary" style="font-size: 0.65rem; padding: 2px 7px; margin-left: 4px; vertical-align: middle;">PRO</span></span>
+                </a>
+                <button id="mobileSidebarClose" class="mobile-sidebar-close" aria-label="Close sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Preparation Hub</div>
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="roadmap.html" class="nav-item">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Career Roadmap</span>
+                </a>
+
+                <div class="nav-section-title">Resume &amp; ATS</div>
+                <a href="resume_builder.html" class="nav-item">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>Create Resume</span>
+                </a>
+                <a href="ats_checker.html" class="nav-item">
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>ATS Scanner</span>
+                </a>
+
+                <div class="nav-section-title">Assessments &amp; Practice</div>
+                <a href="aptitude.html" class="nav-item">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Aptitude Trainer</span>
+                </a>
+                <a href="interview.html" class="nav-item">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Tech Question Bank</span>
+                </a>
+                <a href="mock_interview.html" class="nav-item">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Write Interview</span>
+                </a>
+
+                <div class="nav-section-title">Career Tracking</div>
+                <a href="skills.html" class="nav-item">
+                    <i class="fa-solid fa-award"></i>
+                    <span>Skill Tracker</span>
+                </a>
+                <a href="applications.html" class="nav-item">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Job Tracker</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+
+                <div class="sidebar-widget" style="margin-top: auto; padding: 0.95rem; border-radius: 12px; background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(99, 102, 241, 0.03)); border: 1px solid rgba(79, 70, 229, 0.16); margin-top: 1.25rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #4F46E5; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fa-solid fa-bolt"></i> Placement 2026</span>
+                        <span class="badge badge-success" style="font-size: 0.62rem; padding: 2px 6px;">Live</span>
+                    </div>
+                    <div style="font-size: 0.84rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
+                        Campus Placement Drives
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 0.65rem; line-height: 1.35;">
+                        Check criteria and submit 1-click applications for verified corporate drives.
+                    </p>
+                    <a href="applications.html" class="btn btn-primary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 0.4rem 0.6rem; text-align: center; justify-content: center; display: flex;">
+                        <i class="fa-solid fa-briefcase"></i> View Campus Drives
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-mini-profile">
+                    <div class="user-avatar">R</div>
+                    <div class="user-meta">
+                        <div class="name">Rahul Sharma</div>
+                        <div class="role">AI/ML Engineer</div>
+                    </div>
+                </div>
+                <a href="profile.html" title="Profile &amp; Settings" style="color: var(--text-muted); padding: 5px;">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+            </div>
+        </aside>
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+        <!-- Main Workspace -->
+        <main class="app-main">
+            <!-- Header Bar -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button id="mobileNavToggle" class="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="header-title">Student Placement Overview</h2>
+                </div>
+
+                <div class="header-right" style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <div style="display: inline-flex; align-items: center; gap: 0.4rem; background: var(--bg-card); padding: 3px 8px; border-radius: 8px; border: 1px solid var(--border-color);">
+                        <i class="fa-solid fa-user-gear" style="font-size: 0.75rem; color: #4F46E5;"></i>
+                        <select id="headerUserSwitcher" class="form-control" style="font-size: 0.75rem; padding: 2px 6px; height: 26px; border: none; background: transparent; cursor: pointer; font-weight: 600; color: var(--text-primary);" title="Switch Active Student Profile">
+                            <option value="student">Rahul Sharma (NIT Trichy)</option>
+                            <option value="priya">Priya Patel (IIT Madras)</option>
+                            <option value="ananya">Ananya Iyer (BITS Pilani)</option>
+                            <option value="rohan">Rohan Verma (NIT Surathkal)</option>
+                            <option value="siddharth">Siddharth Nair (VIT Vellore)</option>
+                            <option value="sneha">Sneha Reddy (PSG Tech)</option>
+                        </select>
+                    </div>
+                    <div class="server-status-pill" id="backendStatusBadge" style="display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; padding: 4px 12px; border-radius: 20px; background: rgba(16, 185, 129, 0.12); color: #059669; border: 1px solid rgba(16, 185, 129, 0.3);">
+                        <span class="pulse-dot" style="width: 7px; height: 7px; border-radius: 50%; background: #10B981; box-shadow: 0 0 6px #10B981;"></span>
+                        <span id="backendStatusText">Pure HTML/CSS/JS Engine: Active</span>
+                    </div>
+                    <a href="login.html" class="btn btn-outline btn-sm logout-trigger" title="Sign Out">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Page Body -->
+            <div class="content-body">
+                <!-- Welcome Banner -->
+                <div class="card dashboard-banner">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.5rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem;">
+                                <span class="badge badge-primary"><i class="fa-solid fa-crosshairs"></i> Target: <span id="dashTargetRole">AI/ML Engineer</span></span>
+                                <span class="badge badge-success"><i class="fa-solid fa-building-columns"></i> <span id="dashCollege">NIT Trichy</span></span>
+                            </div>
+                            <h1 style="font-size: 1.85rem; margin-bottom: 0.35rem;">
+                                Welcome back, <span id="dashUserName" style="color: var(--accent);">Rahul Sharma</span>! 👋
+                            </h1>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem; margin: 0;">
+                                Here is your real-time placement readiness score and progress analytics across all preparation modules.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <a href="resume_builder.html" class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-file-pen"></i> Create Resume
+                            </a>
+                            <a href="mock_interview.html" class="btn btn-outline btn-sm">
+                                <i class="fa-solid fa-code"></i> Write Interview
+                            </a>
+                            <a href="aptitude.html" class="btn btn-outline btn-sm">
+                                <i class="fa-solid fa-bolt"></i> Practice Aptitude
+                            </a>
+                            <a href="ats_checker.html" class="btn btn-outline btn-sm">
+                                <i class="fa-solid fa-file-shield"></i> ATS Scan
+                            </a>
+                            <button type="button" onclick="window.print()" class="btn btn-outline btn-sm" title="Print/Save Placement Preparation Summary Report">
+                                <i class="fa-solid fa-print"></i> Export Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placement Cell Broadcast Notices -->
+                <div class="notices-banner-container" id="noticesContainer">
+                    <div class="notice-alert-item priority-urgent">
+                        <div class="notice-alert-content">
+                            <span class="badge badge-danger">
+                                <i class="fa-solid fa-bullhorn"></i> Urgent
+                            </span>
+                            <strong style="color: var(--text-primary); font-size: 0.92rem;">Welcome to Placement Season 2026:</strong>
+                            <span style="color: var(--text-secondary); font-size: 0.88rem;">All final year students must complete profile details and verify ATS resume score before Google drive deadlines.</span>
+                        </div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); white-space: nowrap;">
+                            <i class="fa-solid fa-user-tie"></i> TPO Placement Cell
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KPI Stats Grid -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon indigo">
+                            <i class="fa-solid fa-file-shield"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="label">ATS Resume Score</div>
+                            <div class="value" id="kpiAtsVal">86%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon emerald">
+                            <i class="fa-solid fa-bolt"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="label">Aptitude Accuracy</div>
+                            <div class="value" id="kpiAptVal">85%</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon cyan">
+                            <i class="fa-solid fa-clipboard-check"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="label">Assessment Rating</div>
+                            <div class="value" id="kpiMockVal">8.4<span style="font-size: 1rem; color: var(--text-muted);">/10</span></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon amber">
+                            <i class="fa-solid fa-code"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="label">Skills Logged</div>
+                            <div class="value" id="kpiSkillsVal">8</div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-icon rose">
+                            <i class="fa-solid fa-briefcase"></i>
+                        </div>
+                        <div class="stat-info">
+                            <div class="label">Job Applications</div>
+                            <div class="value" id="kpiAppsVal">5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Placement Readiness Diagnostic & Simulation Engine -->
+                <div class="card readiness-container">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <span class="badge badge-primary"><i class="fa-solid fa-chart-line"></i> Automated Evaluation</span>
+                                <span class="badge badge-success" id="readinessTierBadge">Tier 1 — Day-1 Ready</span>
+                            </div>
+                            <h3 style="font-size: 1.35rem; margin: 0;">
+                                <i class="fa-solid fa-gauge-high" style="color: var(--accent); margin-right: 0.4rem;"></i> Placement Readiness Diagnostic
+                            </h3>
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" id="toggleSimulatorBtn" onclick="toggleReadinessSimulator()">
+                            <i class="fa-solid fa-sliders"></i> <span id="simBtnText">Open Readiness Simulator</span>
+                        </button>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: auto 1fr; gap: 1.75rem; align-items: center;" class="readiness-flex-grid">
+                        <div class="readiness-score-dial" id="readinessScoreDial" style="--score-pct: 86;">
+                            <div class="readiness-score-inner">
+                                <span id="readinessScoreVal" style="font-size: 1.5rem; font-weight: 800; font-family: var(--font); color: var(--accent);">86%</span>
+                                <span style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase;">Index</span>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                                    <span><i class="fa-solid fa-bolt" style="color: var(--accent-emerald);"></i> Aptitude Proficiency</span>
+                                    <strong id="diagAptVal">85%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                                    <div id="diagAptBar" data-progress="85" style="height: 100%; width: 85%; background: var(--accent-emerald); border-radius: 99px; transition: width 0.6s ease;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                                    <span><i class="fa-solid fa-file-shield" style="color: var(--accent);"></i> ATS Resume Alignment</span>
+                                    <strong id="diagAtsVal">86%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                                    <div id="diagAtsBar" data-progress="86" style="height: 100%; width: 86%; background: var(--accent); border-radius: 99px; transition: width 0.6s ease;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                                    <span><i class="fa-solid fa-clipboard-check" style="color: var(--accent-cyan);"></i> Technical Assessment</span>
+                                    <strong id="diagMockVal">84%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                                    <div id="diagMockBar" data-progress="84" style="height: 100%; width: 84%; background: var(--accent-cyan); border-radius: 99px; transition: width 0.6s ease;"></div>
+                                </div>
+                            </div>
+
+                            <div>
+                                <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 0.35rem;">
+                                    <span><i class="fa-solid fa-graduation-cap" style="color: var(--accent-amber);"></i> Academic CGPA Benchmark</span>
+                                    <strong id="diagCgpaVal">85%</strong>
+                                </div>
+                                <div style="height: 6px; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                                    <div id="diagCgpaBar" data-progress="85" style="height: 100%; width: 85%; background: var(--accent-amber); border-radius: 99px; transition: width 0.6s ease;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Expandable Interactive Simulator -->
+                    <div class="simulator-box" id="simulatorBox" style="display: none; margin-top: 1.25rem; padding: 1.25rem; background: var(--bg-body); border: 1px solid var(--border-color); border-radius: var(--radius-sm);">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                            <strong style="color: var(--text-primary); font-size: 0.95rem;">
+                                <i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent);"></i> Simulate Your Target Readiness
+                            </strong>
+                            <span style="font-size: 0.78rem; color: var(--text-muted);">Adjust parameters to see real-time score impact</span>
+                        </div>
+                        <div class="slider-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                            <div class="slider-item">
+                                <label style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.25rem;"><span>College CGPA</span> <span id="simCgpaDisplay" style="color: var(--accent); font-weight: 700;">8.5</span></label>
+                                <input type="range" id="simCgpa" min="5.0" max="10.0" step="0.1" value="8.5" oninput="updateSimulation()" style="width: 100%;">
+                            </div>
+                            <div class="slider-item">
+                                <label style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.25rem;"><span>Aptitude Accuracy</span> <span id="simAptDisplay" style="color: var(--accent); font-weight: 700;">85%</span></label>
+                                <input type="range" id="simApt" min="40" max="100" step="1" value="85" oninput="updateSimulation()" style="width: 100%;">
+                            </div>
+                            <div class="slider-item">
+                                <label style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.25rem;"><span>ATS Resume Score</span> <span id="simAtsDisplay" style="color: var(--accent); font-weight: 700;">86%</span></label>
+                                <input type="range" id="simAts" min="40" max="100" step="1" value="86" oninput="updateSimulation()" style="width: 100%;">
+                            </div>
+                            <div class="slider-item">
+                                <label style="display: flex; justify-content: space-between; font-size: 0.82rem; margin-bottom: 0.25rem;"><span>Assessment Rating</span> <span id="simMockDisplay" style="color: var(--accent); font-weight: 700;">8.4/10</span></label>
+                                <input type="range" id="simMock" min="4.0" max="10.0" step="0.2" value="8.4" oninput="updateSimulation()" style="width: 100%;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Roadmap Milestone Banner -->
+                <div class="card" style="margin-bottom: var(--spacing-standard);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+                        <div>
+                            <span style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-secondary); font-weight: 600;">Active Career Track</span>
+                            <h3 style="font-size: 1.15rem; margin-top: 2px;">AI/ML Engineer &mdash; <span style="color: var(--accent);">Deep Learning Foundations</span></h3>
+                        </div>
+                        <div style="text-align: right;">
+                            <span style="font-size: 1.35rem; font-weight: 700; color: var(--accent);">50%</span>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">Completed</div>
+                        </div>
+                    </div>
+                    <div style="height: 8px; width: 100%; background: var(--border-color); border-radius: 99px; overflow: hidden;">
+                        <div id="dashRoadmapBar" data-progress="50" style="height: 100%; width: 50%; background: var(--accent); border-radius: 99px; transition: width 0.6s ease;"></div>
+                    </div>
+                </div>
+
+                <!-- Active Campus Placement Drives Board -->
+                <div class="card" style="margin-bottom: var(--spacing-standard);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Verified TPO Drives</span>
+                                <span class="badge badge-primary"><span id="openDrivesCount">6</span> Open Positions</span>
+                            </div>
+                            <h3 style="font-size: 1.35rem; margin: 0;">
+                                <i class="fa-solid fa-building-columns" style="color: var(--accent); margin-right: 0.4rem;"></i> Active Campus Placement Drives
+                            </h3>
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">
+                            <i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> 1-Click apply adds directly to your tracker
+                        </div>
+                    </div>
+
+                    <!-- Filter pills and search -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.25rem;">
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button type="button" class="btn btn-outline btn-sm drive-filter-btn active" onclick="setDriveFilter('all', this)">All Packages</button>
+                            <button type="button" class="btn btn-outline btn-sm drive-filter-btn" onclick="setDriveFilter('10', this)">&ge; 10 LPA</button>
+                            <button type="button" class="btn btn-outline btn-sm drive-filter-btn" onclick="setDriveFilter('20', this)">&ge; 20 LPA (Super Dream)</button>
+                        </div>
+                        <div>
+                            <input type="text" id="driveSearchInput" class="form-control" placeholder="Search company or role..." oninput="filterCampusDrives()" style="font-size: 0.85rem; padding: 0.4rem 0.85rem; width: 220px;">
+                        </div>
+                    </div>
+
+                    <!-- Drive cards grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem;" id="drivesGrid">
+                        <!-- Populated dynamically by dashboard.js from CareerXStore.getDrives() -->
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: var(--spacing-standard);" class="dashboard-charts-grid">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                            <h3 style="font-size: 1.15rem; margin: 0;">
+                                <i class="fa-solid fa-chart-line" style="color: var(--accent); margin-right: 0.5rem;"></i> Aptitude Performance by Category
+                            </h3>
+                            <a href="aptitude.html" class="btn btn-outline btn-sm">Take Test</a>
+                        </div>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="aptitudeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                            <h3 style="font-size: 1.15rem; margin: 0;">
+                                <i class="fa-solid fa-pie-chart" style="color: var(--accent); margin-right: 0.5rem;"></i> Application Funnel
+                            </h3>
+                            <a href="applications.html" class="btn btn-outline btn-sm">View Pipeline</a>
+                        </div>
+                        <div style="height: 250px; position: relative;">
+                            <canvas id="applicationsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="static/js/store.js"></script>
+    <script src="static/js/app.js"></script>
+    <script src="static/js/dashboard.js"></script>
+</body>
+</html>
+

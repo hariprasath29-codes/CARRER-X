@@ -1,29 +1,38 @@
-// Career Roadmap Interactive Logic (roadmap.js)
+// CareerX - Career Roadmap (roadmap.js)
+// Interactive skill milestones and learning roadmaps per career track
 
 let roadmapTemplates = {};
-let activeRole = "";
+let activeRole = "AI/ML Engineer";
 let userCompletedSteps = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    const dataEl = document.getElementById('roadmapData');
-    const compEl = document.getElementById('completedStepsData');
-    const roleEl = document.getElementById('initialRoleData');
-
-    roadmapTemplates = dataEl ? JSON.parse(dataEl.textContent || '{}') : {};
-    userCompletedSteps = compEl ? JSON.parse(compEl.textContent || '[]') : [];
-    activeRole = roleEl ? roleEl.textContent.trim() : 'Software Engineer';
-
-    renderRoadmapSteps();
+    if (window.CareerXStore) {
+        roadmapTemplates = window.CareerXStore.getRoadmaps();
+        const user = window.CareerXStore.getUser();
+        if (user && user.target_role) {
+            activeRole = user.target_role;
+        }
+        userCompletedSteps = window.CareerXStore.getCompletedSteps(activeRole);
+    }
 
     const roleSelector = document.getElementById('roleSelector');
     if (roleSelector) {
+        roleSelector.value = activeRole;
         roleSelector.addEventListener('change', (e) => {
             activeRole = e.target.value;
             const badge = document.getElementById('trackBadge');
             if (badge) badge.textContent = activeRole + " Track";
+            if (window.CareerXStore) {
+                userCompletedSteps = window.CareerXStore.getCompletedSteps(activeRole);
+            }
             renderRoadmapSteps();
         });
     }
+
+    const trackBadge = document.getElementById('trackBadge');
+    if (trackBadge) trackBadge.textContent = activeRole + " Track";
+
+    renderRoadmapSteps();
 
     const saveBtn = document.getElementById('saveRoadmapBtn');
     if (saveBtn) {
@@ -32,11 +41,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function renderRoadmapSteps() {
-    const steps = roadmapTemplates[activeRole] || [];
+    const steps = roadmapTemplates[activeRole] || roadmapTemplates['Software Engineer'] || [];
     const container = document.getElementById('milestonesList');
     if (!container) return;
 
     container.innerHTML = '';
+
+    if (steps.length === 0) {
+        container.innerHTML = '<div style="padding: 1.5rem; color: var(--text-muted); text-align: center;">No roadmap steps found for this track.</div>';
+        return;
+    }
 
     steps.forEach((step, idx) => {
         const isChecked = userCompletedSteps.includes(step);
@@ -54,10 +68,10 @@ function renderRoadmapSteps() {
         `;
 
         item.innerHTML = `
-            <div style="font-weight: 800; font-size: 1.1rem; color: ${isChecked ? 'var(--primary)' : 'var(--text-muted)'}; min-width: 28px;">
+            <div style="font-weight: 800; font-size: 1.1rem; color: ${isChecked ? 'var(--accent)' : 'var(--text-muted)'}; min-width: 28px;">
                 0${idx + 1}
             </div>
-            <input type="checkbox" class="step-checkbox" value="${step}" ${isChecked ? 'checked' : ''} style="width: 20px; height: 20px; accent-color: var(--primary); cursor: pointer;">
+            <input type="checkbox" class="step-checkbox" value="${step}" ${isChecked ? 'checked' : ''} style="width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer;">
             <div style="flex: 1;">
                 <div style="font-size: 0.96rem; font-weight: 600; color: ${isChecked ? 'var(--text-muted)' : 'var(--text-primary)'}; text-decoration: ${isChecked ? 'line-through' : 'none'};">
                     ${step}
@@ -86,7 +100,7 @@ function renderRoadmapSteps() {
 }
 
 function updateRoadmapProgress() {
-    const steps = roadmapTemplates[activeRole] || [];
+    const steps = roadmapTemplates[activeRole] || roadmapTemplates['Software Engineer'] || [];
     const completedCount = steps.filter(s => userCompletedSteps.includes(s)).length;
     const pct = steps.length > 0 ? Math.round((completedCount / steps.length) * 100) : 0;
 
@@ -96,25 +110,13 @@ function updateRoadmapProgress() {
     if (bar) bar.style.width = pct + "%";
 }
 
-async function saveRoadmapProgress() {
-    try {
-        const res = await fetch('/api/roadmap/update', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                career_role: activeRole,
-                completed_steps: userCompletedSteps
-            })
-        });
-        const data = await res.json();
-        if (data.success) {
-            localStorage.setItem('careerx_roadmap_' + activeRole, JSON.stringify(userCompletedSteps));
-            window.showToast("Roadmap progress saved successfully!", "success");
-            return;
-        }
-    } catch (err) {
-        // Fallback for standalone Live Server
-        localStorage.setItem('careerx_roadmap_' + activeRole, JSON.stringify(userCompletedSteps));
-        window.showToast("Roadmap progress saved to local storage!", "success");
+function saveRoadmapProgress() {
+    if (window.CareerXStore) {
+        window.CareerXStore.saveRoadmapProgress(activeRole, userCompletedSteps);
+    }
+    if (window.showToast) {
+        window.showToast("Roadmap progress successfully saved!", "success");
+    } else {
+        alert("Roadmap progress saved!");
     }
 }

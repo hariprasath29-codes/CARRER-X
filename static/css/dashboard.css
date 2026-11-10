@@ -1,7 +1,6 @@
 /* ==========================================================================
-   CAREERX – DASHBOARD & LEADERBOARD STYLES (dashboard.css)
-   Linear / Stripe Theme: Inter Typography & Indigo Accents
-   Gold (#F5B942) Reserved Strictly for Rank #1 Podium & Trophy Accents
+   CareerX - Dashboard & Leaderboard Styles (dashboard.css)
+   Styles for student analytics, charts, drives, and leaderboard podium
    ========================================================================== */
 
 .dashboard-banner {
@@ -14,12 +13,6 @@
     position: relative;
     overflow: hidden;
     transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-[data-theme="light"] .dashboard-banner {
-    background: linear-gradient(135deg, rgba(238, 242, 255, 0.75) 0%, #FFFFFF 60%);
-    border: 1px solid rgba(199, 210, 254, 0.85);
-    box-shadow: 0 4px 20px -2px rgba(79, 70, 229, 0.06), 0 1px 3px 0 rgba(15, 23, 42, 0.04);
 }
 
 .chart-wrapper {
@@ -43,16 +36,11 @@
     box-shadow: var(--shadow-md);
 }
 
-/* Rank #1: Gold Highlight (#F5B942) */
+/* Rank #1: Gold Highlight */
 .podium-card.rank-1 {
     border-color: #F5B942;
     box-shadow: 0 4px 20px rgba(245, 185, 66, 0.18);
-    background: linear-gradient(180deg, rgba(245, 185, 66, 0.1) 0%, var(--bg-card) 100%);
-}
-
-[data-theme="light"] .podium-card.rank-1 {
     background: linear-gradient(180deg, rgba(245, 185, 66, 0.1) 0%, #FFFFFF 100%);
-    box-shadow: 0 4px 20px rgba(245, 185, 66, 0.15);
 }
 
 .podium-card.rank-2 {
@@ -68,12 +56,9 @@
     font-weight: 700;
 }
 .rank-text-2 {
-    color: #94A3B8;
+    color: #64748B;
     font-family: var(--font);
     font-weight: 700;
-}
-[data-theme="light"] .rank-text-2 {
-    color: #64748B;
 }
 .rank-text-3 {
     color: #D97706;
@@ -296,4 +281,55 @@
     width: 100%;
     accent-color: var(--accent);
 }
+
+/* ==========================================================================
+   PRINT STYLES: Official Placement Readiness Dossier
+   ========================================================================== */
+@media print {
+    .app-sidebar,
+    .app-header,
+    .mobile-nav-toggle,
+    .mobile-sidebar-close,
+    .logout-trigger,
+    .server-status-pill,
+    #headerUserSwitcher,
+    .simulator-box,
+    #toggleSimBtn,
+    .btn,
+    .dashboard-banner .btn,
+    .sidebar-backdrop {
+        display: none !important;
+    }
+
+    body, .app-layout, .app-main, .content-body {
+        background: #FFFFFF !important;
+        color: #0F172A !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+    }
+
+    .card {
+        border: 1px solid #CBD5E1 !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        margin-bottom: 1.25rem !important;
+    }
+
+    .dashboard-banner {
+        border: 2px solid #4F46E5 !important;
+        background: #F8FAFC !important;
+    }
+
+    .dashboard-banner::before {
+        content: "OFFICIAL CAMPUS PLACEMENT READINESS DOSSIER";
+        display: block;
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        color: #4F46E5;
+        margin-bottom: 0.5rem;
+    }
+}
+
 

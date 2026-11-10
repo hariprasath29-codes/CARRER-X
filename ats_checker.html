@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS Resume Scanner | CareerX</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="brand-logo">
+                    <div class="logo-badge"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <span>Career<span style="color: var(--primary);">X</span> <span class="badge badge-primary" style="font-size: 0.65rem; padding: 2px 7px; margin-left: 4px; vertical-align: middle;">PRO</span></span>
+                </a>
+                <button id="mobileSidebarClose" class="mobile-sidebar-close" aria-label="Close sidebar">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Preparation Hub</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="roadmap.html" class="nav-item">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Career Roadmap</span>
+                </a>
+
+                <div class="nav-section-title">Resume &amp; ATS</div>
+                <a href="resume_builder.html" class="nav-item">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>Create Resume</span>
+                </a>
+                <a href="ats_checker.html" class="nav-item active">
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>ATS Scanner</span>
+                </a>
+
+                <div class="nav-section-title">Assessments &amp; Practice</div>
+                <a href="aptitude.html" class="nav-item">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Aptitude Trainer</span>
+                </a>
+                <a href="interview.html" class="nav-item">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Tech Question Bank</span>
+                </a>
+                <a href="mock_interview.html" class="nav-item">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Write Interview</span>
+                </a>
+
+                <div class="nav-section-title">Career Tracking</div>
+                <a href="skills.html" class="nav-item">
+                    <i class="fa-solid fa-award"></i>
+                    <span>Skill Tracker</span>
+                </a>
+                <a href="applications.html" class="nav-item">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Job Tracker</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+
+                <div class="sidebar-widget" style="margin-top: auto; padding: 0.95rem; border-radius: 12px; background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(99, 102, 241, 0.03)); border: 1px solid rgba(79, 70, 229, 0.16); margin-top: 1.25rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #4F46E5; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fa-solid fa-bolt"></i> Placement 2026</span>
+                        <span class="badge badge-success" style="font-size: 0.62rem; padding: 2px 6px;">Live</span>
+                    </div>
+                    <div style="font-size: 0.84rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
+                        Campus Placement Drives
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 0.65rem; line-height: 1.35;">
+                        Check criteria and submit 1-click applications for verified corporate drives.
+                    </p>
+                    <a href="applications.html" class="btn btn-primary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 0.4rem 0.6rem; text-align: center; justify-content: center; display: flex;">
+                        <i class="fa-solid fa-briefcase"></i> View Campus Drives
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-mini-profile">
+                    <div class="user-avatar">R</div>
+                    <div class="user-meta">
+                        <div class="name">Rahul Sharma</div>
+                        <div class="role">AI/ML Engineer</div>
+                    </div>
+                </div>
+                <a href="profile.html" title="Profile &amp; Settings" style="color: var(--text-muted); padding: 5px;">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+            </div>
+        </aside>
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+        <main class="app-main">
+            <header class="app-header">
+                <div class="header-left">
+                    <button id="mobileNavToggle" class="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="header-title">Applicant Tracking System (ATS) Scanner</h2>
+                </div>
+                <div class="header-right" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <a href="login.html" class="btn btn-outline btn-sm logout-trigger" title="Sign Out">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- Header Banner -->
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 style="font-size: 1.45rem; margin-bottom: 0.35rem;">Smart Resume Keyword &amp; ATS Evaluator</h2>
+                            <p style="color: var(--text-secondary); font-size: 0.92rem; margin: 0;">
+                                Upload your PDF resume or paste text to test ATS compliance against high-yield campus job role requirements.
+                            </p>
+                        </div>
+                        <a href="resume_builder.html" class="btn btn-outline btn-sm">
+                            <i class="fa-solid fa-file-pen"></i> Create / Edit in Resume Studio
+                        </a>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; align-items: start;" class="ats-grid-layout">
+                    <!-- Scanner Upload Form -->
+                    <div class="card">
+                        <h3 style="margin-bottom: 1.25rem; font-size: 1.15rem; color: var(--accent);">
+                            <i class="fa-solid fa-cloud-arrow-up" style="margin-right: 0.5rem;"></i> Resume Input &amp; Target Role
+                        </h3>
+
+                        <form id="atsScanForm">
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label">Target Placement Role</label>
+                                <select name="target_role" id="atsTargetRole" class="form-control">
+                                    <option value="AI/ML Engineer" selected>AI/ML Engineer</option>
+                                    <option value="Software Engineer">Software Engineer</option>
+                                    <option value="Full Stack Developer">Full Stack Developer</option>
+                                    <option value="Cloud / DevOps Engineer">Cloud / DevOps Engineer</option>
+                                    <option value="Data Analyst">Data Analyst</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1rem;">
+                                <label class="form-label">Upload Resume (PDF or TXT)</label>
+                                <div style="border: 2px dashed rgba(79, 70, 229, 0.35); border-radius: var(--radius-md); padding: 2rem; text-align: center; background: rgba(79, 70, 229, 0.04); cursor: pointer;" onclick="document.getElementById('fileInput').click()">
+                                    <i class="fa-solid fa-file-pdf" style="font-size: 2.5rem; color: var(--accent); margin-bottom: 0.75rem;"></i>
+                                    <div style="font-weight: 600; font-size: 0.95rem; color: var(--text-primary);">Click to browse or drag &amp; drop resume file</div>
+                                    <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">Supports (.pdf, .txt)</div>
+                                    <input type="file" id="fileInput" name="resume_file" accept=".pdf,.txt" style="display: none;" onchange="updateFileName(this)">
+                                    <div id="selectedFileName" style="margin-top: 0.75rem; font-weight: 600; color: #059669; font-size: 0.88rem;"></div>
+                                </div>
+                            </div>
+
+                            <div style="text-align: center; margin: 1rem 0; color: var(--text-muted); font-size: 0.85rem; font-weight: 700;">
+                                &mdash; OR PASTE RAW TEXT &mdash;
+                            </div>
+
+                            <div class="form-group" style="margin-bottom: 1.25rem;">
+                                <label class="form-label">Resume Content</label>
+                                <textarea name="resume_text" id="resumeTextInput" class="form-control" rows="5" placeholder="Paste your resume sections, skills, and project descriptions here..."></textarea>
+                            </div>
+
+                            <button type="submit" id="scanSubmitBtn" class="btn btn-primary" style="width: 100%; padding: 0.85rem;">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                                <span>Analyze ATS Match Score</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Live Scan Report Card -->
+                    <div class="card" id="atsReportCard">
+                        <div id="emptyPlaceholder" style="text-align: center; padding: 4rem 1rem; color: var(--text-muted);">
+                            <i class="fa-solid fa-file-shield" style="font-size: 3.5rem; margin-bottom: 1rem; opacity: 0.3;"></i>
+                            <h3 style="font-size: 1.25rem; color: var(--text-primary); margin-bottom: 0.35rem;">Awaiting Resume Scan</h3>
+                            <p style="font-size: 0.9rem;">Submit your resume on the left to view keyword match score and gap analysis.</p>
+                        </div>
+
+                        <div id="reportContent" style="display: none;">
+                            <!-- Header Score -->
+                            <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
+                                <div>
+                                    <span class="badge badge-primary" id="repRoleBadge">AI/ML Engineer Match</span>
+                                    <h3 style="font-size: 1.4rem; margin-top: 0.35rem;" id="repVerdict">Strong ATS Compatibility</h3>
+                                </div>
+                                <div style="text-align: right;">
+                                    <div style="font-size: 2.5rem; font-weight: 800; color: #10B981;" id="repScore">
+                                        88%
+                                    </div>
+                                    <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Match Score</div>
+                                </div>
+                            </div>
+
+                            <!-- Matched Skills -->
+                            <div style="margin-bottom: 1.25rem;">
+                                <div style="font-size: 0.85rem; font-weight: 700; color: #059669; margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-circle-check"></i> Matched Competencies (<span id="repMatchedCount">0</span>)
+                                </div>
+                                <div id="repMatchedWrap" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+                            </div>
+
+                            <!-- Missing Skills -->
+                            <div style="margin-bottom: 1.25rem;">
+                                <div style="font-size: 0.85rem; font-weight: 700; color: #E11D48; margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-triangle-exclamation"></i> Missing Role Keywords (<span id="repMissingCount">0</span>)
+                                </div>
+                                <div id="repMissingWrap" style="display: flex; flex-wrap: wrap; gap: 0.4rem;"></div>
+                            </div>
+
+                            <!-- Recommendations -->
+                            <div>
+                                <div style="font-size: 0.85rem; font-weight: 700; color: #D97706; margin-bottom: 0.5rem;">
+                                    <i class="fa-solid fa-lightbulb"></i> Recommended ATS Fixes
+                                </div>
+                                <ul id="repTipsList" style="padding-left: 1.25rem; font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6;"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Scan History Log -->
+                <div class="card" style="margin-top: 2rem;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.15rem;">Recent Scan Log</h3>
+                    <div class="table-responsive">
+                        <table class="styled-table">
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Score</th>
+                                    <th>Matched Keywords</th>
+                                    <th>Status</th>
+                                    <th>Timestamp</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>AI/ML Engineer</strong></td>
+                                    <td><span class="badge badge-success">88%</span></td>
+                                    <td style="font-size: 0.84rem;">Python, PyTorch, Deep Learning, Pandas, NumPy</td>
+                                    <td><span class="badge badge-primary">High Compatibility</span></td>
+                                    <td>Today</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Software Engineer</strong></td>
+                                    <td><span class="badge badge-success">85%</span></td>
+                                    <td style="font-size: 0.84rem;">Python, DSA, SQL, Git, OOPs, System Design</td>
+                                    <td><span class="badge badge-primary">Placement Ready</span></td>
+                                    <td>Yesterday</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="static/js/store.js"></script>
+    <script src="static/js/app.js"></script>
+    <script src="static/js/ats.js"></script>
+</body>
+</html>
+

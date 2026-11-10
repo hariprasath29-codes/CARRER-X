@@ -1,0 +1,772 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Placement Cell &amp; Student Performance Admin | CareerX</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        .admin-tab-btn {
+            border-radius: 999px;
+            padding: 0.4rem 1.1rem;
+            font-size: 0.84rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-primary);
+            transition: all 0.2s ease;
+        }
+        .admin-tab-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .admin-tab-btn.active {
+            background: var(--accent);
+            color: #FFFFFF;
+            border-color: var(--accent);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .admin-section {
+            display: none;
+        }
+        .admin-section.active {
+            display: block;
+        }
+        .form-card-box {
+            background: #F8FAFC;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="admin.html" class="brand-logo">
+                    <div class="logo-badge"><i class="fa-solid fa-shield-halved"></i></div>
+                    <span>Career<span style="color: var(--primary);">X</span> <span class="badge badge-warning" style="font-size: 0.65rem; padding: 2px 7px; margin-left: 4px; vertical-align: middle;">ADMIN</span></span>
+                </a>
+                <button id="mobileSidebarClose" class="mobile-sidebar-close" aria-label="Close sidebar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Administration Modules</div>
+                <a href="#overview-section" class="nav-item admin-nav-link active" data-tab="overview">
+                    <i class="fa-solid fa-chart-line"></i>
+                    <span>TPO Overview</span>
+                </a>
+                <a href="#performance-section" class="nav-item admin-nav-link" data-tab="performance">
+                    <i class="fa-solid fa-user-graduate"></i>
+                    <span>Student Performance</span>
+                </a>
+                <a href="#drives-section" class="nav-item admin-nav-link" data-tab="drives">
+                    <i class="fa-solid fa-building-columns"></i>
+                    <span>Campus Drives</span>
+                </a>
+                <a href="#applications-section" class="nav-item admin-nav-link" data-tab="applications">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Company Pipeline</span>
+                </a>
+                <a href="#questions-section" class="nav-item admin-nav-link" data-tab="questions">
+                    <i class="fa-solid fa-circle-question"></i>
+                    <span>Question Bank</span>
+                </a>
+                <a href="#notices-section" class="nav-item admin-nav-link" data-tab="notices">
+                    <i class="fa-solid fa-bullhorn"></i>
+                    <span>Placement Notices</span>
+                </a>
+
+                <div class="nav-section-title">Student Portal View</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                    <span>Switch to Student View</span>
+                </a>
+
+                <div class="sidebar-widget" style="margin-top: auto; padding: 0.95rem; border-radius: 12px; background: linear-gradient(135deg, rgba(5, 150, 105, 0.08), rgba(16, 185, 129, 0.03)); border: 1px solid rgba(5, 150, 105, 0.2); margin-top: 1.5rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #059669; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fa-solid fa-shield-halved"></i> TPO Office</span>
+                        <span class="badge badge-success" style="font-size: 0.62rem; padding: 2px 6px;">Live</span>
+                    </div>
+                    <div style="font-size: 0.84rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
+                        Placement Operations
+                    </div>
+                    <p style="font-size: 0.76rem; color: var(--text-secondary); margin: 0 0 0.65rem; line-height: 1.35;">
+                        Create corporate drives, export candidate rosters, and broadcast notices.
+                    </p>
+                    <button type="button" onclick="toggleDriveForm()" class="btn btn-primary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 0.4rem 0.6rem; text-align: center; justify-content: center; display: flex; background: #059669; border-color: #059669;">
+                        <i class="fa-solid fa-plus"></i> Post New Drive
+                    </button>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-mini-profile">
+                    <div class="user-avatar" style="background: #059669;">A</div>
+                    <div class="user-meta">
+                        <div class="name">Dr. K. Ramanathan</div>
+                        <div class="role">Chief Placement Officer</div>
+                    </div>
+                </div>
+                <a href="profile.html" title="Settings" style="color: var(--text-muted); padding: 5px;">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+            </div>
+        </aside>
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+        <main class="app-main">
+            <header class="app-header">
+                <div class="header-left">
+                    <button id="mobileNavToggle" class="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="header-title">TPO Administration &amp; Placement Operations Hub</h2>
+                </div>
+                <div class="header-right" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <button type="button" onclick="exportStudentsCSV()" class="btn btn-primary btn-sm">
+                        <i class="fa-solid fa-file-csv"></i> Export Roster CSV
+                    </button>
+                    <button type="button" onclick="exportPipelineCSV()" class="btn btn-outline btn-sm">
+                        <i class="fa-solid fa-download"></i> Export Pipeline CSV
+                    </button>
+                    <a href="login.html" class="btn btn-outline btn-sm logout-trigger" title="Sign Out">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- Top Command Header -->
+                <div class="card" style="margin-bottom: var(--spacing-standard); border-left: 4px solid var(--accent);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.35rem;">
+                                <span class="badge badge-warning"><i class="fa-solid fa-shield-halved"></i> TPO Officer Portal</span>
+                                <span class="badge badge-primary"><i class="fa-solid fa-circle-check"></i> Authorized Session</span>
+                            </div>
+                            <h2 style="font-size: 1.4rem; margin: 0; color: var(--text-primary); font-weight: 700;">
+                                Placement Operations &amp; Student Performance Command Center
+                            </h2>
+                            <p style="margin: 0.25rem 0 0; color: var(--text-secondary); font-size: 0.86rem;">
+                                Supervise registered candidates, manage campus recruitment drives, broadcast placement announcements, and track pipelines.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Module Switcher Tabs -->
+                <div class="card" style="margin-bottom: 1.5rem; padding: 0.75rem 1.25rem;">
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;" id="adminTabsBar">
+                        <button type="button" class="admin-tab-btn active" data-tab="overview"><i class="fa-solid fa-chart-line"></i> Overview</button>
+                        <button type="button" class="admin-tab-btn" data-tab="performance"><i class="fa-solid fa-user-graduate"></i> Student Performance</button>
+                        <button type="button" class="admin-tab-btn" data-tab="drives"><i class="fa-solid fa-building-columns"></i> Campus Drives</button>
+                        <button type="button" class="admin-tab-btn" data-tab="applications"><i class="fa-solid fa-briefcase"></i> Company Pipeline</button>
+                        <button type="button" class="admin-tab-btn" data-tab="questions"><i class="fa-solid fa-circle-question"></i> Question Bank</button>
+                        <button type="button" class="admin-tab-btn" data-tab="notices"><i class="fa-solid fa-bullhorn"></i> Placement Notices</button>
+                    </div>
+                </div>
+
+                <!-- 1. OVERVIEW SECTION -->
+                <div id="overview-section" class="admin-section active">
+                    <div class="stats-grid" style="margin-bottom: 1.5rem;">
+                        <div class="stat-card">
+                            <div class="stat-icon indigo"><i class="fa-solid fa-users"></i></div>
+                            <div class="stat-info">
+                                <div class="label">Registered Students</div>
+                                <div class="value" id="admTotalStudents">142</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon emerald"><i class="fa-solid fa-building-columns"></i></div>
+                            <div class="stat-info">
+                                <div class="label">Verified Campus Drives</div>
+                                <div class="value" id="admTotalDrives">6</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon cyan"><i class="fa-solid fa-briefcase"></i></div>
+                            <div class="stat-info">
+                                <div class="label">Pipeline Applications</div>
+                                <div class="value" id="admTotalApps">5</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon amber"><i class="fa-solid fa-gauge-high"></i></div>
+                            <div class="stat-info">
+                                <div class="label">Avg Placement Readiness</div>
+                                <div class="value">86.2%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 1rem; font-size: 1.15rem;"><i class="fa-solid fa-bolt" style="color: #F59E0B; margin-right: 0.4rem;"></i> Quick Operations</h3>
+                        <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                            <button type="button" onclick="switchAdminTab('drives')" class="btn btn-primary btn-sm"><i class="fa-solid fa-plus"></i> Post New Campus Drive</button>
+                            <button type="button" onclick="switchAdminTab('notices')" class="btn btn-outline btn-sm"><i class="fa-solid fa-bullhorn"></i> Broadcast Notice</button>
+                            <button type="button" onclick="switchAdminTab('questions')" class="btn btn-outline btn-sm"><i class="fa-solid fa-circle-question"></i> Add Question to Bank</button>
+                            <button type="button" onclick="exportStudentsCSV()" class="btn btn-outline btn-sm"><i class="fa-solid fa-file-csv"></i> Download Candidate Roster</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. STUDENT PERFORMANCE SECTION -->
+                <div id="performance-section" class="admin-section">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                            <h3 style="margin: 0; font-size: 1.2rem;">Student Placement Performance Roster</h3>
+                            <input type="text" id="adminStudentSearch" placeholder="Search candidate by name or role..." class="form-control" style="width: 250px; font-size: 0.85rem; padding: 0.4rem 0.85rem;" oninput="filterAdminStudents()">
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="styled-table" id="adminStudentsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Student</th>
+                                        <th>College / Department</th>
+                                        <th>Target Role</th>
+                                        <th>Aptitude</th>
+                                        <th>Assessment</th>
+                                        <th>Readiness</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. CAMPUS DRIVES SECTION -->
+                <div id="drives-section" class="admin-section">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                            <h3 style="margin: 0; font-size: 1.2rem;">Campus Recruitment Drives Manager</h3>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="toggleDriveForm()"><i class="fa-solid fa-plus"></i> Add New Drive</button>
+                        </div>
+
+                        <!-- Add Drive Drawer Form -->
+                        <div id="addDriveDrawer" class="form-card-box" style="display: none;">
+                            <h4 style="margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--accent);">Create Verified Campus Placement Drive</h4>
+                            <form id="adminDriveForm">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Company Name *</label>
+                                        <input type="text" id="admCompany" class="form-control" placeholder="e.g. Adobe Systems" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Role Title *</label>
+                                        <input type="text" id="admRole" class="form-control" placeholder="e.g. Software Engineer (MTS-1)" required>
+                                    </div>
+                                </div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Package (LPA) *</label>
+                                        <input type="number" step="0.5" id="admPackage" class="form-control" placeholder="e.g. 26.0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Min CGPA Required</label>
+                                        <input type="number" step="0.1" id="admMinCgpa" class="form-control" placeholder="e.g. 7.5" value="7.5">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Application Deadline *</label>
+                                        <input type="date" id="admDeadline" class="form-control" required>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 1.25rem;">
+                                    <label class="form-label">Drive Description &amp; Details</label>
+                                    <textarea id="admDesc" class="form-control" rows="2" placeholder="Eligibility criteria, technical tracks, and interview schedule..."></textarea>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                    <button type="button" onclick="toggleDriveForm()" class="btn btn-outline btn-sm">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Publish Campus Drive</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- Active Drives Table -->
+                        <div class="table-responsive">
+                            <table class="styled-table" id="adminDrivesTable">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Role</th>
+                                        <th>Package</th>
+                                        <th>Min CGPA</th>
+                                        <th>Deadline</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. PIPELINE SECTION -->
+                <div id="applications-section" class="admin-section">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                            <h3 style="margin: 0; font-size: 1.2rem;">Company Placement Pipeline</h3>
+                            <button type="button" onclick="exportPipelineCSV()" class="btn btn-outline btn-sm"><i class="fa-solid fa-file-csv"></i> Export Pipeline CSV</button>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="styled-table" id="adminPipelineTable">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Role</th>
+                                        <th>Candidate</th>
+                                        <th>Location</th>
+                                        <th>Package</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. QUESTION BANK SECTION -->
+                <div id="questions-section" class="admin-section">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                            <h3 style="margin: 0; font-size: 1.2rem;">Assessment &amp; Interview Question Bank</h3>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="toggleQuestionForm()"><i class="fa-solid fa-plus"></i> Add Question</button>
+                        </div>
+
+                        <!-- Add Question Drawer -->
+                        <div id="addQuestionDrawer" class="form-card-box" style="display: none;">
+                            <h4 style="margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--accent);">Add Question to Portal Bank</h4>
+                            <form id="adminQuestionForm">
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Type</label>
+                                        <select id="admQType" class="form-control" onchange="toggleQTypeFields(this.value)">
+                                            <option value="interview">Technical Interview</option>
+                                            <option value="aptitude">Aptitude Quiz</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Category / Domain *</label>
+                                        <input type="text" id="admQCat" class="form-control" placeholder="e.g. Python, DSA, Quantitative" required>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 1rem;">
+                                    <label class="form-label">Question Text *</label>
+                                    <textarea id="admQText" class="form-control" rows="2" placeholder="Write question prompt..." required></textarea>
+                                </div>
+
+                                <div id="interviewFields">
+                                    <div class="form-group" style="margin-bottom: 1rem;">
+                                        <label class="form-label">Model Benchmark Answer *</label>
+                                        <textarea id="admQAns" class="form-control" rows="3" placeholder="Write comprehensive evaluator model answer..."></textarea>
+                                    </div>
+                                </div>
+
+                                <div id="aptitudeFields" style="display: none;">
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                        <input type="text" id="admOptA" class="form-control" placeholder="Option A">
+                                        <input type="text" id="admOptB" class="form-control" placeholder="Option B">
+                                        <input type="text" id="admOptC" class="form-control" placeholder="Option C">
+                                        <input type="text" id="admOptD" class="form-control" placeholder="Option D">
+                                    </div>
+                                    <div class="form-group" style="margin-bottom: 1rem;">
+                                        <label class="form-label">Correct Option</label>
+                                        <select id="admCorrectOpt" class="form-control">
+                                            <option value="A">A</option>
+                                            <option value="B">B</option>
+                                            <option value="C">C</option>
+                                            <option value="D">D</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                    <button type="button" onclick="toggleQuestionForm()" class="btn btn-outline btn-sm">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Save to Bank</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="table-responsive">
+                            <table class="styled-table" id="adminQuestionsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Domain</th>
+                                        <th>Difficulty</th>
+                                        <th>Question</th>
+                                        <th>Concepts</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <!-- Rendered dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. PLACEMENT NOTICES SECTION -->
+                <div id="notices-section" class="admin-section">
+                    <div class="card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                            <h3 style="margin: 0; font-size: 1.2rem;">Placement Cell Broadcast Announcements</h3>
+                            <button type="button" class="btn btn-primary btn-sm" onclick="toggleNoticeForm()"><i class="fa-solid fa-plus"></i> New Notice</button>
+                        </div>
+
+                        <!-- Add Notice Form -->
+                        <div id="addNoticeDrawer" class="form-card-box" style="display: none;">
+                            <h4 style="margin-top: 0; margin-bottom: 1rem; font-size: 1rem; color: var(--accent);">Publish Notice to Candidate Dashboard</h4>
+                            <form id="adminNoticeForm">
+                                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                                    <div class="form-group">
+                                        <label class="form-label">Notice Title *</label>
+                                        <input type="text" id="admNoticeTitle" class="form-control" placeholder="e.g. Google Shortlist Released" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Priority</label>
+                                        <select id="admNoticePriority" class="form-control">
+                                            <option value="Normal">Normal</option>
+                                            <option value="High">High</option>
+                                            <option value="Urgent">Urgent</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 1.25rem;">
+                                    <label class="form-label">Notice Content *</label>
+                                    <textarea id="admNoticeContent" class="form-control" rows="3" placeholder="Full announcement text..." required></textarea>
+                                </div>
+                                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                                    <button type="button" onclick="toggleNoticeForm()" class="btn btn-outline btn-sm">Cancel</button>
+                                    <button type="submit" class="btn btn-primary btn-sm">Publish Notice</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="adminNoticesList">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="static/js/store.js"></script>
+    <script>
+        // Access Control Guard: Restrict TPO Admin Portal to Placement Officers only
+        (function checkAdminAccess() {
+            if (window.CareerXStore) {
+                window.CareerXStore.init();
+                const user = window.CareerXStore.getUser();
+                if (!user || user.role !== 'admin') {
+                    alert("Access Denied: The TPO Admin Portal is restricted to Placement Officers only.");
+                    window.location.replace("dashboard.html");
+                }
+            }
+        })();
+    </script>
+    <script src="static/js/app.js"></script>
+    <script>
+        // Tab switching logic
+        function switchAdminTab(tabName) {
+            document.querySelectorAll('#adminTabsBar .admin-tab-btn, .admin-nav-link').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-tab') === tabName);
+            });
+            document.querySelectorAll('.admin-section').forEach(sec => {
+                sec.classList.toggle('active', sec.id === tabName + '-section');
+            });
+        }
+
+        document.querySelectorAll('#adminTabsBar .admin-tab-btn, .admin-nav-link').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                const tab = btn.getAttribute('data-tab');
+                if (tab) switchAdminTab(tab);
+            });
+        });
+
+        function toggleDriveForm() {
+            const drawer = document.getElementById('addDriveDrawer');
+            drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleNoticeForm() {
+            const drawer = document.getElementById('addNoticeDrawer');
+            drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function toggleQuestionForm() {
+            const drawer = document.getElementById('addQuestionDrawer');
+            drawer.style.display = drawer.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Render functions
+        function renderAdminStudents() {
+            const tbody = document.querySelector('#adminStudentsTable tbody');
+            if (!tbody || !window.CareerXStore) return;
+            const students = window.CareerXStore.getLeaderboard();
+
+            const totEl = document.getElementById('admTotalStudents');
+            if (totEl) totEl.textContent = students.length;
+
+            tbody.innerHTML = students.map(s => `
+                <tr class="student-row" data-search="${(s.full_name + ' ' + s.target_role).toLowerCase()}">
+                    <td>
+                        <strong style="color: var(--text-primary); font-size: 0.95rem;">${s.full_name}</strong>
+                        <div style="font-size: 0.78rem; color: var(--text-muted);">@${s.username}</div>
+                    </td>
+                    <td>${s.college}</td>
+                    <td><span class="badge badge-primary">${s.target_role}</span></td>
+                    <td><strong>${s.avg_aptitude}%</strong></td>
+                    <td><strong>${s.avg_interview}/10</strong></td>
+                    <td><strong style="color: #059669;">${s.composite_score}%</strong></td>
+                    <td><span class="badge badge-success">Verified</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function filterAdminStudents() {
+            const term = (document.getElementById('adminStudentSearch')?.value || '').toLowerCase().trim();
+            document.querySelectorAll('#adminStudentsTable .student-row').forEach(row => {
+                const text = row.getAttribute('data-search') || '';
+                row.style.display = (!term || text.includes(term)) ? '' : 'none';
+            });
+        }
+
+        function renderAdminDrives() {
+            const tbody = document.querySelector('#adminDrivesTable tbody');
+            if (!tbody || !window.CareerXStore) return;
+            const drives = window.CareerXStore.getDrives();
+            const countEl = document.getElementById('admTotalDrives');
+            if (countEl) countEl.textContent = drives.length;
+
+            tbody.innerHTML = drives.map(d => `
+                <tr>
+                    <td><strong style="color: var(--text-primary);">${d.company}</strong></td>
+                    <td>${d.role}</td>
+                    <td><strong style="color: var(--accent);">${parseFloat(d.package_lpa || 10).toFixed(1)} LPA</strong></td>
+                    <td>${d.min_cgpa || 7.0} CGPA</td>
+                    <td>${d.deadline || 'Upcoming'}</td>
+                    <td><span class="badge ${d.status === 'Closed' ? 'badge-danger' : 'badge-success'}">${d.status || 'Open'}</span></td>
+                    <td>
+                        <button type="button" onclick="handleAdminDeleteDrive('${d.id}')" style="background: transparent; border: none; color: #EF4444; cursor: pointer; padding: 4px 8px; font-size: 0.85rem;" title="Remove Drive">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        window.handleAdminDeleteDrive = function(driveId) {
+            if (confirm("Are you sure you want to remove this placement drive?")) {
+                if (window.CareerXStore) {
+                    window.CareerXStore.deleteDrive(driveId);
+                    renderAdminDrives();
+                    if (window.showToast) window.showToast("Drive removed from portal.", "info");
+                }
+            }
+        };
+
+        function renderAdminPipeline() {
+            const tbody = document.querySelector('#adminPipelineTable tbody');
+            if (!tbody || !window.CareerXStore) return;
+            const apps = window.CareerXStore.getApplications();
+            const countEl = document.getElementById('admTotalApps');
+            if (countEl) countEl.textContent = apps.length;
+
+            tbody.innerHTML = apps.map(a => `
+                <tr>
+                    <td><strong style="color: var(--text-primary);">${a.company}</strong></td>
+                    <td>${a.role}</td>
+                    <td><strong>${a.student_name || 'Rahul Sharma'}</strong> <span style="font-size: 0.74rem; color: var(--text-muted);">(${a.student_username || 'student'})</span></td>
+                    <td>${a.location || 'Campus Selection'}</td>
+                    <td><strong>${a.salary_lpa} LPA</strong></td>
+                    <td><span class="badge ${a.status === 'Offer' ? 'badge-success' : (a.status === 'Interview' ? 'badge-primary' : 'badge-warning')}">${a.status}</span></td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminQuestions() {
+            const tbody = document.querySelector('#adminQuestionsTable tbody');
+            if (!tbody || !window.CareerXStore) return;
+            const questions = window.CareerXStore.getInterviewQuestions('All');
+
+            tbody.innerHTML = questions.map(q => `
+                <tr>
+                    <td><span class="badge badge-primary">${q.category}</span></td>
+                    <td><span class="badge badge-warning">${q.difficulty || 'Medium'}</span></td>
+                    <td style="max-width: 380px;"><strong>${q.question}</strong></td>
+                    <td style="font-size: 0.82rem; color: var(--text-muted);">${q.key_points || 'Fundamentals'}</td>
+                </tr>
+            `).join('');
+        }
+
+        function renderAdminNotices() {
+            const container = document.getElementById('adminNoticesList');
+            if (!container || !window.CareerXStore) return;
+            const notices = window.CareerXStore.getNotices();
+
+            container.innerHTML = notices.map(n => `
+                <div class="card" style="padding: 1.25rem; margin-bottom: 1rem; border-left: 4px solid ${n.priority === 'Urgent' ? '#EF4444' : (n.priority === 'High' ? '#F59E0B' : '#6366F1')};">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="badge ${n.priority === 'Urgent' ? 'badge-danger' : (n.priority === 'High' ? 'badge-warning' : 'badge-primary')}">${n.priority}</span>
+                            <strong style="font-size: 1rem; color: var(--text-primary);">${n.title}</strong>
+                        </div>
+                        <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-user-tie"></i> ${n.posted_by || 'TPO Office'}</span>
+                    </div>
+                    <p style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">${n.content}</p>
+                </div>
+            `).join('');
+        }
+
+        // CSV Exports (Generated 100% in browser)
+        function exportStudentsCSV() {
+            const students = window.CareerXStore.getLeaderboard();
+            let csv = "Rank,Student Name,Username,College,Target Role,Aptitude (%),Assessment (/10),Composite Readiness (%)\n";
+            students.forEach(s => {
+                csv += `"${s.rank}","${s.full_name}","${s.username}","${s.college}","${s.target_role}","${s.avg_aptitude}","${s.avg_interview}","${s.composite_score}"\n`;
+            });
+
+            downloadCSV(csv, 'careerx_candidates_roster.csv');
+            if (window.showToast) window.showToast("Candidate roster exported successfully!", "success");
+        }
+
+        function exportPipelineCSV() {
+            const apps = window.CareerXStore.getApplications();
+            let csv = "Application ID,Company,Role,Location,Package (LPA),Apply Date,Status,Notes\n";
+            apps.forEach(a => {
+                csv += `"${a.id}","${a.company}","${a.role}","${a.location}","${a.salary_lpa}","${a.apply_date}","${a.status}","${(a.notes || '').replace(/"/g, '""')}"\n`;
+            });
+
+            downloadCSV(csv, 'careerx_applications_pipeline.csv');
+            if (window.showToast) window.showToast("Application pipeline exported successfully!", "success");
+        }
+
+        function downloadCSV(csvContent, filename) {
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderAdminStudents();
+            renderAdminDrives();
+            renderAdminPipeline();
+            renderAdminQuestions();
+            renderAdminNotices();
+
+            // Drive form submission
+            const driveForm = document.getElementById('adminDriveForm');
+            if (driveForm) {
+                driveForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const newDrive = {
+                        company: document.getElementById('admCompany').value.trim(),
+                        role: document.getElementById('admRole').value.trim(),
+                        package_lpa: parseFloat(document.getElementById('admPackage').value || 10),
+                        min_cgpa: parseFloat(document.getElementById('admMinCgpa').value || 7.0),
+                        deadline: document.getElementById('admDeadline').value,
+                        description: document.getElementById('admDesc').value.trim(),
+                        location: 'Campus Selection',
+                        status: 'Open'
+                    };
+                    window.CareerXStore.addDrive(newDrive);
+                    renderAdminDrives();
+                    toggleDriveForm();
+                    driveForm.reset();
+                    if (window.showToast) window.showToast("Campus recruitment drive published! Now visible to students on Dashboard & Job Tracker.", "success");
+                });
+            }
+
+            // Notice form submission
+            const noticeForm = document.getElementById('adminNoticeForm');
+            if (noticeForm) {
+                noticeForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const newNotice = {
+                        title: document.getElementById('admNoticeTitle').value.trim(),
+                        priority: document.getElementById('admNoticePriority').value,
+                        content: document.getElementById('admNoticeContent').value.trim(),
+                        posted_by: 'TPO Placement Cell'
+                    };
+                    window.CareerXStore.addNotice(newNotice);
+                    renderAdminNotices();
+                    toggleNoticeForm();
+                    noticeForm.reset();
+                    if (window.showToast) window.showToast("Placement notice broadcasted to candidates!", "success");
+                });
+            }
+
+            // Question form submission
+            const qForm = document.getElementById('adminQuestionForm');
+            if (qForm) {
+                qForm.addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    const type = document.getElementById('admQType').value;
+                    const cat = document.getElementById('admQCat').value.trim();
+                    const text = document.getElementById('admQText').value.trim();
+
+                    if (type === 'interview') {
+                        const ans = document.getElementById('admQAns').value.trim();
+                        window.CareerXStore.addInterviewQuestion({
+                            category: cat,
+                            question: text,
+                            model_answer: ans,
+                            difficulty: 'Medium'
+                        });
+                        renderAdminQuestions();
+                    } else {
+                        const optA = document.getElementById('admOptA').value.trim();
+                        const optB = document.getElementById('admOptB').value.trim();
+                        const optC = document.getElementById('admOptC').value.trim();
+                        const optD = document.getElementById('admOptD').value.trim();
+                        const correct = document.getElementById('admCorrectOpt').value;
+                        window.CareerXStore.addAptitudeQuestion({
+                            category: cat,
+                            question: text,
+                            options: { A: optA, B: optB, C: optC, D: optD },
+                            correct: correct,
+                            explanation: `Correct option is ${correct}.`
+                        });
+                    }
+
+                    toggleQuestionForm();
+                    qForm.reset();
+                    if (window.showToast) window.showToast("Question added to portal bank!", "success");
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

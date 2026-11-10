@@ -1,9 +1,20 @@
-// ATS Resume Scanner Client Logic (ats.js)
+// CareerX - ATS Resume Scanner (ats.js)
+// Analyzes resume text against target role skills and benchmarks keyword density
 
 function updateFileName(input) {
     if (input.files && input.files[0]) {
         const nameEl = document.getElementById('selectedFileName');
         if (nameEl) nameEl.textContent = "Selected: " + input.files[0].name;
+
+        // Auto-read file text if txt
+        if (input.files[0].type === "text/plain") {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const textInput = document.getElementById('resumeTextInput');
+                if (textInput) textInput.value = e.target.result;
+            };
+            reader.readAsText(input.files[0]);
+        }
     }
 }
 
@@ -11,38 +22,31 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('atsScanForm');
     if (!form) return;
 
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', (e) => {
         e.preventDefault();
         const btn = document.getElementById('scanSubmitBtn');
         btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Scanning Resume with AI...`;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Scanning Resume with Heuristics...`;
 
-        const formData = new FormData(form);
+        const textInput = document.getElementById('resumeTextInput');
+        const roleSelect = document.getElementById('atsTargetRole');
+        const text = (textInput ? textInput.value : "") || "python pytorch deep learning sql git docker rest api data structures algorithms";
+        const role = roleSelect ? roleSelect.value : "AI/ML Engineer";
 
-        try {
-            const res = await fetch('/api/ats-scan', {
-                method: 'POST',
-                body: formData
-            });
-            const data = await res.json();
-
-            if (data.success && data.report) {
-                renderScanReport(data.report);
-                window.showToast("Resume scan complete!", "success");
-            } else {
-                window.showToast(data.error || "Scan failed.", "danger");
+        setTimeout(() => {
+            const report = generateClientATSReport(text, role);
+            renderScanReport(report);
+            if (window.showToast) {
+                window.showToast("Resume scan complete! Score: " + report.score + "%", "success");
             }
-        } catch (err) {
-            // Standalone Live Server fallback: client-side keyword heuristic engine
-            const text = formData.get('resume_text') || "software engineer python sql javascript react";
-            const role = formData.get('target_role') || "Software Engineer";
-            const mockReport = generateClientATSReport(text, role);
-            renderScanReport(mockReport);
-            window.showToast("Resume analyzed locally (Live Server mode)!", "success");
-        } finally {
+
+            if (window.CareerXStore) {
+                window.CareerXStore.updateDiagnostics({ ats: report.score });
+            }
+
             btn.disabled = false;
             btn.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles"></i> <span>Analyze ATS Match Score</span>`;
-        }
+        }, 500);
     });
 });
 
@@ -98,13 +102,13 @@ function generateClientATSReport(text, role) {
     const targetList = roleKeywords[role] || roleKeywords['Software Engineer'];
     const matched = targetList.filter(k => lower.includes(k.toLowerCase()));
     const missing = targetList.filter(k => !lower.includes(k.toLowerCase()));
-    const score = Math.min(95, Math.max(52, Math.round((matched.length / targetList.length) * 100) || 78));
+    const score = Math.min(96, Math.max(62, Math.round((matched.length / targetList.length) * 100) || 84));
 
     return {
         target_role: role,
         score: score,
         verdict: score >= 75 ? 'Strong Match – Campus Placement Ready' : 'Moderate Match – Keyword Gaps Identified',
-        matched_skills: matched.length > 0 ? matched : ['Python', 'SQL', 'Git', 'Data Structures'],
+        matched_skills: matched.length > 0 ? matched : ['Python', 'SQL', 'Git', 'Data Structures', 'PyTorch'],
         missing_skills: missing.length > 0 ? missing.slice(0, 4) : ['Docker', 'System Design', 'CI/CD'],
         recommendations: [
             'Quantify project outcomes using the Google X-Y-Z formula (e.g., <em>"Accelerated query performance by 40%"</em>).',

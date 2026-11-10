@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | CareerX – Placement Assistant</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            background: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.07) 0px, transparent 50%), #F8FAFC;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 440px;
+            background: #FFFFFF;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: 20px;
+            padding: 2.2rem;
+            box-shadow: 0 18px 40px -12px rgba(79, 70, 229, 0.09);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 1.25rem;
+        }
+        .auth-badge {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.4rem;
+            margin: 0 auto 0.75rem;
+            box-shadow: 0 6px 18px rgba(79, 70, 229, 0.25);
+        }
+        .auth-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .auth-sub {
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            margin-top: 0.35rem;
+        }
+        .form-icon-wrap {
+            position: relative;
+            margin-top: 0.35rem;
+        }
+        .form-icon-wrap i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+        .form-icon-wrap .form-control {
+            width: 100%;
+            padding: 0.72rem 0.85rem 0.72rem 38px;
+            border-radius: 8px;
+            border: 1px solid #CBD5E1;
+            font-size: 0.92rem;
+            box-sizing: border-box;
+        }
+        .form-icon-wrap .form-control:focus {
+            outline: none;
+            border-color: #6366F1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+        }
+        .demo-box {
+            background: #F8FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 12px;
+            padding: 0.85rem;
+            margin-bottom: 1.25rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-badge">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h1 class="auth-title">Welcome to Career<span style="color: var(--accent);">X</span></h1>
+                <p class="auth-sub">Sign in to access your placement dashboard</p>
+            </div>
+
+            <div id="loginFeedback" style="display: none; margin-bottom: 1rem; padding: 0.65rem 0.9rem; border-radius: 8px; font-size: 0.88rem;"></div>
+
+            <!-- 1-Click 6 Demo Students + Admin -->
+            <div class="demo-box" style="margin-bottom: 1.25rem; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 10px; padding: 0.85rem 1rem;">
+                <div style="font-size: 0.8rem; font-weight: 700; color: #4F46E5; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
+                    <span><i class="fa-solid fa-users"></i> Instant Demo (6 Students):</span>
+                    <button type="button" id="demoAdminBtn" class="btn btn-outline btn-sm" style="font-size: 0.74rem; padding: 2px 8px; color: #059669; border-color: #A7F3D0; font-weight: 600;">
+                        <i class="fa-solid fa-shield-halved"></i> Admin Demo
+                    </button>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem;">
+                    <button type="button" class="btn btn-outline btn-sm demo-student-btn" data-user="student" data-pass="student123" style="text-align: left; font-size: 0.78rem; padding: 6px 8px; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 22px; height: 22px; border-radius: 50%; background: #EEF2FF; color: #4F46E5; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.72rem;">R</span>
+                        <div style="overflow: hidden; line-height: 1.2;">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rahul S.</div>
+                            <div style="font-size: 0.68rem; color: #64748B;">AI/ML Eng.</div>
+                        </div>
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm demo-student-btn" data-user="priya" data-pass="priya123" style="text-align: left; font-size: 0.78rem; padding: 6px 8px; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 22px; height: 22px; border-radius: 50%; background: #ECFDF5; color: #059669; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.72rem;">P</span>
+                        <div style="overflow: hidden; line-height: 1.2;">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Priya Patel</div>
+                            <div style="font-size: 0.68rem; color: #64748B;">Software Eng.</div>
+                        </div>
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm demo-student-btn" data-user="ananya" data-pass="ananya123" style="text-align: left; font-size: 0.78rem; padding: 6px 8px; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 22px; height: 22px; border-radius: 50%; background: #FDF2F8; color: #DB2777; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.72rem;">A</span>
+                        <div style="overflow: hidden; line-height: 1.2;">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Ananya Iyer</div>
+                            <div style="font-size: 0.68rem; color: #64748B;">Full Stack</div>
+                        </div>
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm demo-student-btn" data-user="rohan" data-pass="rohan123" style="text-align: left; font-size: 0.78rem; padding: 6px 8px; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 22px; height: 22px; border-radius: 50%; background: #EFF6FF; color: #2563EB; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.72rem;">R</span>
+                        <div style="overflow: hidden; line-height: 1.2;">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Rohan Verma</div>
+                            <div style="font-size: 0.68rem; color: #64748B;">Cloud/DevOps</div>
+                        </div>
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm demo-student-btn" data-user="siddharth" data-pass="sid123" style="text-align: left; font-size: 0.78rem; padding: 6px 8px; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 22px; height: 22px; border-radius: 50%; background: #FFFBEB; color: #D97706; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.72rem;">S</span>
+                        <div style="overflow: hidden; line-height: 1.2;">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Siddharth N.</div>
+                            <div style="font-size: 0.68rem; color: #64748B;">Data Analyst</div>
+                        </div>
+                    </button>
+                    <button type="button" class="btn btn-outline btn-sm demo-student-btn" data-user="sneha" data-pass="sneha123" style="text-align: left; font-size: 0.78rem; padding: 6px 8px; display: flex; align-items: center; gap: 6px;">
+                        <span style="width: 22px; height: 22px; border-radius: 50%; background: #F5F3FF; color: #7C3AED; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 0.72rem;">S</span>
+                        <div style="overflow: hidden; line-height: 1.2;">
+                            <div style="font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Sneha Reddy</div>
+                            <div style="font-size: 0.68rem; color: #64748B;">Cybersecurity</div>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Username or Email</label>
+                    <div class="form-icon-wrap">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" id="usernameInput" class="form-control" placeholder="e.g. student or admin" required autofocus>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.25rem;">
+                    <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Password</label>
+                    <div class="form-icon-wrap">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" id="passwordInput" class="form-control" placeholder="Enter password" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-size: 0.95rem; font-weight: 600;">
+                    <span>Sign In to Dashboard</span>
+                    <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.25rem; font-size: 0.88rem; color: #64748B;">
+                New candidate? <a href="register.html" style="font-weight: 600; color: #4F46E5; text-decoration: none;">Create an Account</a>
+            </div>
+            <div style="text-align: center; margin-top: 0.5rem; font-size: 0.82rem;">
+                <a href="index.html" style="color: #64748B; text-decoration: none;"><i class="fa-solid fa-house"></i> Back to Portal Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/store.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('usernameInput');
+            const passwordInput = document.getElementById('passwordInput');
+            const feedback = document.getElementById('loginFeedback');
+
+            function showMsg(msg, isErr) {
+                feedback.style.display = 'block';
+                feedback.style.background = isErr ? '#FEF2F2' : '#ECFDF5';
+                feedback.style.color = isErr ? '#DC2626' : '#059669';
+                feedback.style.border = isErr ? '1px solid #FECACA' : '1px solid #A7F3D0';
+                feedback.textContent = msg;
+            }
+
+            function proceed(user) {
+                showMsg(`Welcome back, ${user.full_name || user.username}! Signing in...`, false);
+                setTimeout(() => {
+                    if (user.role === 'admin') {
+                        window.location.href = 'admin.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 350);
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const u = usernameInput.value.trim();
+                const p = passwordInput.value;
+                const res = window.CareerXStore.login(u, p);
+                if (res.success) {
+                    proceed(res.user);
+                } else {
+                    showMsg(res.error || 'Invalid credentials.', true);
+                }
+            });
+
+            document.querySelectorAll('.demo-student-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const u = btn.getAttribute('data-user');
+                    const p = btn.getAttribute('data-pass');
+                    usernameInput.value = u;
+                    passwordInput.value = p;
+                    const res = window.CareerXStore.login(u, p);
+                    if (res.success) proceed(res.user);
+                });
+            });
+
+            const demoAdmin = document.getElementById('demoAdminBtn');
+            if (demoAdmin) {
+                demoAdmin.addEventListener('click', () => {
+                    usernameInput.value = 'admin';
+                    passwordInput.value = 'admin123';
+                    const res = window.CareerXStore.login('admin', 'admin123');
+                    if (res.success) proceed(res.user);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register | CareerX – Placement Assistant</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+    <style>
+        .auth-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2.5rem 1.5rem;
+            background: radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.08) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.07) 0px, transparent 50%), #F8FAFC;
+        }
+        .auth-card {
+            width: 100%;
+            max-width: 580px;
+            background: #FFFFFF;
+            border: 1px solid rgba(226, 232, 240, 0.95);
+            border-radius: 20px;
+            padding: 2.5rem 2.25rem;
+            box-shadow: 0 20px 40px -15px rgba(79, 70, 229, 0.08);
+        }
+        .auth-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .auth-badge {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #4F46E5, #6366F1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.45rem;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25);
+        }
+        .auth-title {
+            font-size: 1.7rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
+        }
+        .auth-sub {
+            color: var(--text-muted);
+            font-size: 0.92rem;
+            margin-top: 0.35rem;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 600px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="auth-badge">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h1 class="auth-title">Create Candidate Profile</h1>
+                <p class="auth-sub">Start your placement preparation journey with Career<span style="color: var(--accent);">X</span></p>
+            </div>
+
+            <div id="regFeedback" style="display: none; margin-bottom: 1.25rem; padding: 0.75rem 1rem; border-radius: 8px; font-size: 0.88rem;"></div>
+
+            <form id="registerForm">
+                <div class="grid-2">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Username *</label>
+                        <input type="text" id="regUsername" class="form-control" placeholder="e.g. rahul_s" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Full Name *</label>
+                        <input type="text" id="regFullName" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Email Address *</label>
+                        <input type="email" id="regEmail" class="form-control" placeholder="name@college.edu" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Password *</label>
+                        <input type="password" id="regPassword" class="form-control" placeholder="Create password" required minlength="4">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">College / University</label>
+                        <input type="text" id="regCollege" class="form-control" placeholder="e.g. NIT Trichy" value="NIT Trichy">
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Branch / Department</label>
+                        <input type="text" id="regBranch" class="form-control" placeholder="e.g. Computer Science" value="AI & Data Science">
+                    </div>
+                </div>
+
+                <div class="grid-2">
+                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Graduation Year</label>
+                        <select id="regGradYear" class="form-control">
+                            <option value="2025" selected>2025</option>
+                            <option value="2026">2026</option>
+                            <option value="2027">2027</option>
+                            <option value="2028">2028</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.25rem;">
+                        <label class="form-label" style="font-weight: 600; font-size: 0.86rem;">Target Placement Role</label>
+                        <select id="regRole" class="form-control">
+                            <option value="Software Engineer">Software Engineer</option>
+                            <option value="AI/ML Engineer" selected>AI/ML Engineer</option>
+                            <option value="Full Stack Developer">Full Stack Developer</option>
+                            <option value="Data Analyst">Data Analyst</option>
+                            <option value="Cloud / DevOps Engineer">Cloud / DevOps Engineer</option>
+                            <option value="Cybersecurity Analyst">Cybersecurity Analyst</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 0.96rem; font-weight: 600;">
+                    <span>Complete Registration</span>
+                    <i class="fa-solid fa-arrow-right" style="margin-left: 6px;"></i>
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+                Already have an account? <a href="login.html" style="font-weight: 600; color: var(--accent);">Sign In</a>
+            </div>
+            <div style="text-align: center; margin-top: 0.5rem; font-size: 0.82rem;">
+                <a href="index.html" style="color: #64748B; text-decoration: none;"><i class="fa-solid fa-house"></i> Home</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/js/store.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const form = document.getElementById('registerForm');
+            const feedback = document.getElementById('regFeedback');
+
+            function showMsg(msg, isErr) {
+                feedback.style.display = 'block';
+                feedback.style.background = isErr ? '#FEF2F2' : '#ECFDF5';
+                feedback.style.color = isErr ? '#DC2626' : '#059669';
+                feedback.style.border = isErr ? '1px solid #FECACA' : '1px solid #A7F3D0';
+                feedback.textContent = msg;
+            }
+
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const payload = {
+                    username: document.getElementById('regUsername').value.trim(),
+                    full_name: document.getElementById('regFullName').value.trim(),
+                    email: document.getElementById('regEmail').value.trim(),
+                    password: document.getElementById('regPassword').value,
+                    college: document.getElementById('regCollege').value.trim(),
+                    branch: document.getElementById('regBranch').value.trim(),
+                    grad_year: document.getElementById('regGradYear').value,
+                    target_role: document.getElementById('regRole').value,
+                    role: 'student'
+                };
+
+                const res = window.CareerXStore.register(payload);
+                if (res.success) {
+                    showMsg("Registration successful! Redirecting to Dashboard...", false);
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } else {
+                    showMsg(res.error || "Registration failed.", true);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

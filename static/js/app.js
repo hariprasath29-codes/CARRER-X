@@ -1,53 +1,76 @@
-// Global Application Utilities (app.js)
+// CareerX - Common Application Scripts (app.js)
+// Handles sidebar navigation, user sessions, active links, and UI helpers
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
+    if (window.CareerXStore) {
+        window.CareerXStore.init();
+    }
+    syncUserProfileUI();
     initMobileNav();
     highlightActiveNav();
+    initSidebarScrollPersistence();
     initBackendStatusBadge();
 });
 
-// Check & update server badge if present on page
-async function initBackendStatusBadge() {
+// Update student profile in sidebar
+function syncUserProfileUI() {
+    if (!window.CareerXStore) return;
+    const user = window.CareerXStore.getUser();
+    if (!user) return;
+
+    // Mini profile in sidebar
+    const avatarEl = document.querySelector('.user-mini-profile .user-avatar');
+    const nameEl = document.querySelector('.user-mini-profile .name');
+    const roleEl = document.querySelector('.user-mini-profile .role');
+
+    if (avatarEl) {
+        const initial = (user.full_name || user.username || 'S').charAt(0).toUpperCase();
+        avatarEl.textContent = initial;
+    }
+    if (nameEl) {
+        nameEl.textContent = user.full_name || user.username;
+    }
+    if (roleEl) {
+        roleEl.textContent = user.role === 'admin' ? 'Placement Officer' : (user.target_role || 'Student');
+    }
+
+    // Hide admin navigation for student users
+    if (user.role !== 'admin') {
+        document.querySelectorAll('a[href*="admin.html"], .admin-only').forEach(el => {
+            el.closest('.nav-item')?.remove() || el.remove();
+        });
+    }
+
+    // Setup logout buttons
+    document.querySelectorAll('.logout-trigger, a[href*="logout"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (window.CareerXStore) window.CareerXStore.logout();
+            window.location.href = 'login.html';
+        });
+    });
+}
+
+// System status indicator badge in header
+function initBackendStatusBadge() {
     const badge = document.getElementById('backendStatusBadge') || document.getElementById('serverStatusBadge');
     if (!badge) return;
 
     const badgeText = document.getElementById('backendStatusText') || badge.querySelector('span:not(.pulse-dot)');
     const pulseDot = badge.querySelector('.pulse-dot');
 
-    try {
-        const healthUrl = (window.location.port === '5500' || window.location.port === '5501' || window.location.protocol === 'file:')
-            ? 'http://127.0.0.1:5000/api/health'
-            : '/api/health';
-        const res = await fetch(healthUrl, { signal: controller.signal });
-        clearTimeout(timeoutId);
-
-        if (res.ok) {
-            badge.style.background = 'rgba(16, 185, 129, 0.15)';
-            badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
-            badge.style.color = '#34D399';
-            if (badgeText) badgeText.innerText = 'Connected: Flask Engine (5000)';
-            if (pulseDot) {
-                pulseDot.style.background = '#10B981';
-                pulseDot.style.boxShadow = '0 0 8px #10B981';
-            }
-            return;
-        }
-    } catch (e) {
-        // Backend offline / unreachable
-    }
-
-    badge.style.background = 'rgba(99, 102, 241, 0.15)';
-    badge.style.borderColor = 'rgba(99, 102, 241, 0.4)';
-    badge.style.color = '#A5B4FC';
-    if (badgeText) badgeText.innerText = 'Live Server Standalone (5500)';
+    badge.style.background = 'rgba(16, 185, 129, 0.15)';
+    badge.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+    badge.style.color = '#059669';
+    if (badgeText) badgeText.innerText = 'System Status: Active';
     if (pulseDot) {
-        pulseDot.style.background = '#818CF8';
-        pulseDot.style.boxShadow = '0 0 8px #818CF8';
+        pulseDot.style.background = '#10B981';
+        pulseDot.style.boxShadow = '0 0 8px #10B981';
     }
 }
 
-// Enforce Permanent Clean Light Theme
+// Enforce Clean Light Theme
 function initTheme() {
     localStorage.setItem('careerx_theme', 'light');
     localStorage.setItem('careerx-theme', 'light');
@@ -88,22 +111,74 @@ function initMobileNav() {
     });
 }
 
-// Active Nav Item highlighting based on pathname
+// Active Nav Item highlighting based on HTML filename
 function highlightActiveNav() {
-    const currentPath = window.location.pathname;
+    const rawPath = window.location.pathname.toLowerCase();
+    const cleanPath = rawPath.split('?')[0].split('#')[0];
+    let filename = cleanPath.substring(cleanPath.lastIndexOf('/') + 1);
+    
+    // Default to dashboard.html if running on root folder or index.html in an app context
+    if (!filename || filename === 'index.html' || filename === '') {
+        filename = 'dashboard.html';
+    }
+
     const navLinks = document.querySelectorAll('.sidebar-nav .nav-item');
+    let matchedLink = null;
+
     navLinks.forEach(link => {
-        const href = link.getAttribute('href');
-        if (href === currentPath || (href !== '/' && currentPath.startsWith(href))) {
+        link.classList.remove('active');
+        const href = (link.getAttribute('href') || '').toLowerCase().split('?')[0].split('#')[0];
+        const linkFile = href.substring(href.lastIndexOf('/') + 1);
+        if (linkFile && linkFile === filename) {
             link.classList.add('active');
+            matchedLink = link;
         }
+    });
+
+    if (!matchedLink && filename === 'dashboard.html') {
+        const dashLink = document.querySelector('.sidebar-nav .nav-item[href*="dashboard.html"]');
+        if (dashLink) {
+            dashLink.classList.add('active');
+            matchedLink = dashLink;
+        }
+    }
+
+    // Ensure the active item is always scrolled comfortably into view!
+    if (matchedLink) {
+        setTimeout(() => {
+            matchedLink.scrollIntoView({ block: 'nearest', behavior: 'instant' });
+        }, 15);
+    }
+}
+
+// Preserve sidebar scroll position across navigation so it never jumps/slides up
+function initSidebarScrollPersistence() {
+    const sidebarNav = document.querySelector('.sidebar-nav');
+    if (!sidebarNav) return;
+
+    // Restore saved scroll position
+    const saved = sessionStorage.getItem('careerx_sidebar_scroll');
+    if (saved !== null) {
+        sidebarNav.scrollTop = parseInt(saved, 10);
+    }
+
+    // Save scroll position whenever user scrolls
+    sidebarNav.addEventListener('scroll', () => {
+        sessionStorage.setItem('careerx_sidebar_scroll', String(sidebarNav.scrollTop));
+    }, { passive: true });
+
+    // Save scroll position right before clicking any nav item
+    sidebarNav.querySelectorAll('.nav-item').forEach(link => {
+        link.addEventListener('click', () => {
+            sessionStorage.setItem('careerx_sidebar_scroll', String(sidebarNav.scrollTop));
+        });
     });
 }
 
 // Global Accordion Helper for Interview Flashcards
 window.toggleAnswer = function(id, trigger) {
     const el = document.getElementById(id);
-    const icon = trigger.querySelector('.fa-chevron-down');
+    const icon = trigger ? trigger.querySelector('.fa-chevron-down') : null;
     if (!el) return;
     if (el.style.display === 'none' || !el.style.display) {
         el.style.display = 'block';
@@ -137,7 +212,7 @@ window.showToast = function(message, type = 'info') {
         container.style.position = 'fixed';
         container.style.top = '20px';
         container.style.right = '20px';
-        container.style.zIndex = '9999';
+        container.style.zIndex = '99999';
         container.style.display = 'flex';
         container.style.flexDirection = 'column';
         container.style.gap = '10px';
@@ -146,7 +221,7 @@ window.showToast = function(message, type = 'info') {
 
     const toast = document.createElement('div');
     toast.className = `alert alert-${type}`;
-    toast.style.boxShadow = '0 8px 24px rgba(0,0,0,0.3)';
+    toast.style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)';
     toast.style.minWidth = '280px';
     toast.style.animation = 'fadeIn 0.3s ease';
 

@@ -1,17 +1,12 @@
 /* ==========================================================================
-   CAREERX – PLACEMENT READINESS PLATFORM DESIGN SYSTEM
-   Linear & Stripe Inspired Theme: Inter Typography, Indigo Accent (#6366F1 / #4F46E5)
-   Neutral Base: Dark (#0B0F1A) & Light (#F7F8FA)
-   Gold (#F5B942) Reserved Strictly for Rank #1 & Trophy Highlights
-   Full Responsive Dark / Light Mode with WCAG AA High-Contrast
+   CareerX - Placement Readiness Platform
+   Main Stylesheet: Global Variables, Typography, Layout, Cards & Buttons
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500;600&display=swap');
 
 :root {
-    /* ----------------------------------------------------------------------
-       LIGHT THEME (CLEAN, NEAT & MODERN SAAS TOKENS)
-       ---------------------------------------------------------------------- */
+    /* Color Palette */
     --bg: #F8FAFC;
     --surface: #FFFFFF;
     --sidebar: #FFFFFF;
@@ -34,12 +29,12 @@
     --status-danger: #F43F5E;
     --status-info: #38BDF8;
 
-    /* Isolated Gold: strictly for Rank #1 & trophy highlights */
+    /* Leaderboard Rank Gold Highlight */
     --gold-rank: #F5B942;
     --gold-soft: rgba(245, 185, 66, 0.12);
     --border-gold: rgba(245, 185, 66, 0.35);
 
-    /* Mapped Legacy Aliases */
+    /* Common Aliases */
     --bg-primary: var(--bg);
     --bg-secondary: var(--sidebar);
     --bg-card: var(--surface);
@@ -65,59 +60,17 @@
     --accent-rose: #F43F5E;
     --accent-cyan: #38BDF8;
 
-    /* Layout & Geometry */
+    /* Spacing & Borders */
     --sidebar-width: 260px;
-    --header-height: 70px;
+    --header-height: 64px;
     --spacing-standard: 20px;
-    --radius-btn: 8px; /* 8px for buttons */
+    --radius-btn: 8px;
     --radius-sm: 8px;
-    --radius-md: 14px; /* 14px for cards */
+    --radius-md: 14px;
     --radius-lg: 18px;
     --radius-full: 9999px;
 
-    /* Soft Shadows */
-    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-    --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07);
-    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-/* ----------------------------------------------------------------------
-   CLEAN LIGHT THEME - ENFORCED ACROSS THE APP (DARK THEME REMOVED)
-   ---------------------------------------------------------------------- */
-[data-theme="light"],
-[data-theme="dark"],
-:root {
-    --bg: #F8FAFC;
-    --surface: #FFFFFF;
-    --sidebar: #FFFFFF;
-    --border: #E2E8F0;
-    --text: #0F172A;
-    --text-2: #334155;
-    --text-muted: #64748B;
-    --accent: #4F46E5;
-    --accent-hover: #4338CA;
-    --accent-soft: rgba(79, 70, 229, 0.08);
-
-    --bg-primary: var(--bg);
-    --bg-secondary: var(--sidebar);
-    --bg-card: var(--surface);
-    --bg-card-hover: #F8FAFC;
-    --border-color: var(--border);
-    --border-gold: rgba(79, 70, 229, 0.2);
-    --text-primary: var(--text);
-    --text-secondary: var(--text-2);
-    --accent-gold: var(--accent);
-    --accent-gold-hover: var(--accent-hover);
-    --primary: var(--accent);
-    --primary-gradient: var(--accent);
-    --gold-gradient: var(--accent);
-    --gold-glow: 0 4px 14px rgba(79, 70, 229, 0.18);
-    --gold-card-glow: 0 4px 16px rgba(0, 0, 0, 0.05);
-
-    --navy-surface: #F1F5F9;
-    --navy-elevated: #FFFFFF;
-    --navy-highlight: #E2E8F0;
-
+    /* Shadows */
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
     --shadow-md: 0 4px 14px rgba(0, 0, 0, 0.07);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
@@ -224,39 +177,46 @@ a:hover {
     font-weight: 700;
 }
 
-[data-theme="light"] .logo-badge {
-    color: #FFFFFF;
-}
-
 .sidebar-nav {
     flex: 1;
     overflow-y: auto;
-    padding: 1.25rem 0.85rem;
+    padding: 0.85rem 0.85rem 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.25rem;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(148, 163, 184, 0.35) transparent;
+}
+
+.sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.35);
+    border-radius: 99px;
 }
 
 .nav-section-title {
     font-family: var(--font);
     font-size: 0.72rem;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.07em;
     color: var(--text-muted);
-    font-weight: 600;
-    padding: 0.85rem 0.75rem 0.35rem;
+    font-weight: 700;
+    padding: 0.75rem 0.85rem 0.25rem;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
     gap: 0.85rem;
-    padding: 0.7rem 0.95rem;
-    border-radius: var(--radius-sm);
+    padding: 0.62rem 0.95rem;
+    border-radius: 10px;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition: all 0.18s ease;
     border: 1px solid transparent;
 }
 
@@ -264,31 +224,23 @@ a:hover {
     background: var(--accent-soft);
     color: var(--accent);
     border-color: transparent;
-    transform: translateX(3px);
+    transform: translateX(2px);
 }
 
 .nav-item.active {
     background: var(--accent);
     color: #FFFFFF !important;
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(79, 70, 229, 0.25);
+    box-shadow: 0 3px 10px rgba(79, 70, 229, 0.28);
 }
 
 .nav-item.active i {
     color: #FFFFFF !important;
 }
 
-[data-theme="light"] .nav-item.active {
-    color: #FFFFFF !important;
-}
-
-[data-theme="light"] .nav-item.active i {
-    color: #FFFFFF !important;
-}
-
 .nav-item i {
     font-size: 1.05rem;
-    width: 20px;
+    width: 22px;
     text-align: center;
     color: var(--text-secondary);
     transition: color 0.2s ease;
@@ -298,13 +250,24 @@ a:hover {
     color: var(--accent);
 }
 
+.sidebar-widget {
+    margin-top: auto;
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(99, 102, 241, 0.03));
+    border: 1px solid rgba(79, 70, 229, 0.16);
+    margin-top: 1.25rem;
+    margin-bottom: 0.35rem;
+}
+
 .sidebar-footer {
-    padding: 1rem 1.25rem;
+    padding: 0.75rem 1.15rem;
     border-top: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: #F8FAFC;
+    flex-shrink: 0;
 }
 
 .user-mini-profile {
@@ -327,11 +290,6 @@ a:hover {
     font-size: 0.88rem;
     flex-shrink: 0;
     border: 1px solid var(--accent);
-}
-
-[data-theme="light"] .user-avatar {
-    color: var(--accent);
-    background: var(--accent-soft);
 }
 
 .user-meta {

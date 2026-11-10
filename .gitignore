@@ -1,31 +1,19 @@
-# Python bytecode cache
-__pycache__/
-*.py[cod]
-*$py.class
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
 
-# Virtual environments (Do NOT push local libraries to GitHub)
-venv/
-.venv/
-env/
-ENV/
-
-# Local database (SQLite will auto-generate on first run)
-*.db
-*.sqlite3
-data/
-
-# Local editor & IDE settings
+# Editor & IDE Directories
 .vscode/
 .idea/
+*.swp
+*.swo
 
-# Environment variables & secrets
-.env
-
-# Keep uploads folder structure on GitHub, but don't commit uploaded files
-uploads/*
-!uploads/.gitkeep
-
-# Operating system files
-Thumbs.db
-.DS_Store
+# Local backup / duplicate directory
+Carrer X project/
 

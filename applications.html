@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Tracker | CareerX</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="app-sidebar">
+            <div class="sidebar-header">
+                <a href="dashboard.html" class="brand-logo">
+                    <div class="logo-badge"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <span>Career<span style="color: var(--primary);">X</span> <span class="badge badge-primary" style="font-size: 0.65rem; padding: 2px 7px; margin-left: 4px; vertical-align: middle;">PRO</span></span>
+                </a>
+                <button id="mobileSidebarClose" class="mobile-sidebar-close" aria-label="Close sidebar"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section-title">Preparation Hub</div>
+                <a href="dashboard.html" class="nav-item">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="roadmap.html" class="nav-item">
+                    <i class="fa-solid fa-route"></i>
+                    <span>Career Roadmap</span>
+                </a>
+
+                <div class="nav-section-title">Resume &amp; ATS</div>
+                <a href="resume_builder.html" class="nav-item">
+                    <i class="fa-solid fa-file-pen"></i>
+                    <span>Create Resume</span>
+                </a>
+                <a href="ats_checker.html" class="nav-item">
+                    <i class="fa-solid fa-file-shield"></i>
+                    <span>ATS Scanner</span>
+                </a>
+
+                <div class="nav-section-title">Assessments &amp; Practice</div>
+                <a href="aptitude.html" class="nav-item">
+                    <i class="fa-solid fa-bolt"></i>
+                    <span>Aptitude Trainer</span>
+                </a>
+                <a href="interview.html" class="nav-item">
+                    <i class="fa-solid fa-book-open"></i>
+                    <span>Tech Question Bank</span>
+                </a>
+                <a href="mock_interview.html" class="nav-item">
+                    <i class="fa-solid fa-code"></i>
+                    <span>Write Interview</span>
+                </a>
+
+                <div class="nav-section-title">Career Tracking</div>
+                <a href="skills.html" class="nav-item">
+                    <i class="fa-solid fa-award"></i>
+                    <span>Skill Tracker</span>
+                </a>
+                <a href="applications.html" class="nav-item active">
+                    <i class="fa-solid fa-briefcase"></i>
+                    <span>Job Tracker</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item">
+                    <i class="fa-solid fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+
+                <div class="sidebar-widget" style="margin-top: auto; padding: 0.95rem; border-radius: 12px; background: linear-gradient(135deg, rgba(79, 70, 229, 0.08), rgba(99, 102, 241, 0.03)); border: 1px solid rgba(79, 70, 229, 0.16); margin-top: 1.25rem; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.35rem;">
+                        <span style="font-size: 0.72rem; font-weight: 800; color: #4F46E5; text-transform: uppercase; letter-spacing: 0.05em;"><i class="fa-solid fa-bolt"></i> Placement 2026</span>
+                        <span class="badge badge-success" style="font-size: 0.62rem; padding: 2px 6px;">Live</span>
+                    </div>
+                    <div style="font-size: 0.84rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.2rem;">
+                        Campus Placement Drives
+                    </div>
+                    <p style="font-size: 0.75rem; color: var(--text-secondary); margin: 0 0 0.65rem; line-height: 1.35;">
+                        Check criteria and submit 1-click applications for verified corporate drives.
+                    </p>
+                    <a href="applications.html" class="btn btn-primary btn-sm" style="width: 100%; font-size: 0.78rem; padding: 0.4rem 0.6rem; text-align: center; justify-content: center; display: flex;">
+                        <i class="fa-solid fa-briefcase"></i> View Campus Drives
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-mini-profile">
+                    <div class="user-avatar">R</div>
+                    <div class="user-meta">
+                        <div class="name">Rahul Sharma</div>
+                        <div class="role">AI/ML Engineer</div>
+                    </div>
+                </div>
+                <a href="profile.html" title="Profile &amp; Settings" style="color: var(--text-muted); padding: 5px;">
+                    <i class="fa-solid fa-gear"></i>
+                </a>
+            </div>
+        </aside>
+        <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+        <main class="app-main">
+            <header class="app-header">
+                <div class="header-left">
+                    <button id="mobileNavToggle" class="mobile-nav-toggle" aria-label="Toggle navigation">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <h2 class="header-title">Placement &amp; Job Application Tracker</h2>
+                </div>
+                <div class="header-right" style="display: flex; align-items: center; gap: 0.75rem;">
+                    <a href="login.html" class="btn btn-outline btn-sm logout-trigger" title="Sign Out">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <!-- Header Card -->
+                <div class="card" style="margin-bottom: 2rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div>
+                            <h2 style="font-size: 1.45rem; margin-bottom: 0.25rem;">Application Pipeline &amp; Drive Monitor</h2>
+                            <p style="color: var(--text-secondary); font-size: 0.92rem; margin: 0;">
+                                Manage on-campus and off-campus recruitment processes from initial submission to final offer.
+                            </p>
+                        </div>
+                        <button onclick="openAppModal()" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-plus"></i> Log External Application
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Verified TPO Campus Recruitment Drives -->
+                <div class="card" style="margin-bottom: 2rem; border-top: 3px solid var(--accent);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.25rem;">
+                                <span class="badge badge-success"><i class="fa-solid fa-shield-halved"></i> TPO Verified Drives</span>
+                                <span class="badge badge-primary" id="appDrivesCountBadge">Active Drives</span>
+                            </div>
+                            <h3 style="font-size: 1.3rem; margin: 0;">
+                                <i class="fa-solid fa-building-columns" style="color: var(--accent); margin-right: 0.4rem;"></i> Available Campus Recruitment Drives
+                            </h3>
+                            <p style="color: var(--text-secondary); font-size: 0.88rem; margin: 0.25rem 0 0;">
+                                Corporate placement drives published by the Placement Cell. Click "1-Click Apply" to submit your candidature.
+                            </p>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <span style="font-size: 0.8rem; color: var(--text-muted);"><i class="fa-solid fa-circle-dot" style="color: #10B981; margin-right: 4px;"></i> Live with Admin Portal</span>
+                        </div>
+                    </div>
+
+                    <!-- Campus Drives Grid -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.25rem;" id="campusDrivesTrackerGrid">
+                        <!-- Populated dynamically by applications.js from CareerXStore.getDrives() -->
+                    </div>
+                </div>
+
+                <!-- Filter & Search Bar -->
+                <div class="card" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button class="btn btn-outline btn-sm app-filter active" data-filter="All">All (5)</button>
+                            <button class="btn btn-outline btn-sm app-filter" data-filter="Applied">Applied</button>
+                            <button class="btn btn-outline btn-sm app-filter" data-filter="Screening">Screening</button>
+                            <button class="btn btn-outline btn-sm app-filter" data-filter="Interview">Interview</button>
+                            <button class="btn btn-outline btn-sm app-filter" data-filter="Offer" style="color: #059669; font-weight: 600;">Offers</button>
+                            <button class="btn btn-outline btn-sm app-filter" data-filter="Rejected" style="color: #E11D48; font-weight: 600;">Rejected</button>
+                        </div>
+                        <div>
+                            <input type="text" id="appSearchInput" class="form-control" placeholder="Search company or role..." style="padding: 0.45rem 0.85rem; font-size: 0.85rem; width: 240px;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Applications Table -->
+                <div class="card">
+                    <div class="table-responsive">
+                        <table class="styled-table" id="appsTable">
+                            <thead>
+                                <tr>
+                                    <th>Company</th>
+                                    <th>Role</th>
+                                    <th>Location</th>
+                                    <th>Package (LPA)</th>
+                                    <th>Date Applied</th>
+                                    <th>Status</th>
+                                    <th>Notes &amp; Timeline</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Rendered dynamically by applications.js -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Log Application Modal -->
+    <div id="addAppModal" class="modal-overlay">
+        <div class="modal-card" style="max-width: 540px; padding: 2rem; background: #FFFFFF; border-radius: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h3 style="font-size: 1.25rem; margin: 0;">Log Job Application</h3>
+                <button type="button" onclick="closeAppModal()" style="background: transparent; border: none; color: var(--text-muted); font-size: 1.25rem; cursor: pointer; padding: 4px;">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="appForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" style="font-weight: 600;">Company Name *</label>
+                        <input type="text" id="modalCompany" class="form-control" placeholder="e.g. Microsoft" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" style="font-weight: 600;">Role Title *</label>
+                        <input type="text" id="modalRole" class="form-control" placeholder="e.g. Software Engineer (L3)" required>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" style="font-weight: 600;">Location</label>
+                        <input type="text" id="modalLocation" class="form-control" placeholder="e.g. Bengaluru / Hybrid">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" style="font-weight: 600;">CTC / Package (LPA)</label>
+                        <input type="number" step="0.5" id="modalSalary" class="form-control" placeholder="e.g. 24.5">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label" style="font-weight: 600;">Application Date</label>
+                        <input type="date" id="modalDate" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" style="font-weight: 600;">Pipeline Status</label>
+                        <select id="modalStatus" class="form-control">
+                            <option value="Applied" selected>Applied</option>
+                            <option value="Screening">Screening (OA/Resume)</option>
+                            <option value="Interview">Interview Round</option>
+                            <option value="Offer">Offer Received</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label" style="font-weight: 600;">Notes or Next Steps</label>
+                    <textarea id="modalNotes" class="form-control" rows="2" placeholder="e.g. OA cleared. Technical round next Tuesday."></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                    <button type="button" onclick="closeAppModal()" class="btn btn-outline btn-sm">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">Save Application</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="static/js/store.js"></script>
+    <script src="static/js/app.js"></script>
+    <script src="static/js/applications.js"></script>
+</body>
+</html>
+
